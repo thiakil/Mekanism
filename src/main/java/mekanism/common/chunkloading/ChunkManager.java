@@ -23,6 +23,7 @@ public class ChunkManager implements LoadingCallback
 			
 			if(tileEntity instanceof IChunkLoader)
 			{
+				((IChunkLoader)tileEntity).getChunkLoader().initTicketIfNeeded();
 				((IChunkLoader)tileEntity).getChunkLoader().refreshChunkSet();
 				((IChunkLoader)tileEntity).getChunkLoader().forceChunks(ticket);
 			}

@@ -131,19 +131,24 @@ public class TileComponentChunkLoader implements ITileComponent
 			}
 			
 			refreshChunkSet();
-			
-			if(canOperate() && chunkTicket == null)
+
+			initTicketIfNeeded();
+		}
+	}
+
+	public void initTicketIfNeeded()
+	{
+		if(canOperate() && chunkTicket == null)
+		{
+			Ticket ticket = ForgeChunkManager.requestTicket(Mekanism.instance, tileEntity.getWorld(), Type.NORMAL);
+
+			if(ticket != null)
 			{
-				Ticket ticket = ForgeChunkManager.requestTicket(Mekanism.instance, tileEntity.getWorld(), Type.NORMAL);
-	            
-				if(ticket != null) 
-	            {
-					ticket.getModData().setInteger("xCoord", tileEntity.getPos().getX());
-					ticket.getModData().setInteger("yCoord", tileEntity.getPos().getY());
-					ticket.getModData().setInteger("zCoord", tileEntity.getPos().getZ());
-					
-					forceChunks(ticket);
-	            }
+				ticket.getModData().setInteger("xCoord", tileEntity.getPos().getX());
+				ticket.getModData().setInteger("yCoord", tileEntity.getPos().getY());
+				ticket.getModData().setInteger("zCoord", tileEntity.getPos().getZ());
+
+				forceChunks(ticket);
 			}
 		}
 	}
