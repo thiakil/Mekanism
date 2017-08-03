@@ -2,6 +2,9 @@ package mekanism.common.chunkloading;
 
 import java.util.List;
 
+import mekanism.common.config.MekanismConfig;
+import mekanism.common.tile.component.TileComponentChunkLoader;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -13,19 +16,27 @@ public class ChunkManager implements LoadingCallback
 	@Override
 	public void ticketsLoaded(List<Ticket> tickets, World world)
 	{
-		for(Ticket ticket : tickets)
+		if (MekanismConfig.general.allowChunkloading)
 		{
-			int x = ticket.getModData().getInteger("xCoord");
-			int y = ticket.getModData().getInteger("yCoord");
-			int z = ticket.getModData().getInteger("zCoord");
-			
-			TileEntity tileEntity = world.getTileEntity(new BlockPos(x, y, z));
-			
-			if(tileEntity instanceof IChunkLoader)
+			for (Ticket ticket : tickets)
 			{
-				((IChunkLoader)tileEntity).getChunkLoader().initTicketIfNeeded();
-				((IChunkLoader)tileEntity).getChunkLoader().refreshChunkSet();
-				((IChunkLoader)tileEntity).getChunkLoader().forceChunks(ticket);
+				NBTTagCompound data = ticket.getModData();
+				int x = data.getInteger("xCoord");
+				int y = data.getInteger("yCoord");
+				int z = data.getInteger("zCoord");
+
+				TileEntity tileEntity = world.getTileEntity(new BlockPos(x, y, z));
+
+				if (tileEntity instanceof IChunkLoader)
+				{
+					TileComponentChunkLoader chunkLoader = ((IChunkLoader) tileEntity).getChunkLoader();
+					if (chunkLoader.canOperate())
+					{
+						chunkLoader.initTicketIfNeeded();
+						chunkLoader.refreshChunkSet();
+						chunkLoader.forceChunks(ticket);
+					}
+				}
 			}
 		}
 	}

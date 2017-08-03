@@ -16,6 +16,7 @@ import mekanism.common.config.MekanismConfig.general;
 import mekanism.common.tile.prefab.TileEntityContainerBlock;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
@@ -144,9 +145,11 @@ public class TileComponentChunkLoader implements ITileComponent
 
 			if(ticket != null)
 			{
-				ticket.getModData().setInteger("xCoord", tileEntity.getPos().getX());
-				ticket.getModData().setInteger("yCoord", tileEntity.getPos().getY());
-				ticket.getModData().setInteger("zCoord", tileEntity.getPos().getZ());
+				NBTTagCompound data = ticket.getModData();
+				BlockPos pos = tileEntity.getPos();
+				data.setInteger("xCoord", pos.getX());
+				data.setInteger("yCoord", pos.getY());
+				data.setInteger("zCoord", pos.getZ());
 
 				forceChunks(ticket);
 			}
