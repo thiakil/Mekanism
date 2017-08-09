@@ -21,6 +21,7 @@ import mekanism.common.content.transporter.PathfinderCache;
 import mekanism.common.content.transporter.TransitRequest;
 import mekanism.common.content.transporter.TransitRequest.TransitResponse;
 import mekanism.common.content.transporter.TransporterStack;
+import mekanism.common.integration.MekanismHooks;
 import mekanism.common.integration.multipart.MultipartTileNetworkJoiner;
 import mekanism.common.network.PacketTileEntity.TileEntityMessage;
 import mekanism.common.transmitters.TransporterImpl;
@@ -273,7 +274,7 @@ public class TileEntityLogisticalTransporter extends TileEntityTransmitter<TileE
 	{
 		ArrayList<Object> data = new ArrayList<Object>();
 		
-		if(Mekanism.hooks.MCMPLoaded)
+		if(MekanismHooks.MCMULTIPART.isLoaded)
 		{
 			MultipartTileNetworkJoiner.addMultipartHeader(this, data, null);
 		}

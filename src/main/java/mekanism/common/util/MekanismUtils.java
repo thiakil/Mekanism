@@ -42,6 +42,7 @@ import mekanism.common.block.states.BlockStateMachine.MachineType;
 import mekanism.common.block.states.BlockStateTransmitter.TransmitterType;
 import mekanism.common.config.MekanismConfig.client;
 import mekanism.common.config.MekanismConfig.general;
+import mekanism.common.integration.MekanismHooks;
 import mekanism.common.inventory.InventoryPersonalChest;
 import mekanism.common.inventory.container.ContainerPersonalChest;
 import mekanism.common.item.ItemBlockBasic;
@@ -1210,7 +1211,7 @@ public final class MekanismUtils
 	 */
 	public static boolean useIC2()
 	{
-		return Mekanism.hooks.IC2Loaded && EnergyNet.instance != null && !general.blacklistIC2;
+		return MekanismHooks.IC2.isLoaded && EnergyNet.instance != null && !general.blacklistIC2;
 	}
 
 	/**
@@ -1228,7 +1229,7 @@ public final class MekanismUtils
 	 */
 	public static boolean useTesla()
 	{
-		return Mekanism.hooks.TeslaLoaded && !general.blacklistTesla;
+		return MekanismHooks.TESLA.isLoaded && !general.blacklistTesla;
 	}
 	
 	/**

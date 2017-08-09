@@ -11,6 +11,7 @@ import mekanism.common.base.ITileNetwork;
 import mekanism.common.block.property.PropertyColor;
 import mekanism.common.block.states.BlockStateFacing;
 import mekanism.common.capabilities.Capabilities;
+import mekanism.common.integration.MekanismHooks;
 import mekanism.common.integration.multipart.MultipartTileNetworkJoiner;
 import mekanism.common.network.PacketDataRequest.DataRequestMessage;
 import mekanism.common.util.MekanismUtils;
@@ -47,7 +48,7 @@ public class TileEntityGlowPanel extends TileEntity implements ITileNetwork
 	@Override
 	public ArrayList<Object> getNetworkedData(ArrayList<Object> data)
 	{
-		if(Mekanism.hooks.MCMPLoaded)
+		if(MekanismHooks.MCMULTIPART.isLoaded)
 		{
 			MultipartTileNetworkJoiner.addMultipartHeader(this, data, side);
 		}

@@ -3,6 +3,7 @@ package mekanism.common.integration.computer;
 import java.util.Arrays;
 import java.util.Locale;
 
+import li.cil.oc.api.Driver;
 import li.cil.oc.api.Network;
 import li.cil.oc.api.driver.NamedBlock;
 import li.cil.oc.api.machine.Arguments;
@@ -12,6 +13,8 @@ import li.cil.oc.api.network.ManagedPeripheral;
 import li.cil.oc.api.network.Visibility;
 import li.cil.oc.api.prefab.AbstractManagedEnvironment;
 import li.cil.oc.api.prefab.DriverSidedTileEntity;
+import mekanism.common.Mekanism;
+import mekanism.common.integration.IMekanismHook;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -20,7 +23,7 @@ import net.minecraft.world.World;
 /**
  * Created by aidancbrady on 7/20/15.
  */
-public class OCDriver extends DriverSidedTileEntity
+public class OCDriver extends DriverSidedTileEntity implements IMekanismHook
 {
     @Override
     public Class<?> getTileEntityClass()
@@ -39,6 +42,15 @@ public class OCDriver extends DriverSidedTileEntity
         }
 
         return null;
+    }
+
+    @Override
+    public void postInit() {
+        try {
+            Driver.add(this);
+        } catch(Exception e) {
+            Mekanism.logger.error("Could not register OC Driver", e);
+        }
     }
 
     public class OCManagedEnvironment extends AbstractManagedEnvironment implements NamedBlock, ManagedPeripheral

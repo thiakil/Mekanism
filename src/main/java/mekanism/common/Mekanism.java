@@ -185,9 +185,6 @@ public class Mekanism
 	@Instance("mekanism")
     public static Mekanism instance;
     
-    /** Mekanism hooks instance */
-    public static MekanismHooks hooks = new MekanismHooks();
-    
     /** Mekanism configuration instance */
     public static Configuration configuration;
     
@@ -1342,19 +1339,7 @@ public class Mekanism
 		addRecipes();
 		addEntities();
 		
-		//Integrate with Waila
-		FMLInterModComms.sendMessage(MekanismHooks.WAILA_MOD_ID, "register", "mekanism.common.integration.WailaDataProvider.register");
-
-		//Integrate with OpenComputers
-		if(Loader.isModLoaded(MekanismHooks.OPENCOMPUTERS_MOD_ID))
-		{
-			hooks.loadOCDrivers();
-		}
-
-		if(Loader.isModLoaded(MekanismHooks.APPLIED_ENERGISTICS_2_MOD_ID))
-		{
-			hooks.registerAE2P2P();
-		}
+		MekanismHooks.initialise();
 
 		//Packet registrations
 		packetHandler.initialize();
@@ -1374,7 +1359,7 @@ public class Mekanism
 	{
 		logger.info("Fake player readout: UUID = " + gameProfile.getId().toString() + ", name = " + gameProfile.getName());
 
-		hooks.hook();
+		MekanismHooks.postInitialise();
 		
 		MinecraftForge.EVENT_BUS.post(new BoxBlacklistEvent());
 		

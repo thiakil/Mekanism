@@ -14,6 +14,7 @@ import mekanism.common.block.property.PropertyConnection;
 import mekanism.common.block.states.BlockStateTransmitter;
 import mekanism.common.block.states.BlockStateTransmitter.TransmitterType;
 import mekanism.common.block.states.BlockStateTransmitter.TransmitterType.Size;
+import mekanism.common.integration.MekanismHooks;
 import mekanism.common.integration.multipart.MultipartMekanism;
 import mekanism.common.tile.transmitter.TileEntityDiversionTransporter;
 import mekanism.common.tile.transmitter.TileEntityLogisticalTransporter;
@@ -446,7 +447,7 @@ public class BlockTransmitter extends Block implements ITileEntityProvider
 		{
 			sidedPipe = (TileEntitySidedPipe)tileEntity;
 		}
-		else if(Mekanism.hooks.MCMPLoaded)
+		else if(MekanismHooks.MCMULTIPART.isLoaded)
 		{
 			TileEntity childEntity = MultipartMekanism.unwrapTileEntity(world);
 			if(childEntity instanceof TileEntitySidedPipe)

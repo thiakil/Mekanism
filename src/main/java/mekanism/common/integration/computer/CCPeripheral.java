@@ -1,5 +1,8 @@
 package mekanism.common.integration.computer;
 
+import dan200.computercraft.api.ComputerCraftAPI;
+import mekanism.common.Mekanism;
+import mekanism.common.integration.IMekanismHook;
 import mekanism.common.integration.MekanismHooks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -68,7 +71,7 @@ public class CCPeripheral implements IPeripheral
         return this == other;
     }
 
-    public static class CCPeripheralProvider implements IPeripheralProvider
+    public static class CCPeripheralProvider implements IPeripheralProvider, IMekanismHook
     {
         @Override
         public IPeripheral getPeripheral(World world, BlockPos pos, EnumFacing side)
@@ -81,6 +84,15 @@ public class CCPeripheral implements IPeripheral
             }
 
             return null;
+        }
+
+        @Override
+        public void postInit() {
+            try {
+                ComputerCraftAPI.registerPeripheralProvider(this);
+            } catch(Exception e) {
+                Mekanism.logger.error("Could not register CC Peripheral Provider", e);
+            }
         }
     }
 }

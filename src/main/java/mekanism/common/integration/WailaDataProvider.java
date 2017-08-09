@@ -26,10 +26,16 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Optional.Interface;
 import net.minecraftforge.fml.common.Optional.Method;
+import net.minecraftforge.fml.common.event.FMLInterModComms;
 
 @Interface(iface = "mcp.mobius.waila.api.IWailaDataProvider", modid = MekanismHooks.WAILA_MOD_ID)
-public class WailaDataProvider implements IWailaDataProvider
+public class WailaDataProvider implements IWailaDataProvider, IMekanismHook
 {
+	@Override
+	public void init() {
+		FMLInterModComms.sendMessage(MekanismHooks.WAILA.MOD_ID, "register", "mekanism.common.integration.WailaDataProvider.register");
+	}
+
 	@Method(modid = MekanismHooks.WAILA_MOD_ID)
 	public static void register(IWailaRegistrar registrar)
 	{

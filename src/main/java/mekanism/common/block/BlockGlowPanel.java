@@ -8,6 +8,7 @@ import mekanism.common.MekanismBlocks;
 import mekanism.common.block.property.PropertyColor;
 import mekanism.common.block.states.BlockStateFacing;
 import mekanism.common.block.states.BlockStateGlowPanel;
+import mekanism.common.integration.MekanismHooks;
 import mekanism.common.integration.multipart.MultipartMekanism;
 import mekanism.common.tile.TileEntityGlowPanel;
 import mekanism.common.util.MekanismUtils;
@@ -159,7 +160,7 @@ public class BlockGlowPanel extends Block implements ITileEntityProvider
 	{
 		boolean canStay = false;
 		
-		if(Mekanism.hooks.MCMPLoaded)
+		if(MekanismHooks.MCMULTIPART.isLoaded)
 		{
 			canStay = MultipartMekanism.hasCenterSlot(world, pos);
 		}
@@ -265,7 +266,7 @@ public class BlockGlowPanel extends Block implements ITileEntityProvider
     	{
     		glowPanel = (TileEntityGlowPanel)tileEntity;
     	}
-    	else if(Mekanism.hooks.MCMPLoaded)
+    	else if(MekanismHooks.MCMULTIPART.isLoaded)
     	{
     		TileEntity childEntity = MultipartMekanism.unwrapTileEntity(world);
     		if(childEntity instanceof TileEntityGlowPanel)

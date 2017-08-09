@@ -4,6 +4,7 @@ import com.jaquadro.minecraft.storagedrawers.api.IStorageDrawersApi;
 import com.jaquadro.minecraft.storagedrawers.api.StorageDrawersApi;
 import com.jaquadro.minecraft.storagedrawers.api.registry.IRecipeHandler;
 import com.jaquadro.minecraft.storagedrawers.api.registry.IRecipeHandlerRegistry;
+import mekanism.common.integration.IMekanismHook;
 import mekanism.common.recipe.ShapedMekanismRecipe;
 import mekanism.common.recipe.ShapelessMekanismRecipe;
 
@@ -11,11 +12,11 @@ import net.minecraft.item.crafting.IRecipe;
 
 import java.util.List;
 
-public class StorageDrawerRecipeHandler
+public class StorageDrawerRecipeHandler implements IMekanismHook
 {
     private StorageDrawerRecipeHandler(){}
 
-    public static void register()
+    public void postInit()
     {
         IStorageDrawersApi api = StorageDrawersApi.instance();
         if(api == null)
