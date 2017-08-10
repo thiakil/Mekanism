@@ -9,6 +9,7 @@ import java.util.Map;
 import mekanism.common.Mekanism;
 import mekanism.common.Version;
 import mekanism.common.base.IModule;
+import mekanism.common.config.MekanismConfig;
 import mekanism.common.config.MekanismConfig.tools;
 import mekanism.common.recipe.ShapedMekanismRecipe;
 import net.minecraft.entity.monster.EntitySkeleton;
@@ -578,13 +579,13 @@ public class MekanismTools implements IModule
 	@Override
 	public void writeConfig(ByteBuf dataStream) throws IOException
 	{
-		dataStream.writeDouble(tools.armorSpawnRate);
+		MekanismConfig.writeToBuffer(MekanismConfig.tools.class, dataStream);
 	}
 
 	@Override
 	public void readConfig(ByteBuf dataStream) throws IOException
 	{
-		tools.armorSpawnRate = dataStream.readDouble();
+		MekanismConfig.writeToBuffer(MekanismConfig.tools.class, dataStream);
 	}
 	
 	@Override

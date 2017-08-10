@@ -18,6 +18,7 @@ import mekanism.common.Tier.BaseTier;
 import mekanism.common.Tier.GasTankTier;
 import mekanism.common.Version;
 import mekanism.common.base.IModule;
+import mekanism.common.config.MekanismConfig;
 import mekanism.common.config.TypeConfigManager;
 import mekanism.common.config.MekanismConfig.general;
 import mekanism.common.config.MekanismConfig.generators;
@@ -207,59 +208,13 @@ public class MekanismGenerators implements IModule
 	@Override
 	public void writeConfig(ByteBuf dataStream) throws IOException
 	{
-		dataStream.writeDouble(generators.advancedSolarGeneration);
-		dataStream.writeDouble(generators.bioGeneration);
-		dataStream.writeDouble(generators.heatGeneration);
-		dataStream.writeDouble(generators.heatGenerationLava);
-		dataStream.writeDouble(generators.heatGenerationNether);
-		dataStream.writeDouble(generators.solarGeneration);
-		
-		dataStream.writeDouble(generators.windGenerationMin);
-		dataStream.writeDouble(generators.windGenerationMax);
-		
-		dataStream.writeInt(generators.windGenerationMinY);
-		dataStream.writeInt(generators.windGenerationMaxY);
-		
-		dataStream.writeInt(generators.turbineBladesPerCoil);
-		dataStream.writeDouble(generators.turbineVentGasFlow);
-		dataStream.writeDouble(generators.turbineDisperserGasFlow);
-		dataStream.writeInt(generators.condenserRate);
-		
-		dataStream.writeDouble(generators.energyPerFusionFuel);
-		
-		for(GeneratorType type : GeneratorType.getGeneratorsForConfig())
-		{
-			dataStream.writeBoolean(generators.generatorsManager.isEnabled(type.blockName));
-		}
+		MekanismConfig.writeToBuffer(MekanismConfig.generators.class, dataStream);
 	}
 
 	@Override
 	public void readConfig(ByteBuf dataStream) throws IOException
 	{
-		generators.advancedSolarGeneration = dataStream.readDouble();
-		generators.bioGeneration = dataStream.readDouble();
-		generators.heatGeneration = dataStream.readDouble();
-		generators.heatGenerationLava = dataStream.readDouble();
-		generators.heatGenerationNether = dataStream.readDouble();
-		generators.solarGeneration = dataStream.readDouble();
-		
-		generators.windGenerationMin = dataStream.readDouble();
-		generators.windGenerationMax = dataStream.readDouble();
-		
-		generators.windGenerationMinY = dataStream.readInt();
-		generators.windGenerationMaxY = dataStream.readInt();
-		
-		generators.turbineBladesPerCoil = dataStream.readInt();
-		generators.turbineVentGasFlow = dataStream.readDouble();
-		generators.turbineDisperserGasFlow = dataStream.readDouble();
-		generators.condenserRate = dataStream.readInt();
-		
-		generators.energyPerFusionFuel = dataStream.readDouble();
-		
-		for(GeneratorType type : GeneratorType.getGeneratorsForConfig())
-		{
-			generators.generatorsManager.setEntry(type.blockName, dataStream.readBoolean());
-		}
+		MekanismConfig.readFromBuffer(MekanismConfig.generators.class, dataStream);
 	}
 	
 	@Override

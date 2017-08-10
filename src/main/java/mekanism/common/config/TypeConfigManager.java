@@ -4,8 +4,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.netty.buffer.ByteBuf;
 import mekanism.common.base.IBlockType;
 import net.minecraft.item.crafting.CraftingManager;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 
 public class TypeConfigManager 
 {
@@ -36,5 +38,23 @@ public class TypeConfigManager
 				CraftingManager.getInstance().getRecipeList().removeAll(type.getRecipes());
 			}
 		}
+	}
+
+	public static TypeConfigManager readFromBuffer(ByteBuf buf){
+		int count = buf.readInt();
+		TypeConfigManager ret = new TypeConfigManager();
+		for (int i = 0; i < count; i++){
+			ret.setEntry(ByteBufUtils.readUTF8String(buf), buf.readBoolean());
+		}
+		return ret;
+	}
+
+	public ByteBuf writeToBuffer(ByteBuf buf){
+		buf.writeInt(this.config.size());
+		for (Map.Entry<String, Boolean> e : this.config.entrySet()){
+			ByteBufUtils.writeUTF8String(buf, e.getKey());
+			buf.writeBoolean(e.getValue());
+		}
+		return buf;
 	}
 }

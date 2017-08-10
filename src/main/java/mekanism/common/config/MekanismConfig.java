@@ -1,7 +1,19 @@
 package mekanism.common.config;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import mekanism.common.Mekanism;
 import mekanism.common.util.UnitDisplayUtils.EnergyType;
 import mekanism.common.util.UnitDisplayUtils.TempType;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public class MekanismConfig
 {
@@ -148,4 +160,127 @@ public class MekanismConfig
 	{
 		public static double armorSpawnRate;
 	}
+
+	protected enum SyncAdaptors {
+		BOOLEAN(Boolean.class, ByteBuf::readBoolean, ByteBuf::writeBoolean),
+		INT(Integer.class, ByteBuf::readInt, ByteBuf::writeInt),
+		DOUBLE(Double.class, ByteBuf::readDouble, ByteBuf::writeDouble),
+		FLOAT(Float.class, ByteBuf::readFloat, ByteBuf::writeFloat),
+		ENERGY_TYPE(EnergyType.class, buf->EnergyType.values()[buf.readByte()], (byteBuf, energyType) -> byteBuf.writeByte(energyType.ordinal())),
+		TEMP_TYPE(TempType.class, buf->TempType.values()[buf.readByte()], (byteBuf, tempType) -> byteBuf.writeByte(tempType.ordinal())),
+		TYPE_CONFIG_MANAGER(TypeConfigManager.class, TypeConfigManager::readFromBuffer, ((byteBuf, typeConfigManager) -> typeConfigManager.writeToBuffer(byteBuf))),
+		//MAP(Map.class, ),
+		;
+
+		private Function<ByteBuf,Object> readHandler;
+		private BiFunction<ByteBuf, Object, ByteBuf> writeHandler;
+		private Class<?> clazz;
+
+		@SuppressWarnings("unchecked")
+		<T> SyncAdaptors(Class<T> clazz, Function<ByteBuf,T> read, BiFunction<ByteBuf, T, ByteBuf> write){
+			this.readHandler = (Function<ByteBuf,Object>)read;
+			this.writeHandler = (BiFunction<ByteBuf, Object, ByteBuf>)write;
+			this.clazz = clazz;
+		}
+
+		public static <T> void writeToPacket(T val, ByteBuf buf){
+			for (SyncAdaptors adaptor : values()){
+				if (adaptor.clazz.isInstance(val)){
+					buf.writeByte(adaptor.ordinal());
+					adaptor.writeHandler.apply(buf, val);
+					return;
+				}
+			}
+			throw new IllegalArgumentException("Handler not found for supplied type; "+val.getClass());
+		}
+	}
+
+	public static ByteBuf writeToBuffer(Class<?> clazz, ByteBuf data){
+		Field[] fields = clazz.getDeclaredFields();
+		int count = 0;
+		int countPos = data.writerIndex();
+		data.writeInt(0);//dummy val, updated later
+		for (Field f : fields){
+			int modifiers = f.getModifiers();
+			if (Modifier.isStatic(modifiers) && Modifier.isPublic(modifiers)){
+				ByteBufUtils.writeUTF8String(data, clazz.getName()+"."+f.getName());
+				try {
+					SyncAdaptors.writeToPacket(f.get(null), data);
+				} catch (IllegalAccessException e){
+					throw new IllegalStateException("Could not read field value, though it should be public", e);
+				}
+				count++;
+			}
+		}
+		int endPos = data.writerIndex();
+		data.writerIndex(countPos);
+		data.writeInt(count);
+		data.writerIndex(endPos);
+		return data;
+	}
+
+	public static ByteBuf writeAllToBuffer(ByteBuf data){
+		writeToBuffer(MekanismConfig.general.class, data);
+		writeToBuffer(MekanismConfig.usage.class, data);
+		writeToBuffer(MekanismConfig.generators.class, data);
+		writeToBuffer(MekanismConfig.tools.class, data);
+		return data;
+	}
+
+	public static void readFromBuffer(Class<?> clazz, ByteBuf data){
+		Map<String, Object> values = new HashMap<>();
+		int count = data.readInt();
+		for (int i = 0; i<count; i++){
+			String name = ByteBufUtils.readUTF8String(data);
+			int type = data.readByte();
+			values.put(name, SyncAdaptors.values()[type].readHandler.apply(data));
+		}
+		Field[] fields = clazz.getDeclaredFields();
+		for (Field f : fields){
+			int modifiers = f.getModifiers();
+			if (Modifier.isStatic(modifiers) && Modifier.isPublic(modifiers)){
+				String name = clazz.getName()+"."+f.getName();
+				if (!values.containsKey(name)){
+					//System.err.printf("Key %s not found in data\n", name);
+					Mekanism.logger.error("Key {} not found in data", name);
+					continue;
+				}
+				try {
+					Object val = values.get(name);
+					if (!f.getType().isInstance(val) && !(f.getType().isPrimitive() && val.getClass().getField("TYPE").get(val) == f.getType())){
+						//System.err.printf("Value class is not the same for key %s, found %s, expected %s\n", name, f.getType().getName(), val.getClass().toGenericString());
+						Mekanism.logger.error("Value class is not the same for key {}, found {}, expected {}", name, f.getType().getName(), values.get(name).getClass().toGenericString());
+						continue;
+					}
+					f.set(null, val);
+				} catch (NoSuchFieldException e) {
+					//System.err.println("Could not get primitive type of what should be a Boxed class");
+					Mekanism.logger.error("Could not get primitive type of what should be a Boxed class. {}", name);
+				} catch (IllegalAccessException e) {
+					throw new IllegalStateException("Could not set our value, though it should be public.", e);
+				}
+			}
+		}
+	}
+
+	public static void readAllFromBuffer(ByteBuf data){
+		readFromBuffer(MekanismConfig.general.class, data);
+		readFromBuffer(MekanismConfig.usage.class, data);
+		readFromBuffer(MekanismConfig.generators.class, data);
+		readFromBuffer(MekanismConfig.tools.class, data);
+	}
+
+	/*public static void main(String[] args){
+		ByteBuf buf = Unpooled.buffer();
+		long start = System.nanoTime();
+		System.out.println(writeAllToBuffer(buf).toString());
+		long end = System.nanoTime();
+		System.out.printf("Took %dms\n", TimeUnit.NANOSECONDS.toMillis(end-start));
+		//buf.resetReaderIndex()
+		start = System.nanoTime();
+		readAllFromBuffer(buf);
+		end = System.nanoTime();
+		System.out.printf("Took %dms\n", TimeUnit.NANOSECONDS.toMillis(end-start));
+	}*/
+
 }
