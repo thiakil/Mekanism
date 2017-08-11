@@ -5,12 +5,12 @@ import io.netty.buffer.Unpooled;
 import mekanism.common.Mekanism;
 import mekanism.common.util.UnitDisplayUtils.EnergyType;
 import mekanism.common.util.UnitDisplayUtils.TempType;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Comparator;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -169,7 +169,6 @@ public class MekanismConfig
 		ENERGY_TYPE(EnergyType.class, buf->EnergyType.values()[buf.readByte()], (byteBuf, energyType) -> byteBuf.writeByte(energyType.ordinal())),
 		TEMP_TYPE(TempType.class, buf->TempType.values()[buf.readByte()], (byteBuf, tempType) -> byteBuf.writeByte(tempType.ordinal())),
 		TYPE_CONFIG_MANAGER(TypeConfigManager.class, TypeConfigManager::readFromBuffer, ((byteBuf, typeConfigManager) -> typeConfigManager.writeToBuffer(byteBuf))),
-		//MAP(Map.class, ),
 		;
 
 		private Function<ByteBuf,Object> readHandler;
@@ -195,27 +194,29 @@ public class MekanismConfig
 		}
 	}
 
-	public static ByteBuf writeToBuffer(Class<?> clazz, ByteBuf data){
+	private static List<Field> getSortedSyncableFieldList(Class<?> clazz){
 		Field[] fields = clazz.getDeclaredFields();
-		int count = 0;
-		int countPos = data.writerIndex();
-		data.writeInt(0);//dummy val, updated later
-		for (Field f : fields){
+		List<Field> output = new ArrayList<>(fields.length);
+		for (Field f : fields) {
 			int modifiers = f.getModifiers();
-			if (Modifier.isStatic(modifiers) && Modifier.isPublic(modifiers)){
-				ByteBufUtils.writeUTF8String(data, clazz.getName()+"."+f.getName());
-				try {
-					SyncAdaptors.writeToPacket(f.get(null), data);
-				} catch (IllegalAccessException e){
-					throw new IllegalStateException("Could not read field value, though it should be public", e);
-				}
-				count++;
+			if (Modifier.isStatic(modifiers) && Modifier.isPublic(modifiers)) {
+				output.add(f);
 			}
 		}
-		int endPos = data.writerIndex();
-		data.writerIndex(countPos);
-		data.writeInt(count);
-		data.writerIndex(endPos);
+		output.sort(Comparator.comparing(Field::getName));
+		return output;
+	}
+
+	public static ByteBuf writeToBuffer(Class<?> clazz, ByteBuf data){
+		List<Field> fields = getSortedSyncableFieldList(clazz);
+		data.writeInt(fields.size());
+		for (Field f : fields){
+			try {
+				SyncAdaptors.writeToPacket(f.get(null), data);
+			} catch (IllegalAccessException e){
+				throw new IllegalStateException("Could not read field value, though it should be public", e);
+			}
+		}
 		return data;
 	}
 
@@ -228,37 +229,29 @@ public class MekanismConfig
 	}
 
 	public static void readFromBuffer(Class<?> clazz, ByteBuf data){
-		Map<String, Object> values = new HashMap<>();
+		List<Field> fields = getSortedSyncableFieldList(clazz);
 		int count = data.readInt();
-		for (int i = 0; i<count; i++){
-			String name = ByteBufUtils.readUTF8String(data);
-			int type = data.readByte();
-			values.put(name, SyncAdaptors.values()[type].readHandler.apply(data));
+		if (count != fields.size()){
+			throw new IllegalStateException("Supplied buffer contains a different amount of fields than we were expecting");
 		}
-		Field[] fields = clazz.getDeclaredFields();
+
 		for (Field f : fields){
-			int modifiers = f.getModifiers();
-			if (Modifier.isStatic(modifiers) && Modifier.isPublic(modifiers)){
-				String name = clazz.getName()+"."+f.getName();
-				if (!values.containsKey(name)){
-					//System.err.printf("Key %s not found in data\n", name);
-					Mekanism.logger.error("Key {} not found in data", name);
+			int type = data.readByte();
+			Object val = SyncAdaptors.values()[type].readHandler.apply(data);
+			try {
+				if (!f.getType().isInstance(val) && !(f.getType().isPrimitive() && val.getClass().getField("TYPE").get(val) == f.getType())){
+					String name = clazz.getName()+"."+f.getName();
+					//System.err.printf("Value class is not the same for key %s, found %s, expected %s\n", name, f.getType().getName(), val.getClass().toGenericString());
+					Mekanism.logger.error("Value class is not the same for key {}, found {}, expected {}", name, f.getType().getName(), val.getClass().toGenericString());
 					continue;
 				}
-				try {
-					Object val = values.get(name);
-					if (!f.getType().isInstance(val) && !(f.getType().isPrimitive() && val.getClass().getField("TYPE").get(val) == f.getType())){
-						//System.err.printf("Value class is not the same for key %s, found %s, expected %s\n", name, f.getType().getName(), val.getClass().toGenericString());
-						Mekanism.logger.error("Value class is not the same for key {}, found {}, expected {}", name, f.getType().getName(), values.get(name).getClass().toGenericString());
-						continue;
-					}
-					f.set(null, val);
-				} catch (NoSuchFieldException e) {
-					//System.err.println("Could not get primitive type of what should be a Boxed class");
-					Mekanism.logger.error("Could not get primitive type of what should be a Boxed class. {}", name);
-				} catch (IllegalAccessException e) {
-					throw new IllegalStateException("Could not set our value, though it should be public.", e);
-				}
+				f.set(null, val);
+			} catch (NoSuchFieldException e) {
+				//System.err.println("Could not get primitive type of what should be a Boxed class");
+				String name = clazz.getName()+"."+f.getName();
+				Mekanism.logger.error("Could not get primitive type of what should be a Boxed class. {}", name);
+			} catch (IllegalAccessException e) {
+				throw new IllegalStateException("Could not set our value, though it should be public.", e);
 			}
 		}
 	}
