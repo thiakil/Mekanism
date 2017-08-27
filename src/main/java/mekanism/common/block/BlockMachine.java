@@ -615,6 +615,15 @@ public abstract class BlockMachine extends BlockContainer
 	}
 
 	@Override
+	public boolean canRenderInLayer(IBlockState state, BlockRenderLayer layer)
+	{
+		if(MachineType.get(getMachineBlock(), state.getBlock().getMetaFromState(state)) == MachineType.CHEMICAL_CRYSTALLIZER){
+			return layer == BlockRenderLayer.CUTOUT || layer == BlockRenderLayer.TRANSLUCENT;
+		}
+		return super.canRenderInLayer(state, layer);
+	}
+
+	@Override
 	public float getPlayerRelativeBlockHardness(IBlockState state, EntityPlayer player, World world, BlockPos pos)
 	{
 		TileEntity tile = world.getTileEntity(pos);

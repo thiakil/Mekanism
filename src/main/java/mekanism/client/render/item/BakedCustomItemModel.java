@@ -11,7 +11,6 @@ import com.google.common.collect.ImmutableMap;
 import mekanism.api.energy.IEnergizedItem;
 import mekanism.client.model.ModelArmoredJetpack;
 import mekanism.client.model.ModelAtomicDisassembler;
-import mekanism.client.model.ModelChemicalCrystallizer;
 import mekanism.client.model.ModelChemicalDissolutionChamber;
 import mekanism.client.model.ModelDigitalMiner;
 import mekanism.client.model.ModelEnergyCube;
@@ -93,7 +92,6 @@ public class BakedCustomItemModel implements IBakedModel
 	public static ModelSolarNeutronActivator solarNeutronActivator = new ModelSolarNeutronActivator();
 	public static ModelSeismicVibrator seismicVibrator = new ModelSeismicVibrator();
 	public static ModelChemicalDissolutionChamber chemicalDissolutionChamber = new ModelChemicalDissolutionChamber();
-	public static ModelChemicalCrystallizer chemicalCrystallizer = new ModelChemicalCrystallizer();
 	public static ModelSecurityDesk securityDesk = new ModelSecurityDesk();
 	public static ModelResistiveHeater resistiveHeater = new ModelResistiveHeater();
 	public static ModelQuantumEntangloporter quantumEntangloporter = new ModelQuantumEntangloporter();
@@ -188,13 +186,6 @@ public class BakedCustomItemModel implements IBakedModel
 				GlStateManager.translate(0.0F, -0.55F, 0.0F);
 				mc.renderEngine.bindTexture(MekanismUtils.getResource(ResourceType.RENDER, "SeismicVibrator.png"));
 				seismicVibrator.render(0.0625F);
-			}
-			else if(machineType == MachineType.CHEMICAL_CRYSTALLIZER)
-			{
-				GlStateManager.rotate(180F, 0.0F, 0.0F, 1.0F);
-				GlStateManager.translate(0.05F, -1.001F, 0.05F);
-				mc.renderEngine.bindTexture(MekanismUtils.getResource(ResourceType.RENDER, "ChemicalCrystallizer.png"));
-				chemicalCrystallizer.render(0.0625F);
 			}
 			else if(machineType == MachineType.CHEMICAL_DISSOLUTION_CHAMBER)
 			{
