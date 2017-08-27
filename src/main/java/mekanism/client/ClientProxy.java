@@ -79,7 +79,6 @@ import mekanism.client.render.obj.MekanismOBJLoader;
 import mekanism.client.render.obj.MekanismOBJTransformsLoader;
 import mekanism.client.render.tileentity.RenderBin;
 import mekanism.client.render.tileentity.RenderChargepad;
-import mekanism.client.render.tileentity.RenderChemicalCrystallizer;
 import mekanism.client.render.tileentity.RenderChemicalDissolutionChamber;
 import mekanism.client.render.tileentity.RenderConfigurableMachine;
 import mekanism.client.render.tileentity.RenderDigitalMiner;
@@ -332,7 +331,7 @@ public class ClientProxy extends CommonProxy
 		ClientRegistry.registerTileEntity(TileEntityChemicalInjectionChamber.class, "ChemicalInjectionChamber", new RenderConfigurableMachine<>());
 		ClientRegistry.registerTileEntity(TileEntityThermalEvaporationController.class, "ThermalEvaporationController", new RenderThermalEvaporationController());
 		ClientRegistry.registerTileEntity(TileEntityPrecisionSawmill.class, "PrecisionSawmill", new RenderConfigurableMachine<>());
-		ClientRegistry.registerTileEntity(TileEntityChemicalCrystallizer.class, "ChemicalCrystallizer", new RenderChemicalCrystallizer());
+		ClientRegistry.registerTileEntity(TileEntityChemicalCrystallizer.class, "ChemicalCrystallizer", new RenderConfigurableMachine<>());
 		ClientRegistry.registerTileEntity(TileEntitySeismicVibrator.class, "SeismicVibrator", new RenderSeismicVibrator());
 		ClientRegistry.registerTileEntity(TileEntityPRC.class, "PressurizedReactionChamber", new RenderConfigurableMachine<>());
 		ClientRegistry.registerTileEntity(TileEntityFluidTank.class, "FluidTank", new RenderFluidTank());
