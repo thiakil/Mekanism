@@ -76,6 +76,7 @@ import mekanism.client.render.entity.RenderObsidianTNTPrimed;
 import mekanism.client.render.entity.RenderRobit;
 import mekanism.client.render.item.CustomItemModelFactory;
 import mekanism.client.render.obj.MekanismOBJLoader;
+import mekanism.client.render.obj.MekanismOBJTransformsLoader;
 import mekanism.client.render.tileentity.RenderBin;
 import mekanism.client.render.tileentity.RenderChargepad;
 import mekanism.client.render.tileentity.RenderChemicalCrystallizer;
@@ -768,6 +769,12 @@ public class ClientProxy extends CommonProxy
 	{
 		MekanismRenderer.registerItemRender("mekanism", item);
 	}
+
+	public void registerItemRenderObj(Item item)
+	{
+		registerItemRender(item);
+		MekanismOBJTransformsLoader.INSTANCE.registerOBJWithTransforms(item.getRegistryName());
+	}
 	
 	@Override
 	public GuiScreen getClientGui(int ID, EntityPlayer player, World world, BlockPos pos)
@@ -1061,6 +1068,7 @@ public class ClientProxy extends CommonProxy
 		MekanismRenderer.init();
 		
 		ModelLoaderRegistry.registerLoader(MekanismOBJLoader.INSTANCE);
+		ModelLoaderRegistry.registerLoader(MekanismOBJTransformsLoader.INSTANCE);
 
 		MinecraftForge.EVENT_BUS.register(this);
 		MinecraftForge.EVENT_BUS.register(MekanismOBJLoader.INSTANCE);
