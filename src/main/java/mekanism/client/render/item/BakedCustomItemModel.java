@@ -18,7 +18,6 @@ import mekanism.client.model.ModelEnergyCube;
 import mekanism.client.model.ModelFlamethrower;
 import mekanism.client.model.ModelFreeRunners;
 import mekanism.client.model.ModelGasMask;
-import mekanism.client.model.ModelJetpack;
 import mekanism.client.model.ModelQuantumEntangloporter;
 import mekanism.client.model.ModelResistiveHeater;
 import mekanism.client.model.ModelScubaTank;
@@ -83,8 +82,7 @@ public class BakedCustomItemModel implements IBakedModel
 	
 	private static final RenderFluidTank fluidTankRenderer = (RenderFluidTank)TileEntityRendererDispatcher.instance.renderers.get(TileEntityFluidTank.class);
 	private final RenderBin binRenderer = (RenderBin)TileEntityRendererDispatcher.instance.renderers.get(TileEntityBin.class);
-	
-	public static ModelJetpack jetpack = new ModelJetpack();
+
 	public static ModelArmoredJetpack armoredJetpack = new ModelArmoredJetpack();
 	public static ModelGasMask gasMask = new ModelGasMask();
 	public static ModelScubaTank scubaTank = new ModelScubaTank();
@@ -263,17 +261,7 @@ public class BakedCustomItemModel implements IBakedModel
 			GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
 		}
 		
-		if(stack.getItem() == MekanismItems.Jetpack)
-		{
-			GlStateManager.pushMatrix();
-			GlStateManager.rotate(180, 0.0F, 0.0F, 1.0F);
-			GlStateManager.rotate(90, 0.0F, -1.0F, 0.0F);
-			GlStateManager.translate(0.2F, -0.35F, 0.0F);
-			mc.renderEngine.bindTexture(MekanismUtils.getResource(ResourceType.RENDER, "Jetpack.png"));
-			jetpack.render(0.0625F);
-			GlStateManager.popMatrix();
-		}
-		else if(stack.getItem() == MekanismItems.ArmoredJetpack)
+		if(stack.getItem() == MekanismItems.ArmoredJetpack)
 		{
 			GlStateManager.pushMatrix();
 			GlStateManager.rotate(180, 0.0F, 0.0F, 1.0F);
