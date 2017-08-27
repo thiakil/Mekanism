@@ -247,7 +247,7 @@ public class ClientProxy extends CommonProxy
 	public static Map<String, ModelResourceLocation> transmitterResources = new HashMap<>();
 	
 	public static final String[] CUSTOM_RENDERS = new String[] {"fluid_tank", "bin_basic", "bin_advanced", "bin_elite", "bin_ultimate", 
-		"Jetpack", "FreeRunners", "AtomicDisassembler", "ScubaTank", "GasMask", "ArmoredJetpack", "Flamethrower", "personal_chest",
+		"FreeRunners", "AtomicDisassembler", "ScubaTank", "GasMask", "ArmoredJetpack", "Flamethrower", "personal_chest",
 		"solar_neutron_activator", "chemical_dissolution_chamber", "chemical_crystallizer", "seismic_vibrator", "security_desk",
 		"quantum_entangloporter", "resistive_heater", "EnergyCube", "digital_miner", "bin_creative"};
 	
@@ -385,7 +385,7 @@ public class ClientProxy extends CommonProxy
 		registerItemRender(MekanismItems.DirtyDust);
 		registerItemRender(MekanismItems.Configurator);
 		registerItemRender(MekanismItems.NetworkReader);
-		registerItemRender(MekanismItems.Jetpack);
+		registerItemRenderObj(MekanismItems.Jetpack);
 		registerItemRender(MekanismItems.Dictionary);
 		registerItemRender(MekanismItems.GasMask);
 		registerItemRender(MekanismItems.ScubaTank);
