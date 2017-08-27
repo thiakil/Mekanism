@@ -617,8 +617,15 @@ public abstract class BlockMachine extends BlockContainer
 	@Override
 	public boolean canRenderInLayer(IBlockState state, BlockRenderLayer layer)
 	{
-		if(MachineType.get(getMachineBlock(), state.getBlock().getMetaFromState(state)) == MachineType.CHEMICAL_CRYSTALLIZER){
-			return layer == BlockRenderLayer.CUTOUT || layer == BlockRenderLayer.TRANSLUCENT;
+		MachineType type = MachineType.get(getMachineBlock(), state.getBlock().getMetaFromState(state));
+		if (type != null)
+		{
+			switch (type)
+			{
+				case CHEMICAL_CRYSTALLIZER:
+				case CHEMICAL_DISSOLUTION_CHAMBER:
+					return layer == BlockRenderLayer.CUTOUT || layer == BlockRenderLayer.TRANSLUCENT;
+			}
 		}
 		return super.canRenderInLayer(state, layer);
 	}
