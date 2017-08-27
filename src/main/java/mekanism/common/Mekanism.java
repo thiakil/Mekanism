@@ -69,6 +69,7 @@ import mekanism.common.tile.TileEntityAdvancedBoundingBlock;
 import mekanism.common.tile.TileEntityAmbientAccumulator;
 import mekanism.common.tile.TileEntityBoundingBlock;
 import mekanism.common.tile.TileEntityCardboardBox;
+import mekanism.common.tile.TileEntityChemicalDissolutionChamber;
 import mekanism.common.tile.TileEntityChemicalInfuser;
 import mekanism.common.tile.TileEntityChemicalOxidizer;
 import mekanism.common.tile.TileEntityChemicalWasher;
@@ -623,6 +624,7 @@ public class Mekanism
 		GameRegistry.registerTileEntity(TileEntityElectricPump.class, "ElectricPump");
 		GameRegistry.registerTileEntity(TileEntityFluidicPlenisher.class, "FluidicPlenisher");
 		GameRegistry.registerTileEntity(TileEntityGlowPanel.class, "GlowPanel");
+		GameRegistry.registerTileEntity(TileEntityChemicalDissolutionChamber.class, "ChemicalDissolutionChamber");
 
 		//Load tile entities that have special renderers.
 		proxy.registerSpecialTileEntities();
