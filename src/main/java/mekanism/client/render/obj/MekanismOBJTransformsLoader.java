@@ -1,5 +1,6 @@
 package mekanism.client.render.obj;
 
+import com.google.common.base.Throwables;
 import mekanism.common.Mekanism;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.block.model.ModelBlock;
@@ -69,13 +70,29 @@ public class MekanismOBJTransformsLoader implements ICustomModelLoader
 	@Override
 	public IModel loadModel(@Nonnull ResourceLocation modelLocation) throws Exception
 	{
-		OBJModel objModel = (OBJModel)OBJLoader.INSTANCE.loadModel(getOBJLocation(modelLocation));
-		IModel transformsModel = vanillaLoader.loadModel(modelLocation);
+		Mekanism.logger.info("Attempting to load {}", modelLocation);
+		OBJModel objModel;
+		try
+		{
+			objModel = (OBJModel) OBJLoader.INSTANCE.loadModel(getOBJLocation(modelLocation));
+		} catch (Exception e){
+			Mekanism.logger.error("Could not load OBJ", e);
+			throw new RuntimeException(e);
+		}
+		IModel transformsModel;
 		ItemCameraTransforms transforms = ItemCameraTransforms.DEFAULT;
-		if (vanillaModelWrapper.isInstance(transformsModel)){
-			vanillaModelGetTextures.invoke(transformsModel);//force it to load parents
-			ModelBlock baseModel = (ModelBlock)vanillaModelField.get(transformsModel);
-			transforms = baseModel.getAllTransforms();
+		try
+		{
+			transformsModel = vanillaLoader.loadModel(modelLocation);
+			if(vanillaModelWrapper.isInstance(transformsModel))
+			{
+				vanillaModelGetTextures.invoke(transformsModel);//force it to load parents
+				ModelBlock baseModel = (ModelBlock) vanillaModelField.get(transformsModel);
+				transforms = baseModel.getAllTransforms();
+			}
+		} catch (Exception e){
+			Mekanism.logger.error("Could not load JSON", e);
+			throw new RuntimeException(e);
 		}
 		return new MekanismOBJModelWithTransforms(objModel.getMatLib(), modelLocation,transforms);
 	}
