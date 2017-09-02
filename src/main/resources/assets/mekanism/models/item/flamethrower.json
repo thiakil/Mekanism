@@ -1,3 +1,30 @@
 {
-    "parent": "mekanism:item/standard_item"
+    "parent": "mekanism:item/standard_item",
+	"display": {
+		"gui": {
+			"scale": [0.6,0.6,0.6],
+			"translation": [-2,-1,0],
+			"rotation": [-130,45,180]
+		},
+		"firstperson_righthand": {
+			"scale": [2,2,2],
+			"translation": [22, 0, -4],
+			"rotation": [20, 220, 10]
+		},
+		"firstperson_lefthand": {
+			"scale": [2,2,2],
+			"translation": [26, 0, -4],
+			"rotation": [20, 220, 10]
+		},
+		"thirdperson_righthand": {
+			"scale": [1, 1, 1],
+			"translation": [0, -3.5, -0.5],
+			"rotation": [90, 188, 0]
+		},
+		"thirdperson_lefthand": {
+			"scale": [1, 1, 1],
+			"translation": [-10, -0.3, 1],
+			"rotation": [90, 100, 0]
+		}
+	}
 }

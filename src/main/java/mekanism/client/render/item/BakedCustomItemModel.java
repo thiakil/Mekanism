@@ -12,7 +12,6 @@ import mekanism.api.energy.IEnergizedItem;
 import mekanism.client.model.ModelAtomicDisassembler;
 import mekanism.client.model.ModelDigitalMiner;
 import mekanism.client.model.ModelEnergyCube;
-import mekanism.client.model.ModelFlamethrower;
 import mekanism.client.model.ModelFreeRunners;
 import mekanism.client.model.ModelGasMask;
 import mekanism.client.model.ModelQuantumEntangloporter;
@@ -84,7 +83,6 @@ public class BakedCustomItemModel implements IBakedModel
 	public static ModelScubaTank scubaTank = new ModelScubaTank();
 	public static ModelFreeRunners freeRunners = new ModelFreeRunners();
 	public static ModelAtomicDisassembler atomicDisassembler = new ModelAtomicDisassembler();
-	public static ModelFlamethrower flamethrower = new ModelFlamethrower();
 	public static ModelChest personalChest = new ModelChest();
 	public static ModelSolarNeutronActivator solarNeutronActivator = new ModelSolarNeutronActivator();
 	public static ModelSeismicVibrator seismicVibrator = new ModelSeismicVibrator();
@@ -310,51 +308,6 @@ public class BakedCustomItemModel implements IBakedModel
 
 			mc.renderEngine.bindTexture(MekanismUtils.getResource(ResourceType.RENDER, "AtomicDisassembler.png"));
 			atomicDisassembler.render(0.0625F);
-			GlStateManager.popMatrix();
-		}
-		else if(stack.getItem() instanceof ItemFlamethrower)
-		{
-			GlStateManager.pushMatrix();
-			GlStateManager.rotate(160, 0.0F, 0.0F, 1.0F);
-			mc.renderEngine.bindTexture(MekanismUtils.getResource(ResourceType.RENDER, "Flamethrower.png"));
-			
-			GlStateManager.translate(0.0F, -1.0F, 0.0F);
-			GlStateManager.rotate(135, 0.0F, 1.0F, 0.0F);
-			GlStateManager.rotate(-20, 0.0F, 0.0F, 1.0F);
-			
-			if(type == TransformType.FIRST_PERSON_RIGHT_HAND || type == TransformType.THIRD_PERSON_RIGHT_HAND
-					|| type == TransformType.FIRST_PERSON_LEFT_HAND || type == TransformType.THIRD_PERSON_LEFT_HAND)
-			{
-				if(type == TransformType.FIRST_PERSON_RIGHT_HAND)
-				{
-					GlStateManager.rotate(55, 0.0F, 1.0F, 0.0F);
-				}
-				else if(type == TransformType.FIRST_PERSON_LEFT_HAND)
-				{
-					GlStateManager.rotate(-160, 0.0F, 1.0F, 0.0F);
-					GlStateManager.rotate(30F, 1.0F, 0.0F, 0.0F);
-				}
-				else if(type == TransformType.THIRD_PERSON_RIGHT_HAND)
-				{
-					GlStateManager.translate(0.0F, 0.7F, 0.0F);
-					GlStateManager.rotate(75, 0.0F, 1.0F, 0.0F);
-				}
-				else if(type == TransformType.THIRD_PERSON_LEFT_HAND)
-				{
-					GlStateManager.translate(0.0F, 0.7F, 0.0F);
-					GlStateManager.rotate(-75, 0.0F, 1.0F, 0.0F);
-				}
-				
-				GlStateManager.scale(2.5F, 2.5F, 2.5F);
-				GlStateManager.translate(0.0F, -1.0F, -0.5F);
-			}
-			else if(type == TransformType.GUI)
-			{
-				GlStateManager.translate(-0.6F, 0.0F, 0.0F);
-				GlStateManager.rotate(45, 0.0F, 1.0F, 0.0F);
-			}
-			
-			flamethrower.render(0.0625F);
 			GlStateManager.popMatrix();
 		}
 	}
