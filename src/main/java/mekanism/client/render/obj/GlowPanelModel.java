@@ -67,7 +67,7 @@ public class GlowPanelModel extends OBJBakedModelBase
 			return EnumColor.DYES[tempStack.getItemDamage()];
 		}
 		
-		if(tempState != null)
+		if(tempState != null && ((IExtendedBlockState)tempState).getValue(PropertyColor.INSTANCE) != null)
 		{
 			return ((IExtendedBlockState)tempState).getValue(PropertyColor.INSTANCE).color;
 		}
@@ -137,7 +137,6 @@ public class GlowPanelModel extends OBJBakedModelBase
     	if(state != null && tempState == null)
     	{
 	    	int hash = TileEntityGlowPanel.hash((IExtendedBlockState)state);
-			EnumColor color = ((IExtendedBlockState)state).getValue(PropertyColor.INSTANCE).color;
 			
 			if(!glowPanelCache.containsKey(hash))
 			{
