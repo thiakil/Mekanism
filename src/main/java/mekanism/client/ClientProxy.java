@@ -248,7 +248,7 @@ public class ClientProxy extends CommonProxy
 	public static final String[] CUSTOM_RENDERS = new String[] {"fluid_tank", "bin_basic", "bin_advanced", "bin_elite", "bin_ultimate", 
 		"FreeRunners", "AtomicDisassembler", "ScubaTank", "GasMask", "personal_chest",
 		"solar_neutron_activator", "seismic_vibrator", "security_desk",
-		"quantum_entangloporter", "resistive_heater", "EnergyCube", "digital_miner", "bin_creative"};
+		"quantum_entangloporter", "resistive_heater", "EnergyCube", "bin_creative"};
 	
 	private static final IStateMapper machineMapper = new MachineBlockStateMapper();
 	private static final IStateMapper basicMapper = new BasicBlockStateMapper();
@@ -443,6 +443,8 @@ public class ClientProxy extends CommonProxy
 		{
 			ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(MekanismBlocks.GlowPanel), i, new ModelResourceLocation("mekanism:glowpanel", "inventory"));
 		}
+
+		MekanismOBJTransformsLoader.INSTANCE.registerOBJWithTransforms(new ResourceLocation("mekanism", "digital_miner"));
 
 		for(MachineType type : MachineType.values())
 		{

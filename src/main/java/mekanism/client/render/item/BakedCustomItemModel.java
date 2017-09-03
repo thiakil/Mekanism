@@ -90,7 +90,6 @@ public class BakedCustomItemModel implements IBakedModel
 	public static ModelResistiveHeater resistiveHeater = new ModelResistiveHeater();
 	public static ModelQuantumEntangloporter quantumEntangloporter = new ModelQuantumEntangloporter();
 	public static ModelEnergyCube energyCube = new ModelEnergyCube();
-	public static ModelDigitalMiner digitalMiner = new ModelDigitalMiner();
 	
 	public BakedCustomItemModel(IBakedModel model, ItemStack s)
 	{
@@ -194,13 +193,6 @@ public class BakedCustomItemModel implements IBakedModel
 				GlStateManager.translate(0.05F, -0.96F, 0.05F);
 				mc.renderEngine.bindTexture(MekanismUtils.getResource(ResourceType.RENDER, "ResistiveHeater.png"));
 				resistiveHeater.render(0.0625F, false, mc.renderEngine, true);
-			}
-			else if(machineType == MachineType.DIGITAL_MINER)
-			{
-				GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);
-				GL11.glTranslatef(0.35F, 0.1F, 0.0F);
-				mc.renderEngine.bindTexture(MekanismUtils.getResource(ResourceType.RENDER, "DigitalMiner.png"));
-				digitalMiner.render(0.022F, false, mc.renderEngine, true);
 			}
 			
 			return;
@@ -374,14 +366,9 @@ public class BakedCustomItemModel implements IBakedModel
     	
 		if(Block.getBlockFromItem(stack.getItem()) != null)
 		{
-			MachineType machineType = MachineType.get(stack);
-			
-			if(machineType != MachineType.DIGITAL_MINER)
+			if(!(stack.getItem() instanceof ItemBlockEnergyCube))
 			{
-				if(!(stack.getItem() instanceof ItemBlockEnergyCube))
-				{
-					generalQuads.addAll(baseModel.getQuads(state, side, rand));
-				}
+				generalQuads.addAll(baseModel.getQuads(state, side, rand));
 			}
 		}
 		

@@ -1,0 +1,30 @@
+{
+  "parent": "block/block",
+  "display": {
+    "gui": {
+      "scale": [0.225,0.225,0.225],
+      "rotation": [ 30, 225, 0 ],
+      "translation": [ 0.5, -1.5, 0 ]
+    },
+    "fixed": {
+      "scale": [0.4,0.4,0.4],
+      "rotation": [ 0, 0, 0 ],
+      "translation": [ 0, -3, -4 ]
+    },
+    "firstperson_righthand":{
+      "scale": [0.225,0.225,0.225],
+      "rotation": [ 0, 145, 0 ],
+      "translation": [ 0,0,0 ]
+    },
+    "firstperson_lefthand":{
+      "scale": [0.225,0.225,0.225],
+      "rotation": [ 0, 145, 0 ],
+      "translation": [ 0,0,0 ]
+    },
+    "thirdperson_righthand": {
+      "rotation": [ 75, 145, 0 ],
+      "translation": [ 0, 2.5, 0],
+      "scale": [ 0.16, 0.16, 0.16 ]
+    }
+  }
+}

@@ -20,6 +20,7 @@ public class RenderDigitalMiner extends TileEntitySpecialRenderer<TileEntityDigi
 	@Override
 	public void render(TileEntityDigitalMiner tileEntity, double x, double y, double z, float partialTick, int destroyStage, float alpha)
 	{
+		//TODO fix this rendering
 		GlStateManager.pushMatrix();
 		GlStateManager.translate((float)x + 0.5F, (float)y + 1.5F, (float)z + 0.5F);
 
