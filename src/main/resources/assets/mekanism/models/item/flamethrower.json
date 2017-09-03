@@ -1,5 +1,5 @@
 {
-    "parent": "mekanism:item/standard_item",
+    "parent": "item/generated",
 	"display": {
 		"gui": {
 			"scale": [0.6,0.6,0.6],
