@@ -1,9 +1,10 @@
 package mekanism.client.render.obj;
 
-import com.google.common.base.Throwables;
+import mekanism.client.ClientProxy;
 import mekanism.common.Mekanism;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.block.model.ModelBlock;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ICustomModelLoader;
@@ -16,7 +17,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,7 +39,6 @@ public class MekanismOBJTransformsLoader implements ICustomModelLoader
 
 	private Class vanillaModelWrapper;
 	private Field vanillaModelField;
-	private Method vanillaModelGetTextures;
 	private ICustomModelLoader vanillaLoader;
 
 	private MekanismOBJTransformsLoader(){
@@ -47,7 +46,6 @@ public class MekanismOBJTransformsLoader implements ICustomModelLoader
 		{
 			vanillaModelWrapper = Class.forName("net.minecraftforge.client.model.ModelLoader$VanillaModelWrapper");
 			vanillaModelField = ReflectionHelper.findField(vanillaModelWrapper, "model");
-			vanillaModelGetTextures = ReflectionHelper.findMethod(vanillaModelWrapper, "getTextures", "getTextures");
 			vanillaLoader = (ICustomModelLoader)ReflectionHelper.findField(Class.forName("net.minecraftforge.client.model.ModelLoader$VanillaLoader"), "INSTANCE").get(null);
 		} catch (ClassNotFoundException e){
 			Mekanism.logger.error("[MekanismOBJTransformsLoader] Did not find VanillaModelWrapper", e);
@@ -58,11 +56,19 @@ public class MekanismOBJTransformsLoader implements ICustomModelLoader
 
 	public void registerOBJWithTransforms(ResourceLocation loc){
 		knownOBJJsons.add(loc);
+		for (String ren : ClientProxy.CUSTOM_RENDERS){
+			if (ren.equals(loc.getResourcePath())){
+				throw new RuntimeException("Known object is in CUSTOM_RENDERS, did you forget to remove it?");
+			}
+		}
 	}
 
 	@Override
 	public boolean accepts(@Nonnull ResourceLocation modelLocation)
 	{
+		if (modelLocation instanceof ModelResourceLocation){//let variants handle their thing
+			return false;
+		}
 		ResourceLocation baseLoc = new ResourceLocation(modelLocation.getResourceDomain(), modelLocation.getResourcePath().replaceAll("models/(item|block)/", ""));
 		return knownOBJJsons.contains(baseLoc);
 	}
@@ -70,7 +76,7 @@ public class MekanismOBJTransformsLoader implements ICustomModelLoader
 	@Override
 	public IModel loadModel(@Nonnull ResourceLocation modelLocation) throws Exception
 	{
-		Mekanism.logger.info("Attempting to load {}", modelLocation);
+		Mekanism.logger.info("Attempting to load {}, {}, {}", modelLocation, getOBJLocation(modelLocation), getJSONLocation(modelLocation));
 		OBJModel objModel;
 		try
 		{
@@ -79,26 +85,54 @@ public class MekanismOBJTransformsLoader implements ICustomModelLoader
 			Mekanism.logger.error("Could not load OBJ", e);
 			throw new RuntimeException(e);
 		}
+
+		return new MekanismOBJModelWithTransforms(objModel.getMatLib(), modelLocation,loadJSON(modelLocation));
+	}
+
+	private @Nonnull ItemCameraTransforms loadJSON(ResourceLocation modelLocation)
+	{
 		IModel transformsModel;
 		ItemCameraTransforms transforms = ItemCameraTransforms.DEFAULT;
 		try
 		{
-			transformsModel = vanillaLoader.loadModel(modelLocation);
+			transformsModel = vanillaLoader.loadModel(getJSONLocation(modelLocation));
 			if(vanillaModelWrapper.isInstance(transformsModel))
 			{
-				vanillaModelGetTextures.invoke(transformsModel);//force it to load parents
+				transformsModel.getTextures();//force it to load parents
 				ModelBlock baseModel = (ModelBlock) vanillaModelField.get(transformsModel);
 				transforms = baseModel.getAllTransforms();
 			}
 		} catch (Exception e){
 			Mekanism.logger.error("Could not load JSON", e);
-			throw new RuntimeException(e);
+			//throw new RuntimeException(e);
 		}
-		return new MekanismOBJModelWithTransforms(objModel.getMatLib(), modelLocation,transforms);
+		return transforms;
 	}
 
 	private static ResourceLocation getOBJLocation(ResourceLocation loc){
-		return new ResourceLocation(loc.getResourceDomain(), loc.getResourcePath().replaceFirst("models/(item|block)/", "models/obj/")+".obj");
+		String resPath = loc.getResourcePath();
+		if (resPath.contains("models/")){
+			resPath = resPath.replaceFirst("models/(item|block)/", "models/obj/");
+		}
+		else
+		{
+			resPath = "models/obj/"+resPath;
+		}
+		return new ResourceLocation(loc.getResourceDomain(), resPath+".obj");
+	}
+
+	private static ResourceLocation getJSONLocation(ResourceLocation loc){
+		String resPath = loc.getResourcePath();
+		if (!resPath.contains("models/")){
+			if (loc instanceof ModelResourceLocation && ((ModelResourceLocation)loc).getVariant().equals("inventory")){
+				resPath = "models/item/"+resPath;
+			}
+			else
+			{
+				resPath = "models/block/" + resPath;
+			}
+		}
+		return new ResourceLocation(loc.getResourceDomain(), resPath);
 	}
 
 	@Override
