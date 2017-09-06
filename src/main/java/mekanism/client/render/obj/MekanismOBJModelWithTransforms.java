@@ -10,7 +10,6 @@ import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.PerspectiveMapWrapper;
 import net.minecraftforge.client.model.obj.OBJModel;
 import net.minecraftforge.common.model.IModelState;
-import net.minecraftforge.common.model.TRSRTransformation;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,32 +25,36 @@ public class MekanismOBJModelWithTransforms extends OBJModel
 	public ResourceLocation location;
 	private ItemCameraTransforms transforms;
 
+	public static Map<ResourceLocation, PerspectiveMapWrapper> INSTANCES = new HashMap<>(3);
+
 	public MekanismOBJModelWithTransforms(MaterialLibrary matLib, ResourceLocation modelLocation, ItemCameraTransforms transforms)
 	{
 		super(matLib, modelLocation);
-		
+
 		this.transforms = transforms;
 		location = modelLocation;
 	}
-	
+
 	@Override
 	public IBakedModel bake(IModelState state, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter)
 	{
 		IBakedModel preBaked = super.bake(state, format, bakedTextureGetter);
-		return new PerspectiveMapWrapper(preBaked, PerspectiveMapWrapper.getTransforms(transforms));
+		INSTANCES.put(this.location, new PerspectiveMapWrapper(preBaked, PerspectiveMapWrapper.getTransforms(transforms)));
+		return INSTANCES.get(this.location);
 	}
-	
-	@Override
-    public IModel process(ImmutableMap<String, String> customData)
-    {
-    	MekanismOBJModelWithTransforms ret = new MekanismOBJModelWithTransforms(getMatLib(), location, transforms);
-        return ret;
-    }
 
-    @Override
-    public IModel retexture(ImmutableMap<String, String> textures)
-    {
-    	MekanismOBJModelWithTransforms ret = new MekanismOBJModelWithTransforms(getMatLib().makeLibWithReplacements(textures), location, transforms);
-        return ret;
-    }
+	@Override
+	public IModel process(ImmutableMap<String, String> customData)
+	{
+		MekanismOBJModelWithTransforms ret = new MekanismOBJModelWithTransforms(getMatLib(), location, transforms);
+		return ret;
+	}
+
+	@Override
+	public IModel retexture(ImmutableMap<String, String> textures)
+	{
+		MekanismOBJModelWithTransforms ret = new MekanismOBJModelWithTransforms(getMatLib().makeLibWithReplacements(textures), location, transforms);
+		return ret;
+	}
+
 }
