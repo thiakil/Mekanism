@@ -1,2 +1,4 @@
 newmtl model
-map_Kd mekanism:blocks/digitalminer
+map_Kd mekanism:blocks/digital_miner_1
+newmtl model_2
+map_Kd mekanism:blocks/digital_miner_2

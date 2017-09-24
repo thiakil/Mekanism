@@ -10,7 +10,6 @@ import javax.vecmath.Vector3f;
 import com.google.common.collect.ImmutableMap;
 import mekanism.api.energy.IEnergizedItem;
 import mekanism.client.model.ModelAtomicDisassembler;
-import mekanism.client.model.ModelDigitalMiner;
 import mekanism.client.model.ModelEnergyCube;
 import mekanism.client.model.ModelFreeRunners;
 import mekanism.client.model.ModelGasMask;

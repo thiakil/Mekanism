@@ -8,7 +8,6 @@ import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.PerspectiveMapWrapper;
-import net.minecraftforge.client.model.obj.OBJModel;
 import net.minecraftforge.common.model.IModelState;
 
 import java.util.HashMap;
@@ -20,7 +19,7 @@ import java.util.function.Function;
  *
  * @author Thiakil
  */
-public class MekanismOBJModelWithTransforms extends OBJModel
+public class MekanismOBJModelWithTransforms extends OBJGlowableModel
 {
 	public ResourceLocation location;
 	private ItemCameraTransforms transforms;
@@ -56,5 +55,4 @@ public class MekanismOBJModelWithTransforms extends OBJModel
 		MekanismOBJModelWithTransforms ret = new MekanismOBJModelWithTransforms(getMatLib().makeLibWithReplacements(textures), location, transforms);
 		return ret;
 	}
-
 }
