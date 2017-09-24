@@ -65,9 +65,9 @@ public class TransmitterModel extends OBJBakedModelBase
 	
 	private TransmitterOverride override = new TransmitterOverride();
 	
-	public TransmitterModel(IBakedModel base, OBJModel model, IModelState state, VertexFormat format, ImmutableMap<String, TextureAtlasSprite> textures, HashMap<TransformType, Matrix4f> transform)
+	public TransmitterModel(OBJModel model, IModelState state, VertexFormat format, ImmutableMap<String, TextureAtlasSprite> textures, HashMap<TransformType, Matrix4f> transform)
 	{
-		super(base, model, state, format, textures, transform);
+		super(model, state, format, textures, transform);
 		
 		modelInstances.add(this);
 	}
@@ -91,7 +91,7 @@ public class TransmitterModel extends OBJBakedModelBase
 					visible.add(side.getName() + (side.getAxis() == Axis.Y ? "NORMAL" : "NONE"));
 				}
 				
-				itemCache = new TransmitterModel(baseModel, getModel(), new OBJState(visible, true), vertexFormat, textureMap, transformationMap);
+				itemCache = new TransmitterModel(getModel(), new OBJState(visible, true), vertexFormat, textureMap, transformationMap);
 				itemCache.tempStack = stack;
 			}
 			
@@ -142,7 +142,7 @@ public class TransmitterModel extends OBJBakedModelBase
 				
 				if(!modelCache.containsKey(hash))
 				{
-					TransmitterModel model = new TransmitterModel(baseModel, getModel(), obj, vertexFormat, textureMap, transformationMap);
+					TransmitterModel model = new TransmitterModel(getModel(), obj, vertexFormat, textureMap, transformationMap);
 					model.tempState = state;
 					modelCache.put(hash, model.getQuads(state, side, rand));
 				}

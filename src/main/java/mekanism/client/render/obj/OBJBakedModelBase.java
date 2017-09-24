@@ -41,8 +41,6 @@ import com.google.common.collect.Lists;
 
 public abstract class OBJBakedModelBase extends OBJBakedModel
 {
-	protected IBakedModel baseModel;
-	
 	protected TextureAtlasSprite tempSprite = ModelLoader.White.INSTANCE;
 	
 	protected VertexFormat vertexFormat;
@@ -51,10 +49,9 @@ public abstract class OBJBakedModelBase extends OBJBakedModel
 	
 	protected HashMap<TransformType, Matrix4f> transformationMap = new HashMap<>();
 	
-	public OBJBakedModelBase(IBakedModel base, OBJModel model, IModelState state, VertexFormat format, ImmutableMap<String, TextureAtlasSprite> textures, HashMap<TransformType, Matrix4f> transform) 
+	public OBJBakedModelBase(OBJModel model, IModelState state, VertexFormat format, ImmutableMap<String, TextureAtlasSprite> textures, HashMap<TransformType, Matrix4f> transform)
 	{
 		model.super(model, state, format, textures);
-		baseModel = base;
 		transformationMap = transform;
 		textureMap = textures;
 		vertexFormat = format;

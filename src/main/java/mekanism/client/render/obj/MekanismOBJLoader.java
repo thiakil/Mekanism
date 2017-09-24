@@ -50,12 +50,12 @@ public class MekanismOBJLoader implements ICustomModelLoader
 	        
 	        if(obj instanceof IBakedModel)
 	        {
-	        	event.getModelRegistry().putObject(model, createBakedObjItemModel((IBakedModel)obj, "mekanism:models/block/" + s + ".obj.mek", new OBJModel.OBJState(Lists.newArrayList(OBJModel.Group.ALL), true), DefaultVertexFormats.ITEM));
+	        	event.getModelRegistry().putObject(model, createBakedObjItemModel("mekanism:models/block/" + s + ".obj.mek", new OBJModel.OBJState(Lists.newArrayList(OBJModel.Group.ALL), true), DefaultVertexFormats.ITEM));
 	        }
 		}
     }
 	
-	public OBJBakedModel createBakedObjItemModel(IBakedModel existingModel, String name, IModelState state, VertexFormat format)
+	public OBJBakedModel createBakedObjItemModel(String name, IModelState state, VertexFormat format)
 	{
 		try {
 			Function<ResourceLocation, TextureAtlasSprite> textureGetter = location -> Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(location.toString());
@@ -81,7 +81,7 @@ public class MekanismOBJLoader implements ICustomModelLoader
 			
 			builder.put("missingno", missing);
 			
-			return new GlowPanelModel(existingModel, objModel, state, format, builder.build(), new HashMap<>());
+			return new GlowPanelModel(objModel, state, format, builder.build(), new HashMap<>());
 		} catch(Exception e) {
 			e.printStackTrace();
 		}

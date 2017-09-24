@@ -32,11 +32,11 @@ public class MekanismOBJModel extends OBJModel
 		
 		if(modelType == OBJModelType.GLOW_PANEL)
 		{
-			return new GlowPanelModel(preBaked, this, state, format, GlowPanelModel.getTexturesForOBJModel(preBaked), null);
+			return new GlowPanelModel(this, state, format, GlowPanelModel.getTexturesForOBJModel(preBaked), null);
 		}
 		else if(modelType == OBJModelType.TRANSMITTER)
 		{
-			return new TransmitterModel(preBaked, this, state, format, TransmitterModel.getTexturesForOBJModel(preBaked), null);
+			return new TransmitterModel(this, state, format, TransmitterModel.getTexturesForOBJModel(preBaked), null);
 		}
 		
 		return null;

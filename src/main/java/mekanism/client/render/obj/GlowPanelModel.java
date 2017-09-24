@@ -49,9 +49,9 @@ public class GlowPanelModel extends OBJBakedModelBase
 	
 	private GlowPanelOverride override = new GlowPanelOverride();
 	
-	public GlowPanelModel(IBakedModel base, OBJModel model, IModelState state, VertexFormat format, ImmutableMap<String, TextureAtlasSprite> textures, HashMap<TransformType, Matrix4f> transform)
+	public GlowPanelModel(OBJModel model, IModelState state, VertexFormat format, ImmutableMap<String, TextureAtlasSprite> textures, HashMap<TransformType, Matrix4f> transform)
 	{
-		super(base, model, state, format, textures, transform);
+		super(model, state, format, textures, transform);
 	}
 
 	public static void forceRebake()
@@ -112,7 +112,7 @@ public class GlowPanelModel extends OBJBakedModelBase
 			}
 			
 			builder.put("missingno", missing);
-			GlowPanelModel bakedModel = new GlowPanelModel(baseModel, getModel(), getState(), vertexFormat, builder.build(), transformationMap);
+			GlowPanelModel bakedModel = new GlowPanelModel(getModel(), getState(), vertexFormat, builder.build(), transformationMap);
 			bakedModel.tempStack = stack;
 			glowPanelItemCache.put(stack.getItemDamage(), bakedModel);
 			
@@ -140,7 +140,7 @@ public class GlowPanelModel extends OBJBakedModelBase
 			
 			if(!glowPanelCache.containsKey(hash))
 			{
-				GlowPanelModel model = new GlowPanelModel(baseModel, getModel(), getState(), vertexFormat, textureMap, transformationMap);
+				GlowPanelModel model = new GlowPanelModel(getModel(), getState(), vertexFormat, textureMap, transformationMap);
 				model.tempState = state;
 				glowPanelCache.put(hash, model.getQuads(state, side, rand));
 			}
