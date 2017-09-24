@@ -604,8 +604,7 @@ public abstract class BlockMachine extends BlockContainer
 	@Override
 	public EnumBlockRenderType getRenderType(IBlockState state)
 	{
-		MachineType type = MachineType.get(getMachineBlock(), state.getBlock().getMetaFromState(state));
-		return (type != null && type == MachineType.DIGITAL_MINER) ? EnumBlockRenderType.ENTITYBLOCK_ANIMATED : EnumBlockRenderType.MODEL;
+		return EnumBlockRenderType.MODEL;
 	}
 
 	@SideOnly(Side.CLIENT)
