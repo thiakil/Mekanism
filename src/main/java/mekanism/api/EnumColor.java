@@ -76,6 +76,10 @@ public enum EnumColor implements IStringSerializable
 	{
 		return I18n.translateToLocal("dye." + unlocalizedName);
 	}
+
+	public String getDyeNameUnlocalised(){
+		return "dye." + unlocalizedName;
+	}
 	
 	public String getOreDictName()
 	{

@@ -208,6 +208,7 @@ import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.statemap.IStateMapper;
 import net.minecraft.client.renderer.entity.RenderSkeleton;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
@@ -1149,5 +1150,23 @@ public class ClientProxy extends CommonProxy
 	public FontRenderer getFontRenderer()
 	{
 		return Minecraft.getMinecraft().fontRenderer;
+	}
+
+	@Override
+	public boolean canLocalise(String key)
+	{
+		return I18n.hasKey(key);
+	}
+
+	@Override
+	public String localise(String key)
+	{
+		return I18n.format(key);
+	}
+
+	@Override
+	public String localiseFormatted(String key, Object... params)
+	{
+		return I18n.format(key, params);
 	}
 }

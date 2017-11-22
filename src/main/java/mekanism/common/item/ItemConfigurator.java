@@ -30,6 +30,7 @@ import mekanism.common.util.ItemDataUtils;
 import mekanism.common.util.LangUtils;
 import mekanism.common.util.MekanismUtils;
 import mekanism.common.util.SecurityUtils;
+import mekanism.common.util.TextComponentGroup;
 import net.minecraft.block.Block;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
@@ -45,7 +46,9 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -101,7 +104,15 @@ public class ItemConfigurator extends ItemEnergized implements IMekWrench, ITool
 					{
 						if(!player.isSneaking())
 						{
-							player.sendMessage(new TextComponentString(EnumColor.DARK_BLUE + "[Mekanism]" + EnumColor.GREY + " " + getViewModeText(getState(stack).getTransmission()) + ": " + initial.color + initial.localize() + " (" + initial.color.getColoredName() + ")"));
+							ITextComponent msg = new TextComponentGroup(TextFormatting.GRAY)
+									.string("[Mekanism] ", TextFormatting.DARK_BLUE)
+									.translation("tooltip.configurator.viewMode", getTransmissionTextComponent(stack))
+									.string(": ")
+									.translation(initial.getUnlocalisedName(), initial.color.textFormatting)
+									.string(" (")
+									.appendSibling(initial.color.getTranslatedColouredComponent())
+									.string(")");
+							player.sendMessage(msg);
 						}
 						else {
 							if(getEnergy(stack) >= ENERGY_PER_CONFIGURE)
@@ -111,7 +122,15 @@ public class ItemConfigurator extends ItemEnergized implements IMekWrench, ITool
 									setEnergy(stack, getEnergy(stack) - ENERGY_PER_CONFIGURE);
 									MekanismUtils.incrementOutput(config, getState(stack).getTransmission(), MekanismUtils.getBaseOrientation(side, config.getOrientation()));
 									SideData data = config.getConfig().getOutput(getState(stack).getTransmission(), side, config.getOrientation());
-									player.sendMessage(new TextComponentString(EnumColor.DARK_BLUE + "[Mekanism]" + EnumColor.GREY + " " + getToggleModeText(getState(stack).getTransmission()) + ": " + data.color + data.localize() + " (" + data.color.getColoredName() + ")"));
+									ITextComponent msg = new TextComponentGroup(TextFormatting.GRAY)
+											.string("[Mekanism] ", TextFormatting.DARK_BLUE)
+											.translation("tooltip.configurator.toggleMode", getTransmissionTextComponent(stack))
+											.string(": ")
+											.translation(data.getUnlocalisedName(), data.color.textFormatting)
+											.string(" (")
+											.appendSibling(data.color.getTranslatedColouredComponent())
+											.string(")");
+									player.sendMessage(msg);
 		
 									if(config instanceof TileEntityBasicBlock)
 									{
@@ -225,18 +244,6 @@ public class ItemConfigurator extends ItemEnergized implements IMekWrench, ITool
 		}
 
 		return EnumActionResult.PASS;
-	}
-	
-	public String getViewModeText(TransmissionType type)
-	{
-		String base = LangUtils.localize("tooltip.configurator.viewMode");
-		return String.format(base, type.localize().toLowerCase());
-	}
-	
-	public String getToggleModeText(TransmissionType type)
-	{
-		String base = LangUtils.localize("tooltip.configurator.toggleMode");
-		return String.format(base, type.localize());
 	}
 
 	public String getStateDisplay(ConfiguratorMode mode)
@@ -373,5 +380,10 @@ public class ItemConfigurator extends ItemEnergized implements IMekWrench, ITool
 			int state = dataStream.readInt();
 			setState(stack, ConfiguratorMode.values()[state]);
 		}
+	}
+
+	private ITextComponent getTransmissionTextComponent(ItemStack stack){
+		TransmissionType tt = getState(stack).getTransmission();
+		return tt !=null ? tt.getTextComponent() : new TextComponentString("");
 	}
 }

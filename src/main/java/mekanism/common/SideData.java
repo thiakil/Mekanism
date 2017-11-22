@@ -42,6 +42,10 @@ public class SideData
 	{
 		return LangUtils.localize("sideData." + name);
 	}
+
+	public String getUnlocalisedName(){
+		return "sideData." + name;
+	}
 	
 	public boolean hasSlot(int... slots)
 	{

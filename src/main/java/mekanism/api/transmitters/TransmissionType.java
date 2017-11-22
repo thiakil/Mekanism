@@ -1,6 +1,8 @@
 package mekanism.api.transmitters;
 
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.translation.I18n;
 
 public enum TransmissionType
@@ -33,6 +35,10 @@ public enum TransmissionType
 	public String localize()
 	{
 		return I18n.translateToLocal("transmission." + getTransmission());
+	}
+
+	public ITextComponent getTextComponent(){
+		return new TextComponentTranslation("transmission." + getTransmission());
 	}
 
 	public static boolean checkTransmissionType(ITransmitter sideTile, TransmissionType type)

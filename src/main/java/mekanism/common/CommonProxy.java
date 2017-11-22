@@ -132,6 +132,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
@@ -705,5 +706,23 @@ public class CommonProxy implements IGuiProvider
 	public Object getFontRenderer()
 	{
 		return null;
+	}
+
+	/* These localisation methods really shouldn't be running on server, but this is for back compat, and some things,
+	 * like ItemStack.getDisplayName are not client only. In cases such as those, we need to use the deprecation functions for now.
+	 */
+	@SuppressWarnings("deprecation")
+	public boolean canLocalise(String key){
+		return I18n.canTranslate(key);
+	}
+
+	@SuppressWarnings("deprecation")
+	public String localise(String key){
+		return I18n.translateToLocal(key);
+	}
+
+	@SuppressWarnings("deprecation")
+	public String localiseFormatted(String key, Object... params){
+		return I18n.translateToLocalFormatted(key, params);
 	}
 }

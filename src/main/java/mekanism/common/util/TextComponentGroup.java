@@ -57,10 +57,22 @@ public class TextComponentGroup extends TextComponentBase
 		return this;
 	}
 
-	public TextComponentGroup translation(String key, TextFormatting color){
-		ITextComponent t = new TextComponentTranslation(key);
+	public TextComponentGroup translation(String key, TextFormatting color, ITextComponent... params){
+		ITextComponent t = new TextComponentTranslation(key, (Object[])params);
 		t.getStyle().setColor(color);
 		this.appendSibling(t);
+		return this;
+	}
+
+	public TextComponentGroup translation(String key, ITextComponent... params){
+		this.appendSibling(new TextComponentTranslation(key, (Object[])params));
+		return this;
+	}
+
+	@Override
+	public TextComponentGroup appendSibling(ITextComponent component)
+	{
+		super.appendSibling(component);
 		return this;
 	}
 }
