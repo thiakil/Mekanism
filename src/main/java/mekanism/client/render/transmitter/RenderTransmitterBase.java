@@ -85,7 +85,8 @@ public abstract class RenderTransmitterBase<T extends TileEntityTransmitter> ext
 			LightUtil.renderQuadColor(renderer, quad, color.argb());
 		}
 	}
-	
+
+	@SuppressWarnings("deprecation")
 	public static HashMap<String, IBakedModel> buildModelMap(OBJModel objModel) 
 	{
 		HashMap<String, IBakedModel> modelParts = new HashMap<>();

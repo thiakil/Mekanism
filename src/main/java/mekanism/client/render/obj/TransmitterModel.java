@@ -80,6 +80,7 @@ public class TransmitterModel extends OBJBakedModelBase
 		}
 
 	    @Override
+	    @SuppressWarnings("deprecation")
 	    public IBakedModel handleItemState(IBakedModel originalModel, ItemStack stack, World world, EntityLivingBase entity) 
 	    {
 			if(itemCache == null)
@@ -90,7 +91,7 @@ public class TransmitterModel extends OBJBakedModelBase
 				{
 					visible.add(side.getName() + (side.getAxis() == Axis.Y ? "NORMAL" : "NONE"));
 				}
-				
+
 				itemCache = new TransmitterModel(baseModel, getModel(), new OBJState(visible, true), vertexFormat, textureMap, transformationMap);
 				itemCache.tempStack = stack;
 			}
@@ -106,6 +107,7 @@ public class TransmitterModel extends OBJBakedModelBase
 	}
 	
 	@Override
+	@SuppressWarnings("deprecation")
 	public List<BakedQuad> getQuads(IBlockState state, EnumFacing side, long rand)
 	{
     	if(side != null) 
@@ -124,7 +126,7 @@ public class TransmitterModel extends OBJBakedModelBase
 			{
 				color = colorProp.color.ordinal();
 			}
-			
+
 			OBJState obj = extended.getValue(OBJProperty.INSTANCE);
 			
 			if(layer != BlockRenderLayer.TRANSLUCENT)

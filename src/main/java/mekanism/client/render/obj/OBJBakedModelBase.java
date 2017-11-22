@@ -50,7 +50,8 @@ public abstract class OBJBakedModelBase extends OBJBakedModel
 	protected ImmutableMap<String, TextureAtlasSprite> textureMap;
 	
 	protected HashMap<TransformType, Matrix4f> transformationMap = new HashMap<>();
-	
+
+	@SuppressWarnings("deprecation")
 	public OBJBakedModelBase(IBakedModel base, OBJModel model, IModelState state, VertexFormat format, ImmutableMap<String, TextureAtlasSprite> textures, HashMap<TransformType, Matrix4f> transform) 
 	{
 		model.super(model, state, format, textures);
@@ -66,6 +67,7 @@ public abstract class OBJBakedModelBase extends OBJBakedModel
 	}
 	
     @Override
+    @SuppressWarnings("deprecation")
     public List<BakedQuad> getQuads(IBlockState blockState, EnumFacing side, long rand)
     {
     	if(side != null) 
@@ -81,9 +83,9 @@ public abstract class OBJBakedModelBase extends OBJBakedModel
         
         for(Group g : getModel().getMatLib().getGroups().values())
         {
-            if(getState() instanceof OBJState)
+        	if(getState() instanceof OBJState)
             {
-                OBJState state = (OBJState)getState();
+            	OBJState state = (OBJState)getState();
                 
                 if(state.parent != null)
                 {
@@ -233,6 +235,7 @@ public abstract class OBJBakedModelBase extends OBJBakedModel
 	
 	private static Method m_updateStateVisibilityMap;
 
+	@SuppressWarnings("deprecation")
 	protected void updateStateVisibilityMap(OBJState state)
     {
 		try {
