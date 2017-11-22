@@ -24,7 +24,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.client.CPacketCustomPayload;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.client.resources.I18n;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -84,7 +84,7 @@ public class GuiRobitRepair extends GuiMekanism implements IContainerListener
 		{
 			int k = 8453920;
 			boolean flag = true;
-			String s = I18n.translateToLocalFormatted("container.repair.cost", repairContainer.maximumCost);
+			String s = I18n.format("container.repair.cost", repairContainer.maximumCost);
 
 			if(repairContainer.maximumCost >= 40 && !mc.player.capabilities.isCreativeMode)
 			{
