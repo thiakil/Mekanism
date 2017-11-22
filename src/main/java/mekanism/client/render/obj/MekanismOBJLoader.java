@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import mekanism.client.render.obj.MekanismOBJModel.OBJModelType;
+import mekanism.common.Mekanism;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -39,6 +40,7 @@ public class MekanismOBJLoader implements ICustomModelLoader
 	public static final String[] OBJ_RENDERS = new String[] {"glow_panel"};
 	
 	@SubscribeEvent
+	@SuppressWarnings("deprecation")
     public void onModelBake(ModelBakeEvent event)
     {
 		GlowPanelModel.forceRebake();
@@ -71,7 +73,7 @@ public class MekanismOBJLoader implements ICustomModelLoader
 			{
 				if(objModel.getMatLib().getMaterial(s).getTexture().getTextureLocation().getResourcePath().startsWith("#"))
 				{
-					FMLLog.severe("OBJLoader: Unresolved texture '%s' for obj model '%s'", objModel.getMatLib().getMaterial(s).getTexture().getTextureLocation().getResourcePath(), modelLocation);
+					Mekanism.logger.error("OBJLoader: Unresolved texture '%s' for obj model '%s'", objModel.getMatLib().getMaterial(s).getTexture().getTextureLocation().getResourcePath(), modelLocation);
 					builder.put(s, missing);
 				}
 				else {
