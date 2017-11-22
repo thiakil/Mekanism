@@ -584,6 +584,7 @@ public class CommonProxy implements IGuiProvider
 
 	public void preInit() {}
 
+	@SuppressWarnings("deprecation")//deprecated in 1.12.2, in future, change to player.getEntityAttribute(EntityPlayer.REACH_DISTANCE).getAttributeValue();
 	public double getReach(EntityPlayer player)
 	{
 		if(player instanceof EntityPlayerMP)
