@@ -352,4 +352,10 @@ public class ItemBlockBasic extends ItemBlock implements IEnergizedItem, ITierIt
 	{
 		return false;
 	}
+
+	@Override
+	public int getItemBurnTime(ItemStack itemStack)
+	{
+		return BasicBlockType.get(itemStack) == BasicBlockType.COAL_BLOCK ? 200*8*9 : super.getItemBurnTime(itemStack);
+	}
 }
