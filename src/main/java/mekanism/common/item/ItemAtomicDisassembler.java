@@ -347,9 +347,9 @@ public class ItemAtomicDisassembler extends ItemEnergized
 	}
 	
 	@Override
-	public Multimap<String, AttributeModifier> getItemAttributeModifiers(EntityEquipmentSlot equipmentSlot)
+	public Multimap<String, AttributeModifier> getAttributeModifiers(EntityEquipmentSlot equipmentSlot, ItemStack stack)
     {
-        Multimap<String, AttributeModifier> multimap = super.getItemAttributeModifiers(equipmentSlot);
+        Multimap<String, AttributeModifier> multimap = super.getAttributeModifiers(equipmentSlot, stack);
 
         if(equipmentSlot == EntityEquipmentSlot.MAINHAND)
         {
