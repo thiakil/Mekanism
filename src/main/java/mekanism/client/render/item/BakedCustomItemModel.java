@@ -502,6 +502,7 @@ public class BakedCustomItemModel implements IBakedModel
 	}
 
 	@Override
+	@Deprecated
 	public ItemCameraTransforms getItemCameraTransforms()
 	{
 		return baseModel.getItemCameraTransforms();

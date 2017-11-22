@@ -63,6 +63,7 @@ public class CustomItemModelFactory implements IBakedModel
 	}
 
 	@Override
+	@Deprecated
 	public ItemCameraTransforms getItemCameraTransforms() 
 	{
 		throw new UnsupportedOperationException();
