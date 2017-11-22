@@ -75,6 +75,7 @@ public class LaserManager
 		return new LaserInfo(mop, foundEntity);
 	}
 
+	@SuppressWarnings("deprecation")//getDrops
 	public static List<ItemStack> breakBlock(Coord4D blockCoord, boolean dropAtBlock, World world)
 	{
 		if(!general.aestheticWorldDamage)
