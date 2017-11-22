@@ -74,6 +74,7 @@ public class MekanismConfig
 		public static boolean allowProtection = true;
 		public static int portableTeleporterDelay;
 		public static double quantumEntangloporterEnergyTransfer;
+		public static boolean logDigitalMinerBlockBreakDenied;
 	}
 
 	public static class client

@@ -285,6 +285,7 @@ public class CommonProxy implements IGuiProvider
 		general.allowProtection = Mekanism.configuration.get(Configuration.CATEGORY_GENERAL, "AllowProtection", true).getBoolean();
 		general.portableTeleporterDelay = Mekanism.configuration.get(Configuration.CATEGORY_GENERAL, "PortableTeleporterDelay", 0).getInt();
 		general.quantumEntangloporterEnergyTransfer = Mekanism.configuration.get(Configuration.CATEGORY_GENERAL, "QuantumEntangloporterEnergyTransfer", 16000000D).getDouble();
+		general.logDigitalMinerBlockBreakDenied = Mekanism.configuration.get(Configuration.CATEGORY_GENERAL, "logDigitalMinerBlockBreakDenied", false, "Set to true to log when a digital miner is denied a block break by another mod. It will log the stacktrace. DO NOT ENABLE FOR NORMAL OPERATION").getBoolean();
 		
 		general.blacklistIC2 = Mekanism.configuration.get(Configuration.CATEGORY_GENERAL, "BlacklistIC2Power", false).getBoolean();
 		general.blacklistRF = Mekanism.configuration.get(Configuration.CATEGORY_GENERAL, "BlacklistRFPower", false).getBoolean();

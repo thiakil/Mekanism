@@ -27,6 +27,7 @@ import mekanism.common.base.TileNetworkList;
 import mekanism.common.block.states.BlockStateMachine;
 import mekanism.common.capabilities.Capabilities;
 import mekanism.common.chunkloading.IChunkLoader;
+import mekanism.common.config.MekanismConfig;
 import mekanism.common.config.MekanismConfig.usage;
 import mekanism.common.content.miner.MItemStackFilter;
 import mekanism.common.content.miner.MOreDictFilter;
@@ -403,7 +404,22 @@ public class TileEntityDigitalMiner extends TileEntityElectricBlock implements I
 		IBlockState state = coord.getBlockState(world);
 
 		EntityPlayer dummy = Mekanism.proxy.getDummyPlayer((WorldServer)world, coord.x, coord.y, coord.z).get();
-		BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(world, coord.getPos(), state, dummy);
+		BlockEvent.BreakEvent event;
+		if (!MekanismConfig.general.logDigitalMinerBlockBreakDenied){
+			event = new BlockEvent.BreakEvent(world, coord.getPos(), state, dummy);
+		} else {
+			event = new BlockEvent.BreakEvent(world, coord.getPos(), state, dummy){
+				@Override
+				public void setCanceled(boolean cancel)
+				{
+					super.setCanceled(cancel);
+					if (cancel){
+						Mekanism.logger.info("Digital miner cannot mine block {} at {}", this.getState().getBlock(), this.getPos());
+						Mekanism.logger.info("trace: ", new Exception());
+					}
+				}
+			};
+		}
 		MinecraftForge.EVENT_BUS.post(event);
 
 		return !event.isCanceled();
