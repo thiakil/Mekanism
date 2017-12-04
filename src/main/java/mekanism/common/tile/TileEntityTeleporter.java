@@ -391,9 +391,9 @@ public class TileEntityTeleporter extends TileEntityElectricBlock implements ICo
 			if(player.isEntityAlive())
 			{
 				newWorld.spawnEntity(player);
-				player.setLocationAndAngles(coord.x +0.5, coord.y +1, coord.z +0.5, player.rotationYaw, player.rotationPitch);
-				newWorld.updateEntityWithOptionalForce(player, false);
 				player.setWorld(newWorld);
+				player.setLocationAndAngles(coord.x +0.5, coord.y +1, coord.z +0.5, player.rotationYaw, player.rotationPitch);
+				newWorld.updateEntityWithOptionalForce(player, true);
 			}
 
 			player.mcServer.getPlayerList().preparePlayer(player, oldWorld);
@@ -413,6 +413,7 @@ public class TileEntityTeleporter extends TileEntityElectricBlock implements ICo
 		}
 		else {
 			player.connection.setPlayerLocation(coord.x +0.5, coord.y +1, coord.z +0.5, player.rotationYaw, player.rotationPitch);
+			player.world.updateEntityWithOptionalForce(player, true);
 		}
 	}
 
@@ -427,8 +428,8 @@ public class TileEntityTeleporter extends TileEntityElectricBlock implements ICo
 
 			world.spawnEntity(entity);
 			entity.setLocationAndAngles(coord.x +0.5, coord.y +1, coord.z +0.5, entity.rotationYaw, entity.rotationPitch);
-			world.updateEntityWithOptionalForce(entity, false);
 			entity.setWorld(world);
+			world.updateEntityWithOptionalForce(entity, true);
 			world.resetUpdateEntityTick();
 
 			Entity e = EntityList.newEntity(entity.getClass(), world);
@@ -445,6 +446,7 @@ public class TileEntityTeleporter extends TileEntityElectricBlock implements ICo
 		}
 		else {
 			entity.setLocationAndAngles(coord.x +0.5, coord.y +1, coord.z +0.5, entity.rotationYaw, entity.rotationPitch);
+			world.updateEntityWithOptionalForce(entity, true);
 			Mekanism.packetHandler.sendToReceivers(new EntityMoveMessage(entity), new Range4D(new Coord4D(entity)));
 		}
 	}
