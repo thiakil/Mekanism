@@ -43,6 +43,7 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -169,6 +170,25 @@ public class MekanismRenderer
 		missingIcon = map.getMissingSprite();
 
 		texMap = map;
+	}
+
+	public static TextureAtlasSprite getFluidTexture(FluidStack fluid, FluidType type)
+	{
+		if(fluid == null || type == null)
+		{
+			return missingIcon;
+		}
+
+		ResourceLocation spriteLocation;
+		if (type == FluidType.STILL){
+			spriteLocation = fluid.getFluid().getStill(fluid);
+		} else {
+			spriteLocation = fluid.getFluid().getFlowing(fluid);
+		}
+
+		TextureAtlasSprite sprite = texMap.getTextureExtry(spriteLocation.toString());
+
+		return sprite != null ? sprite : missingIcon;
 	}
 
 	public static TextureAtlasSprite getFluidTexture(Fluid fluid, FluidType type) 
