@@ -1,6 +1,7 @@
 package mekanism.client.render.transmitter;
 
 import java.util.HashMap;
+import java.util.Locale;
 
 import mekanism.client.render.MekanismRenderer;
 import mekanism.client.render.MekanismRenderer.FluidType;
@@ -8,6 +9,7 @@ import mekanism.common.ColourRGBA;
 import mekanism.common.config.MekanismConfig.client;
 import mekanism.common.tile.transmitter.TileEntityMechanicalPipe;
 import mekanism.common.tile.transmitter.TileEntitySidedPipe.ConnectionType;
+import mekanism.common.tile.transmitter.TileEntityTransmitter;
 import mekanism.common.transmitters.grid.FluidNetwork;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -377,7 +379,18 @@ public class RenderMechanicalPipe extends RenderTransmitterBase<TileEntityMechan
 		}
 	}
 	
-    public static void onStitch()
+	@Override
+	public IBakedModel getModelForSide(TileEntityTransmitter part, EnumFacing side) {
+		if (part.getConnectionType(side) == ConnectionType.PULL){
+			String sideName = side.name().toLowerCase(Locale.ROOT);
+			String typeName = part.getConnectionType(side).name().toUpperCase();
+			String name = sideName + typeName + "_Large";
+			return contentsMap.get(name);
+		}
+		return super.getModelForSide(part, side);
+	}
+	
+	public static void onStitch()
     {
     	//cachedLiquids.clear();
     }

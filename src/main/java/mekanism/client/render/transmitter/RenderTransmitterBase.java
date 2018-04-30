@@ -31,7 +31,7 @@ import com.google.common.collect.ImmutableList;
 public abstract class RenderTransmitterBase<T extends TileEntityTransmitter> extends TileEntitySpecialRenderer<T>
 {
 	private static OBJModel contentsModel;
-	private static Map<String, IBakedModel> contentsMap = new HashMap<>();
+	protected static Map<String, IBakedModel> contentsMap = new HashMap<>();
 	
 	protected Minecraft mc = Minecraft.getMinecraft();
 	
