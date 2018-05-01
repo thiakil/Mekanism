@@ -330,6 +330,9 @@ public class MekanismRenderer
 	
 	public static BakedQuad iconTransform(BakedQuad quad, TextureAtlasSprite sprite)
 	{
+		if (!quad.getFormat().hasUvOffset(0)){
+			return quad;//no UVs, nothing to do!
+		}
 		int[] vertices = new int[quad.getVertexData().length];
 		System.arraycopy(quad.getVertexData(), 0, vertices, 0, vertices.length);
 		
