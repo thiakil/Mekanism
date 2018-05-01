@@ -345,7 +345,7 @@ public class RenderMechanicalPipe extends RenderTransmitterBase<TileEntityMechan
 	private void renderTransparency(BufferBuilder renderer, TextureAtlasSprite icon, IBakedModel cc, ColourRGBA color, int skyLight, int fluidLight)
 	{
 		//consumer code copied & adapted from net.minecraftforge.client.model.pipeline.LightUtil.renderQuadColorSlow
-		Lighter cons;
+		/*Lighter cons;
 		if(renderer == Tessellator.getInstance().getBuffer())
 		{
 			cons = getTesselatorLighter();
@@ -353,7 +353,8 @@ public class RenderMechanicalPipe extends RenderTransmitterBase<TileEntityMechan
 		else
 		{
 			cons = new Lighter(new VertexBufferConsumer(renderer));
-		}
+		}*/
+		LightUtil.ItemConsumer cons = LightUtil.getItemConsumer();
 		int auxColor = color.argb();
 		float b = (float)(auxColor & 0xFF) / 0xFF;
 		float g = (float)((auxColor >>> 8) & 0xFF) / 0xFF;
@@ -361,7 +362,8 @@ public class RenderMechanicalPipe extends RenderTransmitterBase<TileEntityMechan
 		float a = (float)((auxColor >>> 24) & 0xFF) / 0xFF;
 		
 		cons.setAuxColor(r, g, b, a);
-		cons.setLight(skyLight, fluidLight);
+		//cons.setLight(skyLight, fluidLight);
+		int brightness = skyLight << 20 | fluidLight << 4;
 		
 		for(EnumFacing side : EnumFacing.values())
 		{
@@ -369,6 +371,7 @@ public class RenderMechanicalPipe extends RenderTransmitterBase<TileEntityMechan
 			{
 				quad = MekanismRenderer.iconTransform(quad, icon);
 				quad.pipe(cons);
+				renderer.putBrightness4(brightness, brightness, brightness, brightness);
 			}
 		}
 
@@ -376,6 +379,7 @@ public class RenderMechanicalPipe extends RenderTransmitterBase<TileEntityMechan
 		{
 			quad = MekanismRenderer.iconTransform(quad, icon);
 			quad.pipe(cons);
+			renderer.putBrightness4(brightness, brightness, brightness, brightness);
 		}
 	}
 	
