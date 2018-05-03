@@ -69,7 +69,7 @@ public class RenderMechanicalPipe extends RenderTransmitterBase<TileEntityMechan
 			GlStateManager.shadeModel(GL11.GL_FLAT);
 		}
 
-		buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+		buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 
 		renderTileEntityFast(te, x, y, z, partialTicks, destroyStage, partial, buffer);
 
@@ -260,19 +260,19 @@ public class RenderMechanicalPipe extends RenderTransmitterBase<TileEntityMechan
 			// Top
 			if (side != null || pipe.getConnectionType(EnumFacing.UP) == ConnectionType.NONE)
 			{
-				buffer.pos(minX, maxY, minZ).color(red, green, blue, alpha).tex(u1, v1).lightmap(skyLight, fluidLight).endVertex();
-				buffer.pos(minX, maxY, maxZ).color(red, green, blue, alpha).tex(u1, v2).lightmap(skyLight, fluidLight).endVertex();
-				buffer.pos(maxX, maxY, maxZ).color(red, green, blue, alpha).tex(u2, v2).lightmap(skyLight, fluidLight).endVertex();
-				buffer.pos(maxX, maxY, minZ).color(red, green, blue, alpha).tex(u2, v1).lightmap(skyLight, fluidLight).endVertex();
+				buffer.pos(minX, maxY, minZ)./*color(red, green, blue, alpha).*/tex(u1, v1)/*.lightmap(skyLight, fluidLight)*/.endVertex();
+				buffer.pos(minX, maxY, maxZ)./*color(red, green, blue, alpha).*/tex(u1, v2)/*.lightmap(skyLight, fluidLight)*/.endVertex();
+				buffer.pos(maxX, maxY, maxZ)./*color(red, green, blue, alpha).*/tex(u2, v2)/*.lightmap(skyLight, fluidLight)*/.endVertex();
+				buffer.pos(maxX, maxY, minZ)./*color(red, green, blue, alpha).*/tex(u2, v1)/*.lightmap(skyLight, fluidLight)*/.endVertex();
 			}
 
 			// bottom
 			if (side != null || pipe.getConnectionType(EnumFacing.DOWN) == ConnectionType.NONE)
 			{
-				buffer.pos(maxX, minY, minZ).color(red, green, blue, alpha).tex(u2, v1).lightmap(skyLight, fluidLight).endVertex();
-				buffer.pos(maxX, minY, maxZ).color(red, green, blue, alpha).tex(u2, v2).lightmap(skyLight, fluidLight).endVertex();
-				buffer.pos(minX, minY, maxZ).color(red, green, blue, alpha).tex(u1, v2).lightmap(skyLight, fluidLight).endVertex();
-				buffer.pos(minX, minY, minZ).color(red, green, blue, alpha).tex(u1, v1).lightmap(skyLight, fluidLight).endVertex();
+				buffer.pos(maxX, minY, minZ)./*color(red, green, blue, alpha).*/tex(u2, v1)./*lightmap(skyLight, fluidLight).*/endVertex();
+				buffer.pos(maxX, minY, maxZ)./*color(red, green, blue, alpha).*/tex(u2, v2)./*lightmap(skyLight, fluidLight).*/endVertex();
+				buffer.pos(minX, minY, maxZ)./*color(red, green, blue, alpha).*/tex(u1, v2)./*lightmap(skyLight, fluidLight).*/endVertex();
+				buffer.pos(minX, minY, minZ)./*color(red, green, blue, alpha).*/tex(u1, v1)./*lightmap(skyLight, fluidLight).*/endVertex();
 			}
 		}
 
@@ -285,19 +285,19 @@ public class RenderMechanicalPipe extends RenderTransmitterBase<TileEntityMechan
 			//NORTH
 			if (side != null || pipe.getConnectionType(EnumFacing.NORTH) == ConnectionType.NONE)
 			{
-				buffer.pos(maxX, maxY, minZ).color(red, green, blue, alpha).tex(u1, v1).lightmap(skyLight, fluidLight).endVertex();
-				buffer.pos(maxX, minY, minZ).color(red, green, blue, alpha).tex(u1, v2).lightmap(skyLight, fluidLight).endVertex();
-				buffer.pos(minX, minY, minZ).color(red, green, blue, alpha).tex(u2, v2).lightmap(skyLight, fluidLight).endVertex();
-				buffer.pos(minX, maxY, minZ).color(red, green, blue, alpha).tex(u2, v1).lightmap(skyLight, fluidLight).endVertex();
+				buffer.pos(maxX, maxY, minZ)./*color(red, green, blue, alpha).*/tex(u1, v1)/*.lightmap(skyLight, fluidLight)*/.endVertex();
+				buffer.pos(maxX, minY, minZ)./*color(red, green, blue, alpha).*/tex(u1, v2)/*.lightmap(skyLight, fluidLight)*/.endVertex();
+				buffer.pos(minX, minY, minZ)./*color(red, green, blue, alpha).*/tex(u2, v2)/*.lightmap(skyLight, fluidLight)*/.endVertex();
+				buffer.pos(minX, maxY, minZ)./*color(red, green, blue, alpha).*/tex(u2, v1)/*.lightmap(skyLight, fluidLight)*/.endVertex();
 			}
 
 			//SOUTH
 			if (side != null || pipe.getConnectionType(EnumFacing.SOUTH) == ConnectionType.NONE)
 			{
-				buffer.pos(maxX, minY, maxZ).color(red, green, blue, alpha).tex(u1, v2).lightmap(skyLight, fluidLight).endVertex();
-				buffer.pos(maxX, maxY, maxZ).color(red, green, blue, alpha).tex(u1, v1).lightmap(skyLight, fluidLight).endVertex();
-				buffer.pos(minX, maxY, maxZ).color(red, green, blue, alpha).tex(u2, v1).lightmap(skyLight, fluidLight).endVertex();
-				buffer.pos(minX, minY, maxZ).color(red, green, blue, alpha).tex(u2, v2).lightmap(skyLight, fluidLight).endVertex();
+				buffer.pos(maxX, minY, maxZ)./*color(red, green, blue, alpha).*/tex(u1, v2)./*lightmap(skyLight, fluidLight).*/endVertex();
+				buffer.pos(maxX, maxY, maxZ)./*color(red, green, blue, alpha).*/tex(u1, v1)./*lightmap(skyLight, fluidLight).*/endVertex();
+				buffer.pos(minX, maxY, maxZ)./*color(red, green, blue, alpha).*/tex(u2, v1)./*lightmap(skyLight, fluidLight).*/endVertex();
+				buffer.pos(minX, minY, maxZ)./*color(red, green, blue, alpha).*/tex(u2, v2)./*lightmap(skyLight, fluidLight).*/endVertex();
 			}
 		}
 
@@ -306,19 +306,19 @@ public class RenderMechanicalPipe extends RenderTransmitterBase<TileEntityMechan
 			//EAST
 			if (side != null || pipe.getConnectionType(EnumFacing.WEST) == ConnectionType.NONE)
 			{
-				buffer.pos(minX, minY, maxZ).color(red, green, blue, alpha).tex(u1, v2).lightmap(skyLight, fluidLight).endVertex();
-				buffer.pos(minX, maxY, maxZ).color(red, green, blue, alpha).tex(u1, v1).lightmap(skyLight, fluidLight).endVertex();
-				buffer.pos(minX, maxY, minZ).color(red, green, blue, alpha).tex(u2, v1).lightmap(skyLight, fluidLight).endVertex();
-				buffer.pos(minX, minY, minZ).color(red, green, blue, alpha).tex(u2, v2).lightmap(skyLight, fluidLight).endVertex();
+				buffer.pos(minX, minY, maxZ)./*color(red, green, blue, alpha).*/tex(u1, v2)./*lightmap(skyLight, fluidLight).*/endVertex();
+				buffer.pos(minX, maxY, maxZ)./*color(red, green, blue, alpha).*/tex(u1, v1)./*lightmap(skyLight, fluidLight).*/endVertex();
+				buffer.pos(minX, maxY, minZ)./*color(red, green, blue, alpha).*/tex(u2, v1)./*lightmap(skyLight, fluidLight).*/endVertex();
+				buffer.pos(minX, minY, minZ)./*color(red, green, blue, alpha).*/tex(u2, v2)./*lightmap(skyLight, fluidLight).*/endVertex();
 			}
 
 			//WEST
 			if (side != null || pipe.getConnectionType(EnumFacing.EAST) == ConnectionType.NONE)
 			{
-				buffer.pos(maxX, maxY, maxZ).color(red, green, blue, alpha).tex(u1, v1).lightmap(skyLight, fluidLight).endVertex();
-				buffer.pos(maxX, minY, maxZ).color(red, green, blue, alpha).tex(u1, v2).lightmap(skyLight, fluidLight).endVertex();
-				buffer.pos(maxX, minY, minZ).color(red, green, blue, alpha).tex(u2, v2).lightmap(skyLight, fluidLight).endVertex();
-				buffer.pos(maxX, maxY, minZ).color(red, green, blue, alpha).tex(u2, v1).lightmap(skyLight, fluidLight).endVertex();
+				buffer.pos(maxX, maxY, maxZ)./*color(red, green, blue, alpha).*/tex(u1, v1)/*.lightmap(skyLight, fluidLight)*/.endVertex();
+				buffer.pos(maxX, minY, maxZ)./*color(red, green, blue, alpha).*/tex(u1, v2)/*.lightmap(skyLight, fluidLight)*/.endVertex();
+				buffer.pos(maxX, minY, minZ)./*color(red, green, blue, alpha).*/tex(u2, v2)/*.lightmap(skyLight, fluidLight)*/.endVertex();
+				buffer.pos(maxX, maxY, minZ)./*color(red, green, blue, alpha).*/tex(u2, v1)/*.lightmap(skyLight, fluidLight)*/.endVertex();
 			}
 		}
 	}
@@ -367,8 +367,8 @@ public class RenderMechanicalPipe extends RenderTransmitterBase<TileEntityMechan
 		float a = (float)((auxColor >>> 24) & 0xFF) / 0xFF;
 		
 		cons.setAuxColor(r, g, b, a);
-		//cons.setLight(skyLight, fluidLight);
-		int brightness = skyLight << 20 | fluidLight << 4;*/
+		//cons.setLight(skyLight, fluidLight);*/
+		int brightness = skyLight << 20 | fluidLight << 4;
 		
 		/*for(EnumFacing side : EnumFacing.values())
 		{
@@ -387,7 +387,7 @@ public class RenderMechanicalPipe extends RenderTransmitterBase<TileEntityMechan
 			renderer.putBrightness4(brightness, brightness, brightness, brightness);*/
 			TransformedQuadBuilder transformed = new TransformedQuadBuilder(renderer.getVertexFormat());
 			quad.pipe(transformed);
-			transformed.setColor(color).retexture(icon).setLight(skyLight, fluidLight).pipe(cons);
+			transformed/*.setColor(color)*/.retexture(icon)/*.setLight(skyLight, fluidLight)*/.pipe(cons);
 		}
 	}
 	
