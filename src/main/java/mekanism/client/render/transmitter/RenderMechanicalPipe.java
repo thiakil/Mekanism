@@ -354,6 +354,9 @@ public class RenderMechanicalPipe extends RenderTransmitterBase<TileEntityMechan
 		{
 			cons = new Lighter(new VertexBufferConsumer(renderer));
 		}*/
+		if (cc == null){
+			return;
+		}
 		LightUtil.ItemConsumer cons = LightUtil.getItemConsumer();
 		int auxColor = color.argb();
 		float b = (float)(auxColor & 0xFF) / 0xFF;
