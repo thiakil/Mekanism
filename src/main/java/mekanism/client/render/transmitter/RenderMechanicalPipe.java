@@ -5,6 +5,7 @@ import java.util.Locale;
 
 import mekanism.client.render.MekanismRenderer;
 import mekanism.client.render.MekanismRenderer.FluidType;
+import mekanism.client.render.TransformedQuadBuilder;
 import mekanism.common.ColourRGBA;
 import mekanism.common.config.MekanismConfig.client;
 import mekanism.common.tile.transmitter.TileEntityMechanicalPipe;
@@ -357,7 +358,8 @@ public class RenderMechanicalPipe extends RenderTransmitterBase<TileEntityMechan
 		if (cc == null){
 			return;
 		}
-		LightUtil.ItemConsumer cons = LightUtil.getItemConsumer();
+		IVertexConsumer cons = LightUtil.getTessellator();
+		/*LightUtil.ItemConsumer cons = LightUtil.getItemConsumer();
 		int auxColor = color.argb();
 		float b = (float)(auxColor & 0xFF) / 0xFF;
 		float g = (float)((auxColor >>> 8) & 0xFF) / 0xFF;
@@ -366,9 +368,9 @@ public class RenderMechanicalPipe extends RenderTransmitterBase<TileEntityMechan
 		
 		cons.setAuxColor(r, g, b, a);
 		//cons.setLight(skyLight, fluidLight);
-		int brightness = skyLight << 20 | fluidLight << 4;
+		int brightness = skyLight << 20 | fluidLight << 4;*/
 		
-		for(EnumFacing side : EnumFacing.values())
+		/*for(EnumFacing side : EnumFacing.values())
 		{
 			for(BakedQuad quad : cc.getQuads(null, side, 0))
 			{
@@ -376,13 +378,16 @@ public class RenderMechanicalPipe extends RenderTransmitterBase<TileEntityMechan
 				quad.pipe(cons);
 				renderer.putBrightness4(brightness, brightness, brightness, brightness);
 			}
-		}
+		}*/
 
 		for(BakedQuad quad : cc.getQuads(null, null, 0))
 		{
-			quad = MekanismRenderer.iconTransform(quad, icon);
+			/*quad = MekanismRenderer.iconTransform(quad, icon);
 			quad.pipe(cons);
-			renderer.putBrightness4(brightness, brightness, brightness, brightness);
+			renderer.putBrightness4(brightness, brightness, brightness, brightness);*/
+			TransformedQuadBuilder transformed = new TransformedQuadBuilder(renderer.getVertexFormat());
+			quad.pipe(transformed);
+			transformed.setColor(color).retexture(icon).setLight(skyLight, fluidLight).pipe(cons);
 		}
 	}
 	
