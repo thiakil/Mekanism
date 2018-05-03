@@ -48,6 +48,16 @@ public abstract class RenderTransmitterBase<T extends TileEntityTransmitter> ext
 		}
 	}
 	
+	public static void reloadContentsModel(){
+		try {
+			OBJLoader.INSTANCE.onResourceManagerReload(Minecraft.getMinecraft().getResourceManager());
+			contentsModel = (OBJModel)OBJLoader.INSTANCE.loadModel(MekanismUtils.getResource(ResourceType.MODEL, "transmitter_contents.obj"));
+			contentsMap = buildModelMap(contentsModel);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	protected void push()
 	{
 		GL11.glPushMatrix();

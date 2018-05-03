@@ -5,6 +5,7 @@ import java.util.List;
 
 import mekanism.api.EnumColor;
 import mekanism.api.MekanismAPI;
+import mekanism.client.render.transmitter.RenderTransmitterBase;
 import mekanism.common.config.MekanismConfig.general;
 import mekanism.common.util.MekanismUtils;
 import net.minecraft.command.CommandBase;
@@ -125,6 +126,10 @@ public class CommandMekanism extends CommandBase
 					minecraftserver.getPlayerList().removeOp(Mekanism.gameProfile);
 					notifyCommandListener(sender, this, "commands.deop.success", new Object[] {"[Mekanism]"});
 				}
+			}
+			else if(params[0].equalsIgnoreCase("obj"))
+			{
+				RenderTransmitterBase.reloadContentsModel();
 			}
 			else {
 				sender.sendMessage(new TextComponentString(EnumColor.DARK_BLUE + "[Mekanism]" + EnumColor.GREY + " Unknown command. Type '" + EnumColor.INDIGO + "/mk help" + EnumColor.GREY + "' for help."));
