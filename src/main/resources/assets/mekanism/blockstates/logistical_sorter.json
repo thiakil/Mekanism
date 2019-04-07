@@ -3,8 +3,7 @@
   "defaults": {
     "model": "mekanism:logistical_sorter",
     "textures": {
-      "all": "mekanism:blocks/models/logistical_sorter",
-      "led": "mekanism:blocks/models/logistical_sorter_led_off"
+      "all": "mekanism:blocks/models/logistical_sorter"
     }
   },
   "variants": {

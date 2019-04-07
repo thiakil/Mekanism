@@ -116,5 +116,9 @@
 				"west": {"uv": [14, 0, 15, 14], "texture": "#frame"}
 			}
 		}
-	]
+	],
+	"textures": {
+      "frame": "mekanism:blocks/models/fluid_tank",
+      "glass": "mekanism:blocks/models/fluid_tank_side_off"
+    }
 }
