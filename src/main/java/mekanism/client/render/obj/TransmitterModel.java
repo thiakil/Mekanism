@@ -18,6 +18,11 @@ import mekanism.common.block.property.PropertyConnection;
 import mekanism.common.config.MekanismConfig;
 import mekanism.common.tile.transmitter.TileEntitySidedPipe;
 import mekanism.common.tile.transmitter.TileEntitySidedPipe.ConnectionType;
+import mekanism.repack.forge.OBJModel;
+import mekanism.repack.forge.OBJModel.Face;
+import mekanism.repack.forge.OBJModel.Group;
+import mekanism.repack.forge.OBJModel.OBJProperty;
+import mekanism.repack.forge.OBJModel.OBJState;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
@@ -35,11 +40,6 @@ import net.minecraft.util.EnumFacing.Axis;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
-import net.minecraftforge.client.model.obj.OBJModel;
-import net.minecraftforge.client.model.obj.OBJModel.Face;
-import net.minecraftforge.client.model.obj.OBJModel.Group;
-import net.minecraftforge.client.model.obj.OBJModel.OBJProperty;
-import net.minecraftforge.client.model.obj.OBJModel.OBJState;
 import net.minecraftforge.common.model.IModelState;
 import net.minecraftforge.common.model.TRSRTransformation;
 import net.minecraftforge.common.property.IExtendedBlockState;
@@ -232,7 +232,7 @@ public class TransmitterModel extends OBJBakedModelBase {
 
     @Nonnull
     @Override
-    public Pair<? extends IBakedModel, Matrix4f> handlePerspective(ItemCameraTransforms.TransformType cameraTransformType) {
+    public Pair<? extends IBakedModel, Matrix4f> handlePerspective(@Nonnull ItemCameraTransforms.TransformType cameraTransformType) {
         return Pair.of(this, transforms.get(cameraTransformType).getMatrix());
     }
 

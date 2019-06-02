@@ -11,6 +11,9 @@ import mekanism.common.ColourRGBA;
 import mekanism.common.tile.transmitter.TileEntityTransmitter;
 import mekanism.common.util.MekanismUtils;
 import mekanism.common.util.MekanismUtils.ResourceType;
+import mekanism.repack.forge.OBJLoader;
+import mekanism.repack.forge.OBJModel;
+import mekanism.repack.forge.OBJModel.OBJState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -21,9 +24,6 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.Attributes;
-import net.minecraftforge.client.model.obj.OBJLoader;
-import net.minecraftforge.client.model.obj.OBJModel;
-import net.minecraftforge.client.model.obj.OBJModel.OBJState;
 import net.minecraftforge.client.model.pipeline.LightUtil;
 import org.lwjgl.opengl.GL11;
 
@@ -38,7 +38,7 @@ public abstract class RenderTransmitterBase<T extends TileEntityTransmitter> ext
     public RenderTransmitterBase() {
         if (contentsModel == null) {
             try {
-                contentsModel = (OBJModel) OBJLoader.INSTANCE.loadModel(MekanismUtils.getResource(ResourceType.MODEL, "transmitter_contents.obj"));
+                contentsModel = OBJLoader.INSTANCE.loadModel(MekanismUtils.getResource(ResourceType.MODEL, "transmitter_contents.obj"));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

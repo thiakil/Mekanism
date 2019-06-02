@@ -8,6 +8,10 @@ import java.util.function.Function;
 import javax.annotation.Nonnull;
 import mekanism.client.render.obj.MekanismOBJModel.OBJModelType;
 import mekanism.common.Mekanism;
+import mekanism.repack.forge.OBJLoader;
+import mekanism.repack.forge.OBJModel;
+import mekanism.repack.forge.OBJModel.OBJBakedModel;
+import mekanism.repack.forge.OBJModel.OBJState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -22,10 +26,6 @@ import net.minecraftforge.client.model.ICustomModelLoader;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
-import net.minecraftforge.client.model.obj.OBJLoader;
-import net.minecraftforge.client.model.obj.OBJModel;
-import net.minecraftforge.client.model.obj.OBJModel.OBJBakedModel;
-import net.minecraftforge.client.model.obj.OBJModel.OBJState;
 import net.minecraftforge.common.model.IModelState;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -54,8 +54,8 @@ public class MekanismOBJLoader implements ICustomModelLoader {
             Function<ResourceLocation, TextureAtlasSprite> textureGetter = location -> Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(location.toString());
 
             ResourceLocation modelLocation = new ResourceLocation(name);
-            OBJModel objModel = (OBJModel) OBJLoader.INSTANCE.loadModel(modelLocation);
-            objModel = (OBJModel) objModel.process(flipData);
+            OBJModel objModel = OBJLoader.INSTANCE.loadModel(modelLocation);
+            objModel = objModel.process(flipData);
             ImmutableMap.Builder<String, TextureAtlasSprite> builder = ImmutableMap.builder();
             builder.put(ModelLoader.White.LOCATION.toString(), ModelLoader.White.INSTANCE);
             TextureAtlasSprite missing = textureGetter.apply(new ResourceLocation("missingno"));
@@ -88,15 +88,13 @@ public class MekanismOBJLoader implements ICustomModelLoader {
     public IModel loadModel(@Nonnull ResourceLocation loc) throws Exception {
         ResourceLocation file = new ResourceLocation(loc.getNamespace(), loc.getPath());
         if (!modelCache.containsKey(file)) {
-            IModel model = OBJLoader.INSTANCE.loadModel(file);
-            if (model instanceof OBJModel) {
-                if (file.getPath().contains("glow_panel")) {
-                    MekanismOBJModel mekModel = new MekanismOBJModel(OBJModelType.GLOW_PANEL, ((OBJModel) model).getMatLib(), file);
-                    modelCache.put(file, mekModel);
-                } else if (file.getPath().contains("transmitter")) {
-                    MekanismOBJModel mekModel = new MekanismOBJModel(OBJModelType.TRANSMITTER, ((OBJModel) model).getMatLib(), file);
-                    modelCache.put(file, mekModel);
-                }
+            OBJModel model = OBJLoader.INSTANCE.loadModel(file);
+            if (file.getPath().contains("glow_panel")) {
+                MekanismOBJModel mekModel = new MekanismOBJModel(OBJModelType.GLOW_PANEL, model.getMatLib(), file);
+                modelCache.put(file, mekModel);
+            } else if (file.getPath().contains("transmitter")) {
+                MekanismOBJModel mekModel = new MekanismOBJModel(OBJModelType.TRANSMITTER, model.getMatLib(), file);
+                modelCache.put(file, mekModel);
             }
         }
 

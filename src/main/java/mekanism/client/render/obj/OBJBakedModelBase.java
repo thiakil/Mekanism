@@ -2,8 +2,6 @@ package mekanism.client.render.obj;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -13,9 +11,17 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.vecmath.Matrix4f;
 import mekanism.client.render.MekanismRenderer;
-import mekanism.common.Mekanism;
+import mekanism.repack.forge.OBJModel;
+import mekanism.repack.forge.OBJModel.Face;
+import mekanism.repack.forge.OBJModel.Group;
+import mekanism.repack.forge.OBJModel.Normal;
+import mekanism.repack.forge.OBJModel.OBJBakedModel;
+import mekanism.repack.forge.OBJModel.OBJState;
+import mekanism.repack.forge.OBJModel.TextureCoordinate;
+import mekanism.repack.forge.OBJModel.Vertex;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
@@ -24,14 +30,6 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.client.model.obj.OBJModel;
-import net.minecraftforge.client.model.obj.OBJModel.Face;
-import net.minecraftforge.client.model.obj.OBJModel.Group;
-import net.minecraftforge.client.model.obj.OBJModel.Normal;
-import net.minecraftforge.client.model.obj.OBJModel.OBJBakedModel;
-import net.minecraftforge.client.model.obj.OBJModel.OBJState;
-import net.minecraftforge.client.model.obj.OBJModel.TextureCoordinate;
-import net.minecraftforge.client.model.obj.OBJModel.Vertex;
 import net.minecraftforge.client.model.pipeline.LightUtil;
 import net.minecraftforge.client.model.pipeline.UnpackedBakedQuad;
 import net.minecraftforge.common.model.IModelState;
@@ -39,24 +37,11 @@ import net.minecraftforge.common.model.TRSRTransformation;
 
 public abstract class OBJBakedModelBase extends OBJBakedModel {
 
-    private static Method m_updateStateVisibilityMap;
-    private static Field f_textures;
     protected IBakedModel baseModel;
     protected TextureAtlasSprite tempSprite = ModelLoader.White.INSTANCE;
     protected VertexFormat vertexFormat;
     protected ImmutableMap<String, TextureAtlasSprite> textureMap;
     protected Map<TransformType, Matrix4f> transformationMap;
-
-    static {
-        try {
-            f_textures = OBJBakedModel.class.getDeclaredField("textures");
-            f_textures.setAccessible(true);
-            m_updateStateVisibilityMap = OBJBakedModel.class.getDeclaredMethod("updateStateVisibilityMap", OBJState.class);
-            m_updateStateVisibilityMap.setAccessible(true);
-        } catch (ReflectiveOperationException e){
-            throw new RuntimeException("Could not set up reflection helpers", e);
-        }
-    }
 
     public OBJBakedModelBase(IBakedModel base, OBJModel model, IModelState state, VertexFormat format, ImmutableMap<String, TextureAtlasSprite> textures,
           Map<TransformType, Matrix4f> transform) {
@@ -108,19 +93,9 @@ public abstract class OBJBakedModelBase extends OBJBakedModel {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public static ImmutableMap<String, TextureAtlasSprite> getTexturesForOBJModel(IBakedModel model) {
-        try {
-            return (ImmutableMap<String, TextureAtlasSprite>) f_textures.get(model);
-        } catch (ReflectiveOperationException | ClassCastException e) {
-            Mekanism.logger.error("Could not get private field textures", e);
-        }
-        return ImmutableMap.of();
-    }
-
     @Nonnull
     @Override
-    public List<BakedQuad> getQuads(IBlockState blockState, EnumFacing side, long rand) {
+    public List<BakedQuad> getQuads(@Nullable IBlockState blockState, @Nullable EnumFacing side, long rand) {
         if (side != null) {
             return ImmutableList.of();
         }
@@ -204,15 +179,6 @@ public abstract class OBJBakedModelBase extends OBJBakedModel {
             bakedQuads.add(quad);
         }
         return bakedQuads;
-    }
-
-    @SuppressWarnings("deprecation")
-    protected void updateStateVisibilityMap(OBJState state) {
-        try {
-            m_updateStateVisibilityMap.invoke(this, state);
-        } catch (ReflectiveOperationException | ClassCastException e) {
-            Mekanism.logger.error("Could not get private field updateStateVisibilityMap", e);
-        }
     }
 
     @Nonnull

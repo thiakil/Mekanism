@@ -12,6 +12,8 @@ import javax.vecmath.Vector3f;
 import mekanism.api.EnumColor;
 import mekanism.common.block.property.PropertyColor;
 import mekanism.common.tile.TileEntityGlowPanel;
+import mekanism.repack.forge.OBJModel;
+import mekanism.repack.forge.OBJModel.Face;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -29,8 +31,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.client.model.obj.OBJModel;
-import net.minecraftforge.client.model.obj.OBJModel.Face;
 import net.minecraftforge.common.model.IModelState;
 import net.minecraftforge.common.model.TRSRTransformation;
 import net.minecraftforge.common.property.IExtendedBlockState;
@@ -119,7 +119,7 @@ public class GlowPanelModel extends OBJBakedModelBase {
 
     @Nonnull
     @Override
-    public Pair<? extends IBakedModel, Matrix4f> handlePerspective(ItemCameraTransforms.TransformType transformType) {
+    public Pair<? extends IBakedModel, Matrix4f> handlePerspective(@Nonnull ItemCameraTransforms.TransformType transformType) {
         if (transformType == TransformType.GUI) {
             GlStateManager.rotate(180, 1, 0, 0);
             ForgeHooksClient.multiplyCurrentGlMatrix(transforms.get(transformType).getMatrix());
