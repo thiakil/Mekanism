@@ -1,5 +1,6 @@
 package mekanism.api.providers;
 
+import java.util.Objects;
 import javax.annotation.Nonnull;
 import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
@@ -22,12 +23,14 @@ public interface IBlockProvider extends IItemProvider {
     }
 
     @Override
+    @Nonnull
     default ResourceLocation getRegistryName() {
         //Make sure to use the block's registry name in case it somehow doesn't match
-        return getBlock().getRegistryName();
+        return Objects.requireNonNull(getBlock().getRegistryName());
     }
 
     @Override
+    @Nonnull
     default String getTranslationKey() {
         return getBlock().getTranslationKey();
     }

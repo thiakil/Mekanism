@@ -5,16 +5,14 @@ import com.google.gson.JsonObject;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
-import vazkii.patchouli.api.PatchouliAPI;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class CategoryBuilder {
 
-	private final BookBuilder bookBuilder;
-	private final ResourceLocation id;
+	protected final BookBuilder bookBuilder;
+	protected final ResourceLocation id;
 	private final String name;
 	private final String description;
 	private final String icon;
@@ -24,11 +22,11 @@ public class CategoryBuilder {
 	private Integer sortnum;
 	private Boolean secret;
 
-	CategoryBuilder(String id, String name, String description, ItemStack icon, BookBuilder bookBuilder) {
-		this(id, name, description, PatchouliAPI.instance.serializeItemStack(icon), bookBuilder);
+	protected CategoryBuilder(String id, String name, String description, ItemStack icon, BookBuilder bookBuilder) {
+		this(id, name, description, ItemStackUtils.serializeStack(icon), bookBuilder);
 	}
 
-	CategoryBuilder(String id, String name, String description, String icon, BookBuilder bookBuilder) {
+	protected CategoryBuilder(String id, String name, String description, String icon, BookBuilder bookBuilder) {
 		this.bookBuilder = bookBuilder;
 		this.id = new ResourceLocation(bookBuilder.getId().getNamespace(), id);
 		this.name = name;

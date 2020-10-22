@@ -5,8 +5,6 @@ import com.google.gson.JsonObject;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
-import vazkii.patchouli.api.PatchouliAPI;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -229,7 +227,7 @@ public class BookBuilder {
 	}
 
 	public BookBuilder setIndexIcon(ItemStack indexIcon) {
-		this.indexIcon = PatchouliAPI.instance.serializeItemStack(indexIcon);
+		this.indexIcon = ItemStackUtils.serializeStack(indexIcon);
 		return this;
 	}
 
@@ -254,7 +252,7 @@ public class BookBuilder {
 	}
 
 	public BookBuilder setCustomBookItem(ItemStack customBookItem) {
-		this.customBookItem = PatchouliAPI.instance.serializeItemStack(customBookItem);
+		this.customBookItem = ItemStackUtils.serializeStack(customBookItem);
 		return this;
 	}
 

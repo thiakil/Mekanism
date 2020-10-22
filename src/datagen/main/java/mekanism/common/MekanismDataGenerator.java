@@ -5,8 +5,10 @@ import mekanism.client.model.MekanismItemModelProvider;
 import mekanism.client.sound.MekanismSoundProvider;
 import mekanism.client.state.MekanismBlockStateProvider;
 import mekanism.common.loot.MekanismLootProvider;
+import mekanism.common.patchouli.MekanismBookProvider;
 import mekanism.common.recipe.impl.MekanismRecipeProvider;
 import mekanism.common.tag.MekanismTagProvider;
+import mekanism.patchouli.MekanismMainBookProvider;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -39,5 +41,7 @@ public class MekanismDataGenerator {
             gen.addProvider(new MekanismLootProvider(gen));
             gen.addProvider(new MekanismRecipeProvider(gen));
         }
+        //Patchouli is used on both (but server only _needs_ the base book json)
+        gen.addProvider(new MekanismMainBookProvider(gen));
     }
 }

@@ -1,5 +1,6 @@
 package mekanism.api.providers;
 
+import java.util.Objects;
 import javax.annotation.Nonnull;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -35,11 +36,13 @@ public interface IItemProvider extends IBaseProvider, net.minecraft.util.IItemPr
     }
 
     @Override
+    @Nonnull
     default ResourceLocation getRegistryName() {
-        return getItem().getRegistryName();
+        return Objects.requireNonNull(getItem().getRegistryName());
     }
 
     @Override
+    @Nonnull
     default String getTranslationKey() {
         return getItem().getTranslationKey();
     }
