@@ -45,4 +45,8 @@ public abstract class AbstractPageBuilder<T extends AbstractPageBuilder<T>> {
 		this.anchor = anchor;
 		return (T) this;
 	}
+
+	public EntryBuilder getEntry() {
+		return this.parent;
+	}
 }

@@ -4,9 +4,9 @@ import com.google.gson.JsonObject;
 
 import net.minecraft.item.ItemStack;
 
-import vazkii.patchouli.api.PatchouliAPI;
 import vazkii.patchouli.api.data.AbstractPageBuilder;
 import vazkii.patchouli.api.data.EntryBuilder;
+import vazkii.patchouli.api.data.ItemStackUtils;
 
 public class SpotlightPageBuilder extends AbstractPageBuilder<SpotlightPageBuilder> {
 	private final String item;
@@ -16,7 +16,7 @@ public class SpotlightPageBuilder extends AbstractPageBuilder<SpotlightPageBuild
 
 	public SpotlightPageBuilder(ItemStack stack, EntryBuilder parent) {
 		super("spotlight", parent);
-		this.item = PatchouliAPI.instance.serializeItemStack(stack);
+		this.item = ItemStackUtils.serializeStack(stack);
 	}
 
 	@Override
