@@ -93,70 +93,99 @@ class MekanismMainBookProvider(generator: DataGenerator): BasePatchouliProvider(
                     }
                     ARMORED_JETPACK("The Armored Jetpack is an upgraded version of the ${link(JETPACK, "Jetpack")}. It is intended to provide 12 armor points, offering slightly better protection than a Diamond Chestplate with Protection IV. Numbers accurate as of Minecraft 1.7.10")
                     SCUBA_TANK("A piece of equipment worn in the chest armor slot that provides underwater respiration when a ${link(SCUBA_MASK, "Scuba Mask")} is worn. The Scuba Tank must be filled with Oxygen gas in order to function.") {
-                        //todo equipment desc
+                        +"When you first put on the Scuba Tank, its oxygen supply will be turned off. In order to use it underwater you must turn it on by using the ${MekanismKeyHandler.chestModeSwitchKey()} button. Also, you must have the Gas Mask equipped in the helmet armor slot or you won't be able to breathe and will start to drown."
+                        text {
+                            title = "Tips"
+                            text = "$(li)Any potion effect will instantly stop once you equip the Gas Mask and turn on the oxygen supply." +
+                                    "$(li)Be sure to turn the oxygen supply OFF when you are above surface, otherwise you'll waste oxygen." +
+                                    "$(li)Leave the oxygen supply on while underwater. You can't cheat to conserve oxygen by turning it on and off, because the oxygen will be consumed faster to refill the breath meter." +
+                                    "$(li)The Scuba Tank will not work in Airless dimensions in some other mods, such as the outer space dimensions in Galacticraft (Moon, Mars, etc.)."
+                        }
                     }
-                    SCUBA_MASK("The Scuba Mask is an utility head armor piece, used in conjunction with the ${link(SCUBA_TANK, "Scuba Tank")} to breathe underwater.") {
-                        //todo equipment desc
-                    }
+                    SCUBA_MASK("The Scuba Mask is an utility head armor piece, used in conjunction with the ${link(SCUBA_TANK, "Scuba Tank")} to breathe underwater.$(p)It can be enchanted with respiration and water breathing for extended use.")
                     CONFIGURATOR("The Configurator is a configuration tool for Mekanism machines & pipes.$(p)It comes with several different modes that you can switch between by sneaking and then pressing the Item Mode Switch Key (${MekanismKeyHandler.handModeSwitchKey()})") {
-                        //todo equipment desc
+                        text("Configurate") {
+                            text = "Mousing over a Mekanism machine or factory will show the color for that side, using the the Configuration Color Scheme. Right clicking will print a message announcing both the color and input/output mode. $(k:sneak) + Right Clicking will cycle through the valid colors for the given sub-mode."+
+                                    "$(li)Grey is no connection (neither in nor out)." +
+                                    "\$(li)Dark Red is input (items, gasses)." +
+                                    "\$(li)Dark Blue is output (items, gasses)." +
+                                    "\$(li)Green is for Energy input (items, cable)." +
+                                    "\$(li)Purple is Infusion item input (for the Metallurgic Infuser)" +
+                                    "\$(li)Yellow is for fluids (for the Pressurized Reaction Chamber)"
+                        }
+                        +("Additionally, you can interact with any of the cables, pipes, transporters, or tubes to set their connection type between machines/inventory and their redstone sensitivity. Right clicking on the center of the cable/pipe/transporter/tube will toggle sensitivity off/on (default is on). \$(k:sneak) + Right clicking on a segment between the center of the cable/etc. and machine will cycle between:" +
+                                "$(li)Normal" +
+                                "\$(li)Pull - try to take items, etc. from the machine" +
+                                "\$(li)Push - try to put items, etc., into the machine" +
+                                "\$(li)None - no connection. Will not try to push or pull items from the machine.")
+                        text("Empty") {
+                            text = "\$(k:sneak) + Right Clicking on the machine while in this mode will eject any and all items currently in the machine in random directions. It will not dump fluids or gasses."
+                        }
+                        text("Rotate") {
+                            text = "Right clicking on a face will have that set as \"forward\" while \$(k:sneak) + Right clicking will have that set as \"back\" The Energy Cube can have its top and bottom faces designated as \"forward.\""
+                        }
+                        text("Wrench") {
+                            text = "Behaves like a wrench from most other mods. Right click to rotate the machine clockwise on the ground, \$(k:sneak) + Right click to have the machine instantly pried loose as an item (works on cables and pipes, too!)"
+                        }
                     }
-                    ELECTRIC_BOW {
-                        //todo equipment desc
+                    ELECTRIC_BOW("Much like a normal bow, but uses energy instead of durability. Can also set arrows on fire (toggle with ${MekanismKeyHandler.handModeSwitchKey()}).")
+                    FLAMETHROWER("The Flamethrower is a ranged weapon which uses Hydrogen gas as its fuel. It is fairly effective against mobs as it deals damage when they are directly hit with the stream and sets them on fire. It is most effective on large groups of mobs, where the user can hose down the entire group with fuel at a short distance.") {
+                        text("Modes") {
+                            text = "You can switch between three fire modes using \$(k:sneak) + ${MekanismKeyHandler.handModeSwitchKey()}. The modes are" +
+                                    "$(li)\$(bold)Combat\$() - The default mode. Damages mobs and sets them on fire. Destroys any items on the ground. Does not set fire to blocks nor damage them." +
+                                    "$(li)\$(bold)Heat\$() - Same as combat, but blocks/items that have a smelter recipe will be instantly converted into it. For example you can fire a short burst at iron ore block and a single ingot of iron will be dropped.1\n" +
+                                    "$(li)\$(bold)Inferno\$() - Same as combat, but blocks that the stream hits will be hit with blast damage (like with creepers, ghasts, TNT) and will usually be destroyed. Nearby blocks will be set on fire."
+                        }
                     }
-                    FLAMETHROWER {
-                        //todo equipment desc
+                    FREE_RUNNERS("Free Runners are an item that allows players to ascend 1-block inclines automatically, as well as preventing fall damage as long as they are charged. A fall will reduce the item's charge, depending on how far the fall was.$(p)Can be toggled with ${MekanismKeyHandler.feetModeSwitchKey()}")
+                    NETWORK_READER ("Sends information about the targeted pipe network to chat.")
+                    PORTABLE_TELEPORTER("A player kept teleportation device. It can store power and like all Mekanism teleporters, energy drain increases with the distance the player teleports to.") {
+                        text {
+                            title = "Usage"
+                            text = "Right-clicking with this device in hand will open a GUI similar to that of the full Teleporter, allowing instant travel to any Teleporters that the player has set up. The Portable Teleporter is capable of multidimensional travel.$(p)Note that in order for the Portable Teleporter to be functional, the complete Teleporter Portal structure does $(bold)not$() need to be built; only the Teleporter block must be present (and supplied with power)."
+                        }
                     }
-                    FREE_RUNNERS {
-                        //todo equipment desc
-                    }
-                    NETWORK_READER {
-                        //todo equipment desc
-                    }
-                    PORTABLE_TELEPORTER {
-                        //todo equipment desc
-                    }
-                    SEISMIC_READER {
-                        //todo equipment desc
-                    }
+                    SEISMIC_READER ("The Seismic Reader is used in conjunction with the ${link(SEISMIC_VIBRATOR, "Seismic Vibrator")} to analyze the ground immediately around the vibrator, informing you of the blocks, by level, all the way to bedrock level.")
                 }
                 GuideCategory.ITEMS_METAL_AND_ORE {
                     name = "Metals & Ores"
                     description = "Ore/Metal processing based materials."
                     icon = PROCESSED_RESOURCES.get(ResourceType.INGOT, PrimaryResource.OSMIUM)
 
-                    BRONZE_DUST("")//todo
-                    BRONZE_INGOT("")//todo
-                    BRONZE_NUGGET("")//todo
-                    CHARCOAL_DUST("")//todo
-                    COAL_DUST("")//todo
-                    DIAMOND_DUST("")//todo
-                    EMERALD_DUST("")//todo
-                    ENRICHED_IRON("")//todo
-                    LAPIS_LAZULI_DUST("")//todo
-                    LITHIUM_DUST("")//todo
-                    OBSIDIAN_DUST("")//todo
-                    QUARTZ_DUST("")//todo
-                    REFINED_GLOWSTONE_INGOT("")//todo
-                    REFINED_GLOWSTONE_NUGGET("")//todo
-                    REFINED_OBSIDIAN_DUST("")//todo
-                    REFINED_OBSIDIAN_INGOT("")//todo
-                    REFINED_OBSIDIAN_NUGGET("")//todo
-                    STEEL_DUST("")//todo
-                    STEEL_INGOT("")//todo
-                    STEEL_NUGGET("")//todo
-                    SULFUR_DUST("")//todo
+                    BRONZE_DUST()
+                    BRONZE_INGOT()
+                    BRONZE_NUGGET()
+                    CHARCOAL_DUST()
+                    COAL_DUST()
+                    DIAMOND_DUST()
+                    EMERALD_DUST()
+                    ENRICHED_IRON()
+                    LAPIS_LAZULI_DUST()
+                    LITHIUM_DUST()
+                    OBSIDIAN_DUST()
+                    QUARTZ_DUST()
+                    REFINED_GLOWSTONE_INGOT()
+                    REFINED_GLOWSTONE_NUGGET()
+                    REFINED_OBSIDIAN_DUST()
+                    REFINED_OBSIDIAN_INGOT()
+                    REFINED_OBSIDIAN_NUGGET()
+                    STEEL_DUST()
+                    STEEL_INGOT()
+                    STEEL_NUGGET()
+                    SULFUR_DUST()
                 }
                 GuideCategory.ITEMS_UPGRADES {
                     name = "Upgrades"
-                    description = "You gotta pump up them numbers, rookie. Increase various abilities of machines with these items."
+                    description = "You gotta pump up them numbers, rookie. Increase various abilities of machines with these items.$(br)Insert via the machine's GUI, Upgrades tab."
                     icon = SPEED_UPGRADE
 
-                    SPEED_UPGRADE("")//todo
-                    ENERGY_UPGRADE("")//todo
-                    FILTER_UPGRADE("")//todo
-                    MUFFLING_UPGRADE("")//todo
-                    GAS_UPGRADE("")//todo
+                    SPEED_UPGRADE("An upgrade to increate the running speed of a machine.") {
+                        +"Note that every speed upgrade makes the machine 33% faster, and the Power Usage increases with ~77% (33²%), which makes for an increase in power usage for each operation with 33%.$(p)$(bold)The machine must have enough buffer to run one operation or it will not run at all."
+                    }
+                    ENERGY_UPGRADE("Upgrades the energy buffer of a machine and reduces its per-operation consumption.$(p)The ${link(ELECTROLYTIC_SEPARATOR, "Electrolytic Separator")} only receives a buffer increase.")
+                    FILTER_UPGRADE("The Filter Upgrade is an upgrade that, when used in the ${link(ELECTRIC_PUMP, "Electric Pump")}, allows the Electric Pump to produce Heavy Water.")
+                    MUFFLING_UPGRADE("Reduces the sound produced by a machine.")
+                    GAS_UPGRADE("The gas upgrade allows you to increase the gas usage efficiency of a Mekanism machine which consumes gas.")
                     ANCHOR_UPGRADE("The Anchor Upgrade is a machine upgrade which keeps the chunk of the machine to which it is applied loaded. This is helpful for machines like the Digital Miner and Teleporter which must be in loaded chunks to function properly.$(p)$(bold)Compatible machines$()$(li)${link(DIGITAL_MINER, "Digital Miner")}$(li)${link(QUANTUM_ENTANGLOPORTER, "Quantum Entangloporter")}$(li)${link(GuideEntry.TELEPORTER, "Teleporter")}")
                 }
 

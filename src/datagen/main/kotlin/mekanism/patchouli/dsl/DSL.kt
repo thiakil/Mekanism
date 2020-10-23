@@ -520,6 +520,14 @@ class Entry(
     }
 
     @PatchouliDSL
+    fun text(title: String, init: TextPage.() -> Unit) {
+        this.pages.add(TextPage().also {
+            it.title = title
+            it.init()
+        })
+    }
+
+    @PatchouliDSL
     operator fun String.unaryPlus(){
         text { text = this@unaryPlus }
     }
