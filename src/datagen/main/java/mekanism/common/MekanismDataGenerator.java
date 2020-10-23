@@ -5,7 +5,6 @@ import mekanism.client.model.MekanismItemModelProvider;
 import mekanism.client.sound.MekanismSoundProvider;
 import mekanism.client.state.MekanismBlockStateProvider;
 import mekanism.common.loot.MekanismLootProvider;
-import mekanism.common.patchouli.MekanismBookProvider;
 import mekanism.common.recipe.impl.MekanismRecipeProvider;
 import mekanism.common.tag.MekanismTagProvider;
 import mekanism.patchouli.MekanismMainBookProvider;

@@ -266,7 +266,7 @@ class MekanismMainBookProvider(generator: DataGenerator): BasePatchouliProvider(
                 GuideEntry.TANKS_GAS {
                     name = "Chemical Tanks"
                     icon = BASIC_CHEMICAL_TANK
-                    +"Gas Tanks are Mekanism's batteries for storing Gases. They can be placed as a block and interact with Pressurized Tubes. They come in four tiers, each increasing the storage capacity and output rate."
+                    +"Chemical Tanks are Mekanism's batteries for storing Gases and other chemicals. They can be placed as a block and interact with Pressurized Tubes. They come in four tiers, each increasing the storage capacity and output rate."
                     spotlight(BASIC_CHEMICAL_TANK)
                     spotlight(ADVANCED_CHEMICAL_TANK)
                     spotlight(ELITE_CHEMICAL_TANK)
