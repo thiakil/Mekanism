@@ -229,6 +229,9 @@ minecraft {
                     source(sourceSets.tools)
                 }
             }
+
+            //For Mixin in other mods / Patchouli
+            property 'mixin.env.disableRefMap', 'true'
         }
 
         server {
@@ -251,6 +254,9 @@ minecraft {
                     source(sourceSets.tools)
                 }
             }
+
+            //For Mixin in other mods / Patchouli
+            property 'mixin.env.disableRefMap', 'true'
         }
 
         data {
@@ -289,6 +295,9 @@ minecraft {
                     sources(sourceSets.tools, sourceSets.datagentools)
                 }
             }
+
+            //For Mixin in other mods / Patchouli
+            property 'mixin.env.disableRefMap', 'true'
         }
     }
 }
