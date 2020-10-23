@@ -236,6 +236,9 @@ minecraft {
                 mekanismgenerators.source((SourceSet) sourceSets.generators)
                 mekanismtools.source((SourceSet) sourceSets.tools)
             }
+
+            //For Mixin in other mods / Patchouli
+            property 'mixin.env.disableRefMap', 'true'
         }
 
         server {
@@ -248,6 +251,9 @@ minecraft {
                 mekanismgenerators.source((SourceSet) sourceSets.generators)
                 mekanismtools.source((SourceSet) sourceSets.tools)
             }
+
+            //For Mixin in other mods / Patchouli
+            property 'mixin.env.disableRefMap', 'true'
         }
 
         data {
@@ -276,6 +282,9 @@ minecraft {
                 mekanismgenerators.sources((SourceSet[]) [sourceSets.generators, sourceSets.datagengenerators])
                 mekanismtools.sources((SourceSet[]) [sourceSets.tools, sourceSets.datagentools])
             }
+
+            //For Mixin in other mods / Patchouli
+            property 'mixin.env.disableRefMap', 'true'
         }
     }
 }
