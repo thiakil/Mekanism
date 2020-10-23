@@ -15,7 +15,6 @@ import net.minecraft.item.ItemStack
 import net.minecraft.nbt.CompoundNBT
 import net.minecraft.util.ResourceLocation
 import org.apache.logging.log4j.LogManager
-import vazkii.patchouli.api.data.ItemStackUtils
 
 fun JsonObject.addProperty(name: String, res: ResourceLocation) {
     addProperty(name, res.toString())
