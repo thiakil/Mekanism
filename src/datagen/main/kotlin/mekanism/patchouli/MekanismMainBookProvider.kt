@@ -68,15 +68,15 @@ class MekanismMainBookProvider(generator: DataGenerator): BasePatchouliProvider(
                     ATOMIC_DISASSEMBLER("The Atomic Disassembler is Mekanism's an all-in-one tool, essentially the ultimate, electronic version of the Paxel (working at any mining level). Also functions as a Hoe & Scoop (Forestry)$(p)The Atomic Disassembler has multiple modes that can be cycled with $(k:sneak) + right click.") {
                         text {
                             title = "Normal Mode"
-                            text = "Base speed setting, single block.$(li)Roughly equivalent to Efficiency II.$(li)Right click Dirt to till a 3x3 area to Farmland$(li)Right click grass to make a 3x3 Grass Path, right click again to till"
+                            text = "Base speed setting, single block, roughly equivalent to Efficiency II.$(p)Farmland tilling and Grass Path functions have been moved to the MekaTool Farming Module"
                         }
                         text {
                             title = "Slow Mode"
-                            text = "Slower than Normal Mode.$(li)Right click functions of Normal act on 1 block$(li)Less power usage"
+                            text = "Slower than Normal Mode, less power usage"
                         }
                         text {
                             title = "Fast Mode"
-                            text = "Super mode.$(li)Roughly equivalent to Efficiency V$(li)More power usage$(li)Right click functions of Normal act on 5x5"
+                            text = "Super mode, roughly equivalent to Efficiency V. Uses more energy to function."
                         }
                         text {
                             title = "Vein Mode"
