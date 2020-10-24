@@ -38,7 +38,7 @@ public interface IItemProvider extends IBaseProvider, net.minecraft.util.IItemPr
     @Nonnull
     @Override
     default ResourceLocation getRegistryName() {
-        return Objects.requireNonNull(getItem().getRegistryName());
+        return Objects.requireNonNull(getItem().getRegistryName(), "Unregistered Item");
     }
 
     @Nonnull

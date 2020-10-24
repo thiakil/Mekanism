@@ -26,7 +26,7 @@ public interface IBlockProvider extends IItemProvider {
     @Override
     default ResourceLocation getRegistryName() {
         //Make sure to use the block's registry name in case it somehow doesn't match
-        return Objects.requireNonNull(getBlock().getRegistryName());
+        return Objects.requireNonNull(getBlock().getRegistryName(), "Unregistered Block");
     }
 
     @Nonnull
