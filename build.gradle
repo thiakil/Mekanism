@@ -81,9 +81,11 @@ sourceSets {
 }
 
 // no kotlin for the main mod
+sourceSets.api.kotlin.srcDirs.removeAll()
 sourceSets.main.kotlin.srcDirs.removeAll()
 sourceSets.additions.kotlin.srcDirs.removeAll()
 sourceSets.defense.kotlin.srcDirs.removeAll()
+sourceSets.generators.kotlin.srcDirs.removeAll()
 sourceSets.tools.kotlin.srcDirs.removeAll()
 
 //This method sets up an additional sourceset in src/$name and adds a reference to the corresponding
