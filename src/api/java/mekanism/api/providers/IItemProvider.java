@@ -35,14 +35,14 @@ public interface IItemProvider extends IBaseProvider, net.minecraft.util.IItemPr
         return getItem() == other;
     }
 
-    @Override
     @Nonnull
+    @Override
     default ResourceLocation getRegistryName() {
         return Objects.requireNonNull(getItem().getRegistryName());
     }
 
-    @Override
     @Nonnull
+    @Override
     default String getTranslationKey() {
         return getItem().getTranslationKey();
     }

@@ -22,15 +22,15 @@ public interface IBlockProvider extends IItemProvider {
         return getBlock() == other;
     }
 
-    @Override
     @Nonnull
+    @Override
     default ResourceLocation getRegistryName() {
         //Make sure to use the block's registry name in case it somehow doesn't match
         return Objects.requireNonNull(getBlock().getRegistryName());
     }
 
-    @Override
     @Nonnull
+    @Override
     default String getTranslationKey() {
         return getBlock().getTranslationKey();
     }
