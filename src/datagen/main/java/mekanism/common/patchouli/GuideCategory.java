@@ -15,7 +15,8 @@ public enum GuideCategory {
     ITEMS_UPGRADES,
     BLOCKS,
     MULTIBLOCKS,
-    ORE_PROCESSING
+    ORE_PROCESSING,
+    CHEMICALS
     ;
 
     public final String id;

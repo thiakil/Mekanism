@@ -42,6 +42,22 @@ public enum GuideEntry {
 
     GENERATORS_TURBINE("multiblocks", "industrial_turbine"),
     GENERATORS_FUSION("multiblocks", "fusion_reactor"),
+
+    CHEMICAL_HYDROGEN("chemicals", "hydrogen"),
+    CHEMICAL_OXYGEN("chemicals", "oxygen"),
+    CHEMICAL_CHLORINE("chemicals", "chlorine"),
+    CHEMICAL_HYDROGEN_CHLORIDE("chemicals", "hydrogen_chloride"),
+    CHEMICAL_SULFUR_DIOXIDE("chemicals", "sulfur_dioxide"),
+    CHEMICAL_SULFUR_TRIOXIDE("chemicals", "sulfur_trioxide"),
+    CHEMICAL_BRINE("chemicals", "gaseous_brine"),
+    CHEMICAL_WATER_VAPOR("chemicals", "water_vapor"),
+    CHEMICAL_SULFURIC_ACID("chemicals", "sulfuric_acid"),
+    CHEMICAL_ETHYLENE("chemicals", "ethylene"),
+    CHEMICAL_DEUTERIUM("chemicals", "deuterium"),
+    CHEMICAL_TRITIUM("chemicals", "tritium"),
+    CHEMICAL_DT_FUEL("chemicals", "dt_fuel"),
+    CHEMICAL_LITHIUM("chemicals", "lithium"),
+    CHEMICAL_SODIUM("chemicals", "sodium")
     ;
 
     static {
