@@ -5,6 +5,7 @@ import mekanism.common.Mekanism
 import mekanism.common.MekanismLang
 import mekanism.common.patchouli.GuideCategory
 import mekanism.common.patchouli.GuideEntry
+import mekanism.common.registries.MekanismBlocks
 import mekanism.common.registries.MekanismBlocks.*
 import mekanism.common.registries.MekanismItems.*
 import mekanism.common.resource.OreType
