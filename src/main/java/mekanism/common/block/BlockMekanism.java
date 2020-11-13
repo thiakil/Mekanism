@@ -33,7 +33,7 @@ import mekanism.common.tile.interfaces.ISustainedData;
 import mekanism.common.tile.interfaces.ISustainedInventory;
 import mekanism.common.util.EnumUtils;
 import mekanism.common.util.ItemDataUtils;
-import mekanism.common.util.MekanismUtils;
+import mekanism.common.util.WorldUtils;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -95,15 +95,15 @@ public abstract class BlockMekanism extends Block {
     @Override
     public ItemStack getPickBlock(@Nonnull BlockState state, RayTraceResult target, @Nonnull IBlockReader world, @Nonnull BlockPos pos, PlayerEntity player) {
         ItemStack itemStack = new ItemStack(this);
-        TileEntityMekanism tile = MekanismUtils.getTileEntity(TileEntityMekanism.class, world, pos);
+        TileEntityMekanism tile = WorldUtils.getTileEntity(TileEntityMekanism.class, world, pos);
         if (tile == null) {
             return itemStack;
         }
         Item item = itemStack.getItem();
         if (item instanceof ISecurityItem && tile.hasSecurity()) {
             ISecurityItem securityItem = (ISecurityItem) item;
-            securityItem.setOwnerUUID(itemStack, tile.getSecurity().getOwnerUUID());
-            securityItem.setSecurity(itemStack, tile.getSecurity().getMode());
+            securityItem.setOwnerUUID(itemStack, tile.getOwnerUUID());
+            securityItem.setSecurity(itemStack, tile.getSecurityMode());
         }
         if (tile.supportsUpgrades()) {
             tile.getComponent().write(ItemDataUtils.getDataMap(itemStack));
@@ -228,7 +228,7 @@ public abstract class BlockMekanism extends Block {
 
     @Override
     public void onBlockPlacedBy(@Nonnull World world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nullable LivingEntity placer, @Nonnull ItemStack stack) {
-        TileEntityMekanism tile = MekanismUtils.getTileEntity(TileEntityMekanism.class, world, pos);
+        TileEntityMekanism tile = WorldUtils.getTileEntity(TileEntityMekanism.class, world, pos);
         if (tile == null) {
             return;
         }
@@ -247,15 +247,16 @@ public abstract class BlockMekanism extends Block {
         }
         if (item instanceof ISecurityItem && tile.hasSecurity()) {
             ISecurityItem securityItem = (ISecurityItem) item;
-            tile.getSecurity().setMode(securityItem.getSecurity(stack));
+            tile.setSecurityMode(securityItem.getSecurity(stack));
             UUID ownerUUID = securityItem.getOwnerUUID(stack);
             if (ownerUUID != null) {
                 tile.getSecurity().setOwnerUUID(ownerUUID);
             } else if (placer != null) {
                 tile.getSecurity().setOwnerUUID(placer.getUniqueID());
-            }
-            if (!world.isRemote && placer != null) {
-                Mekanism.packetHandler.sendToAll(new PacketSecurityUpdate(placer.getUniqueID(), null));
+                if (!world.isRemote) {
+                    //If the machine doesn't already have an owner, make sure we portray this
+                    Mekanism.packetHandler.sendToAll(new PacketSecurityUpdate(placer.getUniqueID(), null));
+                }
             }
         }
         if (tile.supportsUpgrades()) {
@@ -311,7 +312,7 @@ public abstract class BlockMekanism extends Block {
     @Deprecated
     public void onBlockAdded(BlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull BlockState oldState, boolean isMoving) {
         if (state.hasTileEntity() && oldState.getBlock() != state.getBlock()) {
-            TileEntityMekanism tile = MekanismUtils.getTileEntity(TileEntityMekanism.class, world, pos);
+            TileEntityMekanism tile = WorldUtils.getTileEntity(TileEntityMekanism.class, world, pos);
             if (tile != null) {
                 tile.onAdded();
             }
@@ -323,7 +324,7 @@ public abstract class BlockMekanism extends Block {
     @Deprecated
     public void onReplaced(BlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull BlockState newState, boolean isMoving) {
         if (state.hasTileEntity() && (!state.isIn(newState.getBlock()) || !newState.hasTileEntity())) {
-            TileEntity tile = MekanismUtils.getTileEntity(world, pos);
+            TileEntity tile = WorldUtils.getTileEntity(world, pos);
             if (tile instanceof IBoundingBlock) {
                 ((IBoundingBlock) tile).onBreak(state);
             }
@@ -341,7 +342,7 @@ public abstract class BlockMekanism extends Block {
     @Deprecated
     public int getComparatorInputOverride(@Nonnull BlockState blockState, @Nonnull World world, @Nonnull BlockPos pos) {
         if (hasComparatorInputOverride(blockState)) {
-            TileEntity tile = MekanismUtils.getTileEntity(world, pos);
+            TileEntity tile = WorldUtils.getTileEntity(world, pos);
             //Double check the tile actually has comparator support
             if (tile instanceof IComparatorSupport) {
                 IComparatorSupport comparatorTile = (IComparatorSupport) tile;

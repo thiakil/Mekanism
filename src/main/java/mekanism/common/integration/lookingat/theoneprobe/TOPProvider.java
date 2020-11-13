@@ -32,7 +32,7 @@ import mekanism.common.integration.lookingat.theoneprobe.TOPChemicalElement.Slur
 import mekanism.common.lib.multiblock.MultiblockData;
 import mekanism.common.tile.base.TileEntityUpdateable;
 import mekanism.common.util.CapabilityUtils;
-import mekanism.common.util.MekanismUtils;
+import mekanism.common.util.WorldUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tileentity.TileEntity;
@@ -85,10 +85,12 @@ public class TOPProvider implements IProbeInfoProvider, Function<ITheOneProbe, V
             BlockPos mainPos = BlockBounding.getMainBlockPos(world, pos);
             if (mainPos != null) {
                 pos = mainPos;
-                blockState = world.getBlockState(mainPos);
+                //If we end up needing the blockstate at some point lower down, then uncomment this line
+                // until we do though there is no point in bothering to query the world to get it
+                //blockState = world.getBlockState(mainPos);
             }
         }
-        TileEntity tile = MekanismUtils.getTileEntity(world, pos);
+        TileEntity tile = WorldUtils.getTileEntity(world, pos);
         if (tile != null) {
             TOPLookingAtHelper helper = new TOPLookingAtHelper(info);
             MultiblockData structure = LookingAtUtils.getMultiblock(tile);

@@ -9,15 +9,13 @@ import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.inventory.container.PlayerContainer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class ArmorSlot extends InsertableSlot {
 
     protected static final ResourceLocation[] ARMOR_SLOT_TEXTURES = new ResourceLocation[]{PlayerContainer.EMPTY_ARMOR_SLOT_BOOTS,
-                                                                                        PlayerContainer.EMPTY_ARMOR_SLOT_LEGGINGS,
-                                                                                        PlayerContainer.EMPTY_ARMOR_SLOT_CHESTPLATE,
-                                                                                        PlayerContainer.EMPTY_ARMOR_SLOT_HELMET};
+                                                                                           PlayerContainer.EMPTY_ARMOR_SLOT_LEGGINGS,
+                                                                                           PlayerContainer.EMPTY_ARMOR_SLOT_CHESTPLATE,
+                                                                                           PlayerContainer.EMPTY_ARMOR_SLOT_HELMET};
 
     private final EquipmentSlotType slotType;
 
@@ -46,7 +44,6 @@ public class ArmorSlot extends InsertableSlot {
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public Pair<ResourceLocation, ResourceLocation> getBackground() {
         return Pair.of(PlayerContainer.LOCATION_BLOCKS_TEXTURE, ARMOR_SLOT_TEXTURES[slotType.getIndex()]);
     }

@@ -31,7 +31,7 @@ public class GuiQIOTileFrequencySelect extends GuiQIOFrequencySelect<QIOFrequenc
     @Override
     public void init() {
         super.init();
-        addButton(new MekanismImageButton(this, getGuiLeft() + 6, getGuiTop() + 6, 14, getButtonLocation("back"),
+        addButton(new MekanismImageButton(this, guiLeft + 6, guiTop + 6, 14, getButtonLocation("back"),
               () -> Mekanism.packetHandler.sendToServer(new PacketGuiButtonPress(ClickedTileButton.BACK_BUTTON, (TileEntity) tile))));
     }
 
@@ -60,12 +60,12 @@ public class GuiQIOTileFrequencySelect extends GuiQIOFrequencySelect<QIOFrequenc
 
     @Override
     public String getOwnerUsername() {
-        return tile.getSecurity().getClientOwner();
+        return tile.getOwnerName();
     }
 
     @Override
     public UUID getOwnerUUID() {
-        return tile.getSecurity().getOwnerUUID();
+        return tile.getOwnerUUID();
     }
 
     @Override

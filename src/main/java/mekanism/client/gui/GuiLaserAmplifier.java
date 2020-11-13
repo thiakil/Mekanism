@@ -36,7 +36,7 @@ public class GuiLaserAmplifier extends GuiMekanismTile<TileEntityLaserAmplifier,
     public void init() {
         super.init();
         addButton(new GuiEnergyGauge(tile.getEnergyContainer(), GaugeType.STANDARD, this, 6, 10));
-        addButton(new GuiSecurityTab<>(this, tile));
+        addButton(new GuiSecurityTab(this, tile));
         addButton(new GuiRedstoneControlTab(this, tile));
         addButton(new GuiAmplifierTab(this, tile));
         addButton(timerField = new GuiTextField(this, 96, 28, 36, 11));
@@ -56,7 +56,7 @@ public class GuiLaserAmplifier extends GuiMekanismTile<TileEntityLaserAmplifier,
     @Override
     protected void drawForegroundText(@Nonnull MatrixStack matrix, int mouseX, int mouseY) {
         renderTitleText(matrix);
-        drawString(matrix, MekanismLang.INVENTORY.translate(), 8, (getYSize() - 96) + 2, titleTextColor());
+        drawString(matrix, playerInventory.getDisplayName(), playerInventoryTitleX, playerInventoryTitleY, titleTextColor());
         if (tile.time > 0) {
             drawString(matrix, MekanismLang.DELAY.translate(tile.time), 26, 30, titleTextColor());
         } else {

@@ -3,7 +3,6 @@ package mekanism.client.gui;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import javax.annotation.Nonnull;
 import mekanism.api.text.EnumColor;
 import mekanism.client.gui.element.bar.GuiVerticalPowerBar;
@@ -55,6 +54,7 @@ public class GuiTeleporter extends GuiMekanismTile<TileEntityTeleporter, Mekanis
             privateMode = teleporterFrequency.isPrivate();
         }
         ySize += 64;
+        titleY = 4;
         dynamicSlots = true;
     }
 
@@ -64,19 +64,19 @@ public class GuiTeleporter extends GuiMekanismTile<TileEntityTeleporter, Mekanis
         addButton(new GuiTeleporterStatus(this, () -> tile.getFrequency(FrequencyType.TELEPORTER) != null, () -> tile.status));
         addButton(new GuiRedstoneControlTab(this, tile));
         addButton(new GuiUpgradeTab(this, tile));
-        addButton(new GuiSecurityTab<>(this, tile));
+        addButton(new GuiSecurityTab(this, tile));
         addButton(new GuiVerticalPowerBar(this, tile.getEnergyContainer(), 158, 26));
         addButton(scrollList = new GuiTextScrollList(this, 27, 36, 122, 42));
 
-        addButton(publicButton = new TranslationButton(this, getGuiLeft() + 27, getGuiTop() + 14, 60, 20, MekanismLang.PUBLIC, () -> {
+        addButton(publicButton = new TranslationButton(this, guiLeft + 27, guiTop + 14, 60, 20, MekanismLang.PUBLIC, () -> {
             privateMode = false;
             updateButtons();
         }));
-        addButton(privateButton = new TranslationButton(this, getGuiLeft() + 89, getGuiTop() + 14, 60, 20, MekanismLang.PRIVATE, () -> {
+        addButton(privateButton = new TranslationButton(this, guiLeft + 89, guiTop + 14, 60, 20, MekanismLang.PRIVATE, () -> {
             privateMode = true;
             updateButtons();
         }));
-        addButton(setButton = new TranslationButton(this, getGuiLeft() + 27, getGuiTop() + 120, 50, 18, MekanismLang.BUTTON_SET, () -> {
+        addButton(setButton = new TranslationButton(this, guiLeft + 27, guiTop + 120, 50, 18, MekanismLang.BUTTON_SET, () -> {
             int selection = scrollList.getSelection();
             if (selection != -1) {
                 Frequency freq = privateMode ? tile.getPrivateCache(FrequencyType.TELEPORTER).get(selection) : tile.getPublicCache(FrequencyType.TELEPORTER).get(selection);
@@ -84,7 +84,7 @@ public class GuiTeleporter extends GuiMekanismTile<TileEntityTeleporter, Mekanis
             }
             updateButtons();
         }));
-        addButton(deleteButton = new TranslationButton(this, getGuiLeft() + 79, getGuiTop() + 120, 50, 18, MekanismLang.BUTTON_DELETE, () -> {
+        addButton(deleteButton = new TranslationButton(this, guiLeft + 79, guiTop + 120, 50, 18, MekanismLang.BUTTON_DELETE, () -> {
             int selection = scrollList.getSelection();
             if (selection != -1) {
                 Frequency freq = privateMode ? tile.getPrivateCache(FrequencyType.TELEPORTER).get(selection) : tile.getPublicCache(FrequencyType.TELEPORTER).get(selection);
@@ -94,7 +94,7 @@ public class GuiTeleporter extends GuiMekanismTile<TileEntityTeleporter, Mekanis
             updateButtons();
         }));
         addButton(new GuiSlot(SlotType.NORMAL, this, 131, 120).setRenderAboveSlots());
-        addButton(new ColorButton(this, getGuiLeft() + 132, getGuiTop() + 121, 16, 16, () -> {
+        addButton(new ColorButton(this, guiLeft + 132, guiTop + 121, 16, 16, () -> {
             TeleporterFrequency frequency = getFrequency();
             return frequency == null ? null : frequency.getColor();
         }, () -> sendColorUpdate(0), () -> sendColorUpdate(1)));
@@ -115,7 +115,7 @@ public class GuiTeleporter extends GuiMekanismTile<TileEntityTeleporter, Mekanis
     }
 
     private void updateButtons() {
-        if (getOwner() == null) {
+        if (tile.getOwnerUUID() == null) {
             return;
         }
         List<String> text = new ArrayList<>();
@@ -141,7 +141,7 @@ public class GuiTeleporter extends GuiMekanismTile<TileEntityTeleporter, Mekanis
                              tile.getPublicCache(FrequencyType.TELEPORTER).get(scrollList.getSelection());
             TeleporterFrequency teleporterFrequency = tile.getFrequency(FrequencyType.TELEPORTER);
             setButton.active = teleporterFrequency == null || !teleporterFrequency.equals(freq);
-            deleteButton.active = getOwner().equals(freq.getOwner());
+            deleteButton.active = tile.getOwnerUUID().equals(freq.getOwner());
         } else {
             setButton.active = false;
             deleteButton.active = false;
@@ -176,8 +176,8 @@ public class GuiTeleporter extends GuiMekanismTile<TileEntityTeleporter, Mekanis
 
     @Override
     protected void drawForegroundText(@Nonnull MatrixStack matrix, int mouseX, int mouseY) {
-        renderTitleText(matrix, 4);
-        drawString(matrix, OwnerDisplay.of(getOwner(), tile.getSecurity().getClientOwner()).getTextComponent(), 8, getYSize() - 92, titleTextColor());
+        renderTitleText(matrix);
+        drawString(matrix, OwnerDisplay.of(tile.getOwnerUUID(), tile.getOwnerName()).getTextComponent(), 8, ySize - 92, titleTextColor());
         ITextComponent frequencyComponent = MekanismLang.FREQUENCY.translate();
         drawString(matrix, frequencyComponent, 32, 81, titleTextColor());
         ITextComponent securityComponent = MekanismLang.SECURITY.translate("");
@@ -193,10 +193,6 @@ public class GuiTeleporter extends GuiMekanismTile<TileEntityTeleporter, Mekanis
         }
         drawTextScaledBound(matrix, MekanismLang.SET.translate(), 27, 104, titleTextColor(), 20);
         super.drawForegroundText(matrix, mouseX, mouseY);
-    }
-
-    private UUID getOwner() {
-        return tile.getSecurity().getOwnerUUID();
     }
 
     public void setFrequency(String freq) {

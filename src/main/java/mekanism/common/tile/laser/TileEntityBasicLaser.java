@@ -23,8 +23,8 @@ import mekanism.common.particle.LaserParticleData;
 import mekanism.common.registries.MekanismDamageSource;
 import mekanism.common.tile.base.TileEntityMekanism;
 import mekanism.common.util.CapabilityUtils;
-import mekanism.common.util.MekanismUtils;
 import mekanism.common.util.NBTUtils;
+import mekanism.common.util.WorldUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -189,7 +189,7 @@ public abstract class TileEntityBasicLaser extends TileEntityMekanism {
                     digging = result.getType() == Type.MISS ? null : hitPos;
                     diggingProgress = FloatingLong.ZERO;
                 }
-                Optional<ILaserReceptor> capability = CapabilityUtils.getCapability(MekanismUtils.getTileEntity(world, hitPos), Capabilities.LASER_RECEPTOR_CAPABILITY,
+                Optional<ILaserReceptor> capability = CapabilityUtils.getCapability(WorldUtils.getTileEntity(world, hitPos), Capabilities.LASER_RECEPTOR_CAPABILITY,
                       result.getFace()).resolve();
                 if (capability.isPresent() && !capability.get().canLasersDig()) {
                     //Give the energy to the receptor
@@ -202,8 +202,8 @@ public abstract class TileEntityBasicLaser extends TileEntityMekanism {
                         diggingProgress = diggingProgress.plusEqual(remainingEnergy);
                         if (diggingProgress.compareTo(MekanismConfig.general.laserEnergyNeededPerHardness.get().multiply(hardness)) >= 0) {
                             if (MekanismConfig.general.aestheticWorldDamage.get()) {
-                                MekFakePlayer.withFakePlayer((ServerWorld)world, to.getX(), to.getY(), to.getZ(), dummy-> {
-                                    dummy.setEmulatingUUID(getSecurity().getOwnerUUID());//pretend to be the owner
+                                MekFakePlayer.withFakePlayer((ServerWorld) world, to.getX(), to.getY(), to.getZ(), dummy -> {
+                                    dummy.setEmulatingUUID(getOwnerUUID());//pretend to be the owner
                                     BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(world, hitPos, hitState, dummy);
                                     if (!MinecraftForge.EVENT_BUS.post(event)) {
                                         handleBreakBlock(hitState, hitPos);
@@ -293,7 +293,7 @@ public abstract class TileEntityBasicLaser extends TileEntityMekanism {
     }
 
     protected void handleBreakBlock(BlockState state, BlockPos hitPos) {
-        Block.spawnDrops(state, world, hitPos, MekanismUtils.getTileEntity(world, hitPos));
+        Block.spawnDrops(state, world, hitPos, WorldUtils.getTileEntity(world, hitPos));
     }
 
     protected FloatingLong toFire() {

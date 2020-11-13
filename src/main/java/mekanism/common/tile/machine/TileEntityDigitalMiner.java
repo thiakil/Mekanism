@@ -10,9 +10,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.function.BiPredicate;
 import javax.annotation.Nonnull;
 import mekanism.api.Action;
@@ -66,6 +65,7 @@ import mekanism.common.util.ItemDataUtils;
 import mekanism.common.util.MekanismUtils;
 import mekanism.common.util.NBTUtils;
 import mekanism.common.util.StackUtils;
+import mekanism.common.util.WorldUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.Enchantments;
@@ -92,7 +92,6 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
-import org.apache.logging.log4j.core.jmx.Server;
 
 public class TileEntityDigitalMiner extends TileEntityMekanism implements ISustainedData, IChunkLoader, IAdvancedBoundingBlock, ITileFilterHolder<MinerFilter<?>>,
       IHasSortableFilters {
@@ -228,7 +227,8 @@ public class TileEntityDigitalMiner extends TileEntityMekanism implements ISusta
                                 it.remove();
                                 break;
                             }
-                            if (!world.isBlockPresent(pos) || world.isAirBlock(pos)) {
+                            Optional<BlockState> blockState = WorldUtils.getBlockState(world, pos);
+                            if (!blockState.isPresent() || blockState.get().isAir(world, pos)) {
                                 set.clear(index);
                                 if (set.cardinality() == 0) {
                                     it.remove();
@@ -238,7 +238,7 @@ public class TileEntityDigitalMiner extends TileEntityMekanism implements ISusta
                                 continue;
                             }
                             boolean hasFilter = false;
-                            BlockState state = world.getBlockState(pos);
+                            BlockState state = blockState.get();
                             for (MinerFilter<?> filter : filters) {
                                 if (filter.canFilter(state)) {
                                     hasFilter = true;
@@ -256,7 +256,7 @@ public class TileEntityDigitalMiner extends TileEntityMekanism implements ISusta
                                 continue;
                             }
 
-                            List<ItemStack> drops = getDrops(pos);
+                            List<ItemStack> drops = getDrops(state, pos);
                             if (canInsert(drops) && setReplace(pos, index)) {
                                 did = true;
                                 add(drops);
@@ -433,7 +433,7 @@ public class TileEntityDigitalMiner extends TileEntityMekanism implements ISusta
             missingStack = filter.replaceStack;
             return false;
         }
-        BlockState newState = MekFakePlayer.withFakePlayer((ServerWorld)world, this.pos.getX(), this.pos.getY(), this.pos.getZ(), fakePlayer ->
+        BlockState newState = MekFakePlayer.withFakePlayer((ServerWorld) world, this.pos.getX(), this.pos.getY(), this.pos.getZ(), fakePlayer ->
               StackUtils.getStateForPlacement(stack, pos, fakePlayer)
         );
         if (newState == null || !newState.isValidPosition(world, pos)) {
@@ -450,7 +450,7 @@ public class TileEntityDigitalMiner extends TileEntityMekanism implements ISusta
         }
         BlockState state = world.getBlockState(pos);
         return MekFakePlayer.withFakePlayer((ServerWorld) world, this.pos.getX(), this.pos.getY(), this.pos.getZ(), dummy -> {
-            dummy.setEmulatingUUID(getSecurity().getOwnerUUID());//pretend to be the owner
+            dummy.setEmulatingUUID(getOwnerUUID());//pretend to be the owner
             BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(world, pos, state, dummy);
             return !MinecraftForge.EVENT_BUS.post(event);
         });
@@ -555,11 +555,11 @@ public class TileEntityDigitalMiner extends TileEntityMekanism implements ISusta
     }
 
     private TileEntity getPullInv() {
-        return MekanismUtils.getTileEntity(getWorld(), getPos().up(2));
+        return WorldUtils.getTileEntity(getWorld(), getPos().up(2));
     }
 
     private TileEntity getEjectInv() {
-        return MekanismUtils.getTileEntity(world, getPos().up().offset(getOppositeDirection(), 2));
+        return WorldUtils.getTileEntity(world, getPos().up().offset(getOppositeDirection(), 2));
     }
 
     private void add(List<ItemStack> stacks) {
@@ -691,7 +691,7 @@ public class TileEntityDigitalMiner extends TileEntityMekanism implements ISusta
                     for (int z = -1; z <= +1; z++) {
                         if (x != 0 || y != 0 || z != 0) {
                             BlockPos boundingPos = pos.add(x, y, z);
-                            MekanismUtils.makeAdvancedBoundingBlock(world, boundingPos, pos);
+                            WorldUtils.makeAdvancedBoundingBlock(world, boundingPos, pos);
                             world.notifyNeighborsOfStateChange(boundingPos, getBlockType());
                         }
                     }
@@ -714,7 +714,7 @@ public class TileEntityDigitalMiner extends TileEntityMekanism implements ISusta
     }
 
     private TileEntity getEjectTile() {
-        return MekanismUtils.getTileEntity(getWorld(), getPos().up().offset(getOppositeDirection()));
+        return WorldUtils.getTileEntity(getWorld(), getPos().up().offset(getOppositeDirection()));
     }
 
     @Override
@@ -972,23 +972,22 @@ public class TileEntityDigitalMiner extends TileEntityMekanism implements ISusta
         NBTUtils.setIntIfPresent(tag, NBTConstants.MAX, this::setMaxY);
     }
 
-    private List<ItemStack> getDrops(BlockPos pos) {
-        BlockState state = this.getWorldNN().getBlockState(pos);
-        if (state.isAir(this.getWorldNN(), pos)) {
+    private List<ItemStack> getDrops(BlockState state, BlockPos pos) {
+        if (state.isAir(getWorldNN(), pos)) {
             return Collections.emptyList();
         }
         ItemStack stack = MekanismItems.ATOMIC_DISASSEMBLER.getItemStack();
         if (getSilkTouch()) {
             stack.addEnchantment(Enchantments.SILK_TOUCH, 1);
         }
-        return MekFakePlayer.withFakePlayer((ServerWorld)this.getWorldNN(), this.pos.getX(), this.pos.getY(), this.pos.getZ(), fakePlayer -> {
-            fakePlayer.setEmulatingUUID(getSecurity().getOwnerUUID());
-            LootContext.Builder lootContextBuilder = new LootContext.Builder((ServerWorld)this.getWorldNN())
-                  .withRandom(this.getWorldNN().rand)
+        return MekFakePlayer.withFakePlayer((ServerWorld) getWorldNN(), this.pos.getX(), this.pos.getY(), this.pos.getZ(), fakePlayer -> {
+            fakePlayer.setEmulatingUUID(getOwnerUUID());
+            LootContext.Builder lootContextBuilder = new LootContext.Builder((ServerWorld) getWorldNN())
+                  .withRandom(getWorldNN().rand)
                   .withParameter(LootParameters.field_237457_g_, Vector3d.copyCentered(pos))
                   .withParameter(LootParameters.TOOL, stack)
                   .withNullableParameter(LootParameters.THIS_ENTITY, fakePlayer)
-                  .withNullableParameter(LootParameters.BLOCK_ENTITY, MekanismUtils.getTileEntity(this.getWorldNN(), pos));
+                  .withNullableParameter(LootParameters.BLOCK_ENTITY, WorldUtils.getTileEntity(getWorldNN(), pos));
             return state.getDrops(lootContextBuilder);
         });
     }

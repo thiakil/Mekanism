@@ -10,7 +10,9 @@ import mekanism.common.capabilities.ItemCapabilityWrapper;
 import mekanism.common.capabilities.energy.BasicEnergyContainer;
 import mekanism.common.capabilities.energy.item.RateLimitEnergyHandler;
 import mekanism.common.item.block.ItemBlockTooltip;
+import mekanism.common.lib.security.ISecurityItem;
 import mekanism.common.registration.impl.ItemDeferredRegister;
+import mekanism.common.util.SecurityUtils;
 import mekanism.common.util.StorageUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -18,7 +20,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
-public class ItemBlockLaser extends ItemBlockTooltip<BlockTileModel<?, ?>> {
+public class ItemBlockLaser extends ItemBlockTooltip<BlockTileModel<?, ?>> implements ISecurityItem {
 
     public ItemBlockLaser(BlockTileModel<?, ?> block) {
         super(block, true, ItemDeferredRegister.getMekBaseProperties().maxStackSize(1));
@@ -26,6 +28,7 @@ public class ItemBlockLaser extends ItemBlockTooltip<BlockTileModel<?, ?>> {
 
     @Override
     public void addDetails(@Nonnull ItemStack stack, World world, @Nonnull List<ITextComponent> tooltip, boolean advanced) {
+        SecurityUtils.addSecurityTooltip(stack, tooltip);
         StorageUtils.addStoredEnergy(stack, tooltip, true);
     }
 

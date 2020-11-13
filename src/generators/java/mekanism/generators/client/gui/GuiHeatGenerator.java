@@ -32,9 +32,8 @@ public class GuiHeatGenerator extends GuiMekanismTile<TileEntityHeatGenerator, M
     public void init() {
         super.init();
         addButton(new GuiRedstoneControlTab(this, tile));
-        addButton(new GuiSecurityTab<>(this, tile));
-        addButton(new GuiEnergyTab(() -> Arrays.asList(
-              GeneratorsLang.PRODUCING_AMOUNT.translate(EnergyDisplay.of(tile.getProducingEnergy())),
+        addButton(new GuiSecurityTab(this, tile));
+        addButton(new GuiEnergyTab(() -> Arrays.asList(GeneratorsLang.PRODUCING_AMOUNT.translate(EnergyDisplay.of(tile.getProducingEnergy())),
               MekanismLang.MAX_OUTPUT.translate(EnergyDisplay.of(tile.getMaxOutput()))), this));
         addButton(new GuiFluidGauge(() -> tile.lavaTank, () -> tile.getFluidTanks(null), GaugeType.WIDE, this, 55, 18));
         addButton(new GuiVerticalPowerBar(this, tile.getEnergyContainer(), 164, 15));
@@ -49,7 +48,7 @@ public class GuiHeatGenerator extends GuiMekanismTile<TileEntityHeatGenerator, M
     @Override
     protected void drawForegroundText(@Nonnull MatrixStack matrix, int mouseX, int mouseY) {
         renderTitleText(matrix);
-        drawString(matrix, MekanismLang.INVENTORY.translate(), 8, (getYSize() - 96) + 2, titleTextColor());
+        drawString(matrix, playerInventory.getDisplayName(), playerInventoryTitleX, playerInventoryTitleY, titleTextColor());
         super.drawForegroundText(matrix, mouseX, mouseY);
     }
 }

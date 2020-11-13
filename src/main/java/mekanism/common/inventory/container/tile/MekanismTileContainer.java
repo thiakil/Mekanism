@@ -6,16 +6,16 @@ import javax.annotation.Nullable;
 import mekanism.api.inventory.IInventorySlot;
 import mekanism.common.inventory.container.IEmptyContainer;
 import mekanism.common.inventory.container.MekanismContainer;
+import mekanism.common.lib.security.ISecurityObject;
 import mekanism.common.registration.impl.ContainerTypeRegistryObject;
 import mekanism.common.tile.base.TileEntityMekanism;
-import mekanism.common.util.MekanismUtils;
+import mekanism.common.util.WorldUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 
@@ -44,6 +44,11 @@ public class MekanismTileContainer<TILE extends TileEntityMekanism> extends Meka
     }
 
     @Override
+    public ISecurityObject getSecurityObject() {
+        return getTileEntity();
+    }
+
+    @Override
     protected void openInventory(@Nonnull PlayerInventory inv) {
         if (tile != null) {
             tile.open(inv.player);
@@ -62,15 +67,8 @@ public class MekanismTileContainer<TILE extends TileEntityMekanism> extends Meka
         if (tile == null) {
             return true;
         }
-        if (tile.hasGui() && !tile.isRemoved()) {
-            //prevent Containers from remaining valid after the chunk has unloaded;
-            World world = tile.getWorld();
-            if (world == null) {
-                return false;
-            }
-            return world.isBlockPresent(tile.getPos());
-        }
-        return false;
+        //prevent Containers from remaining valid after the chunk has unloaded;
+        return tile.hasGui() && !tile.isRemoved() && WorldUtils.isBlockLoaded(tile.getWorld(), tile.getPos());
     }
 
     @Override
@@ -96,6 +94,6 @@ public class MekanismTileContainer<TILE extends TileEntityMekanism> extends Meka
         if (buf == null) {
             return null;
         }
-        return DistExecutor.unsafeCallWhenOn(Dist.CLIENT, () -> () -> MekanismUtils.getTileEntity(type, Minecraft.getInstance().world, buf.readBlockPos()));
+        return DistExecutor.unsafeCallWhenOn(Dist.CLIENT, () -> () -> WorldUtils.getTileEntity(type, Minecraft.getInstance().world, buf.readBlockPos()));
     }
 }

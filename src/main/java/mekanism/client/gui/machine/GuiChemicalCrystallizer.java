@@ -31,6 +31,7 @@ public class GuiChemicalCrystallizer extends GuiConfigurableTile<TileEntityChemi
     public GuiChemicalCrystallizer(MekanismTileContainer<TileEntityChemicalCrystallizer> container, PlayerInventory inv, ITextComponent title) {
         super(container, inv, title);
         dynamicSlots = true;
+        titleY = 4;
     }
 
     @Override
@@ -51,18 +52,18 @@ public class GuiChemicalCrystallizer extends GuiConfigurableTile<TileEntityChemi
                 return cachedRecipe == null ? null : cachedRecipe.getRecipe();
             }
         }));
-        addButton(new GuiSecurityTab<>(this, tile));
+        addButton(new GuiSecurityTab(this, tile));
         addButton(new GuiRedstoneControlTab(this, tile));
         addButton(new GuiUpgradeTab(this, tile));
         addButton(new GuiVerticalPowerBar(this, tile.getEnergyContainer(), 157, 23));
-        addButton(new GuiEnergyTab(tile.getEnergyContainer(), this));
+        addButton(new GuiEnergyTab(tile.getEnergyContainer(), tile::getActive, this));
         addButton(new GuiMergedChemicalTankGauge<>(() -> tile.inputTank, () -> tile, GaugeType.STANDARD, this, 7, 4));
         addButton(new GuiProgress(tile::getScaledProgress, ProgressType.LARGE_RIGHT, this, 53, 61).jeiCategory(tile));
     }
 
     @Override
     protected void drawForegroundText(@Nonnull MatrixStack matrix, int mouseX, int mouseY) {
-        renderTitleText(matrix, 4);
+        renderTitleText(matrix);
         super.drawForegroundText(matrix, mouseX, mouseY);
     }
 

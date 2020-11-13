@@ -1,9 +1,12 @@
 package mekanism.common.tile;
 
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
@@ -36,6 +39,7 @@ import mekanism.common.tile.component.TileComponentChunkLoader;
 import mekanism.common.util.EnumUtils;
 import mekanism.common.util.MekanismUtils;
 import mekanism.common.util.NBTUtils;
+import mekanism.common.util.WorldUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.PortalInfo;
 import net.minecraft.entity.Entity;
@@ -50,6 +54,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.IChunk;
 import net.minecraft.world.server.ServerChunkProvider;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.Constants.NBT;
@@ -153,7 +158,7 @@ public class TileEntityTeleporter extends TileEntityMekanism implements IChunkLo
         color = freq != null ? freq.getColor() : null;
         if (shouldRender != prevShouldRender) {
             //This also means the comparator output changed so notify the neighbors we have a change
-            MekanismUtils.notifyLoadedNeighborsOfTileChange(world, getPos());
+            WorldUtils.notifyLoadedNeighborsOfTileChange(world, getPos());
             sendUpdatePacket();
         } else if (color != prevColor) {
             sendUpdatePacket();
@@ -228,7 +233,7 @@ public class TileEntityTeleporter extends TileEntityMekanism implements IChunkLo
         MinecraftServer currentServer = ServerLifecycleHooks.getCurrentServer();
         World teleWorld = currentServer.getWorld(closestCoords.dimension);
         BlockPos closestPos = closestCoords.getPos();
-        TileEntityTeleporter teleporter = MekanismUtils.getTileEntity(TileEntityTeleporter.class, teleWorld, closestPos);
+        TileEntityTeleporter teleporter = WorldUtils.getTileEntity(TileEntityTeleporter.class, teleWorld, closestPos);
         if (teleporter != null) {
             List<Entity> entitiesToTeleport = getToTeleport();
             if (!entitiesToTeleport.isEmpty()) {
@@ -242,7 +247,7 @@ public class TileEntityTeleporter extends TileEntityMekanism implements IChunkLo
                     }
                     for (Coord4D coords : activeCoords) {
                         BlockPos coordsPos = coords.getPos();
-                        TileEntityTeleporter tile = MekanismUtils.getTileEntity(TileEntityTeleporter.class, world, coordsPos);
+                        TileEntityTeleporter tile = WorldUtils.getTileEntity(TileEntityTeleporter.class, world, coordsPos);
                         if (tile != null) {
                             if (tile.frameDirection != null) {
                                 coordsPos = coordsPos.down().offset(tile.frameDirection);
@@ -368,71 +373,40 @@ public class TileEntityTeleporter extends TileEntityMekanism implements IChunkLo
      * @return whether the frame exists.
      */
     private boolean hasFrame(Direction direction, boolean rotated) {
-        int x = getPos().getX();
-        int y = getPos().getY();
-        int z = getPos().getZ();
-        switch (direction) {
-            case UP:
-                if (rotated) {
-                    return isFrame(x, y, z - 1) && isFrame(x, y, z + 1) && isFrame(x, y + 1, z - 1) && isFrame(x, y + 1, z + 1)
-                           && isFrame(x, y + 2, z - 1) && isFrame(x, y + 2, z + 1) && isFrame(x, y + 3, z - 1) && isFrame(x, y + 3, z + 1)
-                           && isFrame(x, y + 3, z);
-                }
-                return isFrame(x - 1, y, z) && isFrame(x + 1, y, z) && isFrame(x - 1, y + 1, z) && isFrame(x + 1, y + 1, z)
-                       && isFrame(x - 1, y + 2, z) && isFrame(x + 1, y + 2, z) && isFrame(x - 1, y + 3, z) && isFrame(x + 1, y + 3, z)
-                       && isFrame(x, y + 3, z);
-            case DOWN:
-                if (rotated) {
-                    return isFrame(x, y, z - 1) && isFrame(x, y, z + 1) && isFrame(x, y - 1, z - 1) && isFrame(x, y - 1, z + 1)
-                           && isFrame(x, y - 2, z - 1) && isFrame(x, y - 2, z + 1) && isFrame(x, y - 3, z - 1) && isFrame(x, y - 3, z + 1)
-                           && isFrame(x, y - 3, z);
-                }
-                return isFrame(x - 1, y, z) && isFrame(x + 1, y, z) && isFrame(x - 1, y - 1, z) && isFrame(x + 1, y - 1, z)
-                       && isFrame(x - 1, y - 2, z) && isFrame(x + 1, y - 2, z) && isFrame(x - 1, y - 3, z) && isFrame(x + 1, y - 3, z)
-                       && isFrame(x, y - 3, z);
-            case EAST:
-                if (rotated) {
-                    return isFrame(x, y, z - 1) && isFrame(x, y, z + 1) && isFrame(x + 1, y, z - 1) && isFrame(x + 1, y, z + 1)
-                           && isFrame(x + 2, y, z - 1) && isFrame(x + 2, y, z + 1) && isFrame(x + 3, y, z - 1) && isFrame(x + 3, y, z + 1)
-                           && isFrame(x + 3, y, z);
-                }
-                return isFrame(x, y - 1, z) && isFrame(x, y + 1, z) && isFrame(x + 1, y - 1, z) && isFrame(x + 1, y + 1, z)
-                       && isFrame(x + 2, y - 1, z) && isFrame(x + 2, y + 1, z) && isFrame(x + 3, y - 1, z) && isFrame(x + 3, y + 1, z)
-                       && isFrame(x + 3, y, z);
-            case WEST:
-                if (rotated) {
-                    return isFrame(x, y, z - 1) && isFrame(x, y, z + 1) && isFrame(x - 1, y, z - 1) && isFrame(x - 1, y, z + 1)
-                           && isFrame(x - 2, y, z - 1) && isFrame(x - 2, y, z + 1) && isFrame(x - 3, y, z - 1) && isFrame(x - 3, y, z + 1)
-                           && isFrame(x - 3, y, z);
-                }
-                return isFrame(x, y - 1, z) && isFrame(x, y + 1, z) && isFrame(x - 1, y - 1, z) && isFrame(x - 1, y + 1, z)
-                       && isFrame(x - 2, y - 1, z) && isFrame(x - 2, y + 1, z) && isFrame(x - 3, y - 1, z) && isFrame(x - 3, y + 1, z)
-                       && isFrame(x - 3, y, z);
-            case NORTH:
-                if (rotated) {
-                    return isFrame(x - 1, y, z) && isFrame(x + 1, y, z) && isFrame(x - 1, y, z - 1) && isFrame(x + 1, y, z - 1)
-                           && isFrame(x - 1, y, z - 2) && isFrame(x + 1, y, z - 2) && isFrame(x - 1, y, z - 3) && isFrame(x + 1, y, z - 3)
-                           && isFrame(x, y, z - 3);
-                }
-                return isFrame(x, y - 1, z) && isFrame(x, y + 1, z) && isFrame(x, y - 1, z - 1) && isFrame(x, y + 1, z - 1)
-                       && isFrame(x, y - 1, z - 2) && isFrame(x, y + 1, z - 2) && isFrame(x, y - 1, z - 3) && isFrame(x, y + 1, z - 3)
-                       && isFrame(x, y, z - 3);
-            case SOUTH:
-                if (rotated) {
-                    return isFrame(x - 1, y, z) && isFrame(x + 1, y, z) && isFrame(x - 1, y, z + 1) && isFrame(x + 1, y, z + 1)
-                           && isFrame(x - 1, y, z + 2) && isFrame(x + 1, y, z + 2) && isFrame(x - 1, y, z + 3) && isFrame(x + 1, y, z + 3)
-                           && isFrame(x, y, z + 3);
-                }
-                return isFrame(x, y - 1, z) && isFrame(x, y + 1, z) && isFrame(x, y - 1, z + 1) && isFrame(x, y + 1, z + 1)
-                       && isFrame(x, y - 1, z + 2) && isFrame(x, y + 1, z + 2) && isFrame(x, y - 1, z + 3) && isFrame(x, y + 1, z + 3)
-                       && isFrame(x, y, z + 3);
-            default:
-                return false;
+        int alternatingX = 0;
+        int alternatingY = 0;
+        int alternatingZ = 0;
+        if (rotated) {
+            if (direction == Direction.NORTH || direction == Direction.SOUTH) {
+                alternatingX = 1;
+            } else {
+                alternatingZ = 1;
+            }
+        } else if (direction == Direction.UP || direction == Direction.DOWN) {
+            alternatingX = 1;
+        } else {
+            alternatingY = 1;
         }
+        int xComponent = direction.getXOffset();
+        int yComponent = direction.getYOffset();
+        int zComponent = direction.getZOffset();
+        //Cache the chunks we are looking up to check the frames of
+        Long2ObjectMap<IChunk> chunkMap = new Long2ObjectOpenHashMap<>();
+        return isFramePair(chunkMap, 0, alternatingX, 0, alternatingY, 0, alternatingZ) &&
+               isFramePair(chunkMap, xComponent, alternatingX, yComponent, alternatingY, zComponent, alternatingZ) &&
+               isFramePair(chunkMap, 2 * xComponent, alternatingX, 2 * yComponent, alternatingY, 2 * zComponent, alternatingZ) &&
+               isFramePair(chunkMap, 3 * xComponent, alternatingX, 3 * yComponent, alternatingY, 3 * zComponent, alternatingZ) &&
+               isFrame(chunkMap, 3 * xComponent, 3 * yComponent, 3 * zComponent);
     }
 
-    private boolean isFrame(int x, int y, int z) {
-        return world.getBlockState(new BlockPos(x, y, z)).getBlock() instanceof BlockTeleporterFrame;
+    private boolean isFramePair(Long2ObjectMap<IChunk> chunkMap, int xOffset, int alternatingX, int yOffset, int alternatingY, int zOffset, int alternatingZ) {
+        return isFrame(chunkMap, xOffset - alternatingX, yOffset - alternatingY, zOffset - alternatingZ) &&
+               isFrame(chunkMap, xOffset + alternatingX, yOffset + alternatingY, zOffset + alternatingZ);
+    }
+
+    private boolean isFrame(Long2ObjectMap<IChunk> chunkMap, int xOffset, int yOffset, int zOffset) {
+        Optional<BlockState> state = WorldUtils.getBlockState(world, chunkMap, pos.add(xOffset, yOffset, zOffset));
+        return state.filter(blockState -> blockState.getBlock() instanceof BlockTeleporterFrame).isPresent();
     }
 
     /**

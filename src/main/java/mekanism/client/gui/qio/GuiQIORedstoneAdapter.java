@@ -37,13 +37,14 @@ public class GuiQIORedstoneAdapter extends GuiMekanismTile<TileEntityQIORedstone
         super(container, inv, title);
         dynamicSlots = true;
         ySize += 16;
+        playerInventoryTitleY = ySize - 94;
     }
 
     @Override
     public void init() {
         super.init();
         addButton(new GuiQIOFrequencyTab(this, tile));
-        addButton(new GuiSecurityTab<>(this, tile));
+        addButton(new GuiSecurityTab(this, tile));
         addButton(new GuiSlot(SlotType.NORMAL, this, 7, 30).setRenderHover(true));
         addButton(new GuiInnerScreen(this, 7, 16, xSize - 15, 12, () -> {
             List<ITextComponent> list = new ArrayList<>();
@@ -92,7 +93,7 @@ public class GuiQIORedstoneAdapter extends GuiMekanismTile<TileEntityQIORedstone
     @Override
     protected void drawForegroundText(@Nonnull MatrixStack matrix, int mouseX, int mouseY) {
         renderTitleText(matrix);
-        drawString(matrix, MekanismLang.INVENTORY.translate(), 8, (getYSize() - 96) + 2, titleTextColor());
+        drawString(matrix, playerInventory.getDisplayName(), playerInventoryTitleX, playerInventoryTitleY, titleTextColor());
         if (tile.getItemType() != null) {
             renderItem(matrix, tile.getItemType(), 8, 31);
         }
@@ -103,8 +104,8 @@ public class GuiQIORedstoneAdapter extends GuiMekanismTile<TileEntityQIORedstone
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         super.mouseClicked(mouseX, mouseY, button);
         if (button == 0) {
-            double xAxis = mouseX - getGuiLeft();
-            double yAxis = mouseY - getGuiTop();
+            double xAxis = mouseX - guiLeft;
+            double yAxis = mouseY - guiTop;
             if (xAxis >= 8 && xAxis < 24 && yAxis >= 31 && yAxis < 47) {
                 ItemStack stack = getMinecraft().player.inventory.getItemStack();
                 if (!stack.isEmpty() && !hasShiftDown()) {
@@ -112,7 +113,7 @@ public class GuiQIORedstoneAdapter extends GuiMekanismTile<TileEntityQIORedstone
                 } else if (stack.isEmpty() && hasShiftDown()) {
                     Mekanism.packetHandler.sendToServer(new PacketGuiInteract(GuiInteractionItem.QIO_REDSTONE_ADAPTER_STACK, tile, ItemStack.EMPTY));
                 }
-                SoundHandler.playSound(MekanismSounds.BEEP.get());
+                SoundHandler.playSound(MekanismSounds.BEEP);
             }
         }
         return true;

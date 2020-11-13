@@ -29,7 +29,7 @@ public class GuiGasGenerator extends GuiMekanismTile<TileEntityGasGenerator, Mek
     public void init() {
         super.init();
         addButton(new GuiRedstoneControlTab(this, tile));
-        addButton(new GuiSecurityTab<>(this, tile));
+        addButton(new GuiSecurityTab(this, tile));
         addButton(new GuiEnergyTab(() -> Arrays.asList(
               GeneratorsLang.PRODUCING_AMOUNT.translate(EnergyDisplay.of(tile.getGenerationRate().multiply(tile.getUsed()).multiply(tile.getMaxBurnTicks()))),
               MekanismLang.MAX_OUTPUT.translate(EnergyDisplay.of(tile.getMaxOutput()))), this));
@@ -40,9 +40,9 @@ public class GuiGasGenerator extends GuiMekanismTile<TileEntityGasGenerator, Mek
     @Override
     protected void drawForegroundText(@Nonnull MatrixStack matrix, int mouseX, int mouseY) {
         renderTitleText(matrix);
-        drawString(matrix, MekanismLang.INVENTORY.translate(), 8, (getYSize() - 96) + 2, titleTextColor());
+        drawString(matrix, playerInventory.getDisplayName(), playerInventoryTitleX, playerInventoryTitleY, titleTextColor());
         ITextComponent component = GeneratorsLang.GAS_BURN_RATE.translate(tile.getUsed());
-        drawString(matrix, component, getXSize() - 8 - getStringWidth(component), (getYSize() - 96) + 2, titleTextColor());
+        drawString(matrix, component, xSize - 8 - getStringWidth(component), playerInventoryTitleY, titleTextColor());
         super.drawForegroundText(matrix, mouseX, mouseY);
     }
 }

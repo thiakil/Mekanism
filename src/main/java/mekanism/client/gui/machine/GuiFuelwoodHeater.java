@@ -43,7 +43,7 @@ public class GuiFuelwoodHeater extends GuiMekanismTile<TileEntityFuelwoodHeater,
                 return tile.burnTime > 0;
             }
         }, this, 144, 31));
-        addButton(new GuiSecurityTab<>(this, tile));
+        addButton(new GuiSecurityTab(this, tile));
         addButton(new GuiHeatTab(() -> {
             ITextComponent environment = MekanismUtils.getTemperatureDisplay(tile.lastEnvironmentLoss, TemperatureUnit.KELVIN, false);
             return Collections.singletonList(MekanismLang.DISSIPATED_RATE.translate(environment));
@@ -53,7 +53,7 @@ public class GuiFuelwoodHeater extends GuiMekanismTile<TileEntityFuelwoodHeater,
     @Override
     protected void drawForegroundText(@Nonnull MatrixStack matrix, int mouseX, int mouseY) {
         renderTitleText(matrix);
-        drawString(matrix, MekanismLang.INVENTORY.translate(), 8, (getYSize() - 94) + 2, titleTextColor());
+        drawString(matrix, playerInventory.getDisplayName(), playerInventoryTitleX, playerInventoryTitleY, titleTextColor());
         super.drawForegroundText(matrix, mouseX, mouseY);
     }
 }

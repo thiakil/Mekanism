@@ -9,6 +9,7 @@ import mekanism.api.NBTConstants;
 import mekanism.api.math.FloatingLong;
 import mekanism.api.math.FloatingLongSupplier;
 import mekanism.api.text.EnumColor;
+import mekanism.client.MekanismClient;
 import mekanism.common.MekanismLang;
 import mekanism.common.block.attribute.Attribute;
 import mekanism.common.block.attribute.AttributeEnergy;
@@ -22,6 +23,7 @@ import mekanism.common.capabilities.energy.item.RateLimitEnergyHandler;
 import mekanism.common.item.block.ItemBlockTooltip;
 import mekanism.common.item.interfaces.IItemSustainedInventory;
 import mekanism.common.lib.security.ISecurityItem;
+import mekanism.common.lib.security.ISecurityObject;
 import mekanism.common.registration.impl.ItemDeferredRegister;
 import mekanism.common.util.ItemDataUtils;
 import mekanism.common.util.MekanismUtils;
@@ -29,14 +31,12 @@ import mekanism.common.util.SecurityUtils;
 import mekanism.common.util.StorageUtils;
 import mekanism.common.util.text.BooleanStateDisplay.YesNo;
 import mekanism.common.util.text.OwnerDisplay;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.tileentity.ItemStackTileEntityRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.Constants.NBT;
 import net.minecraftforge.fluids.FluidStack;
@@ -52,12 +52,12 @@ public class ItemBlockMachine extends ItemBlockTooltip<BlockTile<?, ?>> implemen
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public void addDetails(@Nonnull ItemStack stack, World world, @Nonnull List<ITextComponent> tooltip, boolean advanced) {
-        tooltip.add(OwnerDisplay.of(Minecraft.getInstance().player, getOwnerUUID(stack)).getTextComponent());
+        tooltip.add(OwnerDisplay.of(MekanismClient.tryGetClientPlayer(), getOwnerUUID(stack)).getTextComponent());
         if (Attribute.has(getBlock(), AttributeSecurity.class)) {
-            tooltip.add(MekanismLang.SECURITY.translateColored(EnumColor.GRAY, SecurityUtils.getSecurity(stack, Dist.CLIENT)));
-            if (SecurityUtils.isOverridden(stack, Dist.CLIENT)) {
+            ISecurityObject securityObject = SecurityUtils.wrapSecurityItem(stack);
+            tooltip.add(MekanismLang.SECURITY.translateColored(EnumColor.GRAY, SecurityUtils.getSecurity(securityObject, Dist.CLIENT)));
+            if (SecurityUtils.isOverridden(securityObject, Dist.CLIENT)) {
                 tooltip.add(MekanismLang.SECURITY_OVERRIDDEN.translateColored(EnumColor.RED));
             }
         }

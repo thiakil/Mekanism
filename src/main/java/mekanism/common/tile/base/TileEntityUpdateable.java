@@ -4,9 +4,10 @@ import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import mekanism.common.Mekanism;
+import mekanism.common.config.MekanismConfig;
 import mekanism.common.network.PacketUpdateTile;
 import mekanism.common.tile.interfaces.ITileWrapper;
-import mekanism.common.util.MekanismUtils;
+import mekanism.common.util.WorldUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
@@ -59,7 +60,7 @@ public abstract class TileEntityUpdateable extends TileEntity implements ITileWr
             if (recheckBlockState) {
                 cachedBlockState = world.getBlockState(pos);
             }
-            MekanismUtils.markChunkDirty(world, pos);
+            WorldUtils.markChunkDirty(world, pos);
             if (!isRemote()) {
                 markDirtyComparator();
             }
@@ -131,5 +132,11 @@ public abstract class TileEntityUpdateable extends TileEntity implements ITileWr
     @Override
     public BlockPos getTilePos() {
         return getPos();
+    }
+
+    @Override
+    public double getMaxRenderDistanceSquared() {
+        //Override and change the default range for TERs for mekanism tiles to the value defined in the config
+        return MekanismConfig.client.terRange.get();
     }
 }

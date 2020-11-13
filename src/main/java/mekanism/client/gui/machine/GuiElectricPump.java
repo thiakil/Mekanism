@@ -27,6 +27,7 @@ public class GuiElectricPump extends GuiMekanismTile<TileEntityElectricPump, Mek
 
     public GuiElectricPump(MekanismTileContainer<TileEntityElectricPump> container, PlayerInventory inv, ITextComponent title) {
         super(container, inv, title);
+        playerInventoryTitleY += 2;
         dynamicSlots = true;
     }
 
@@ -48,7 +49,7 @@ public class GuiElectricPump extends GuiMekanismTile<TileEntityElectricPump, Mek
         addButton(new GuiVerticalPowerBar(this, tile.getEnergyContainer(), 164, 15));
         addButton(new GuiFluidGauge(() -> tile.fluidTank, () -> tile.getFluidTanks(null), GaugeType.STANDARD, this, 6, 13));
         addButton(new GuiEnergyTab(tile.getEnergyContainer(), this));
-        addButton(new GuiSecurityTab<>(this, tile));
+        addButton(new GuiSecurityTab(this, tile));
         addButton(new GuiRedstoneControlTab(this, tile));
         addButton(new GuiUpgradeTab(this, tile));
     }
@@ -56,7 +57,7 @@ public class GuiElectricPump extends GuiMekanismTile<TileEntityElectricPump, Mek
     @Override
     protected void drawForegroundText(@Nonnull MatrixStack matrix, int mouseX, int mouseY) {
         renderTitleText(matrix);
-        drawString(matrix, MekanismLang.INVENTORY.translate(), 8, (getYSize() - 94) + 2, titleTextColor());
+        drawString(matrix, playerInventory.getDisplayName(), playerInventoryTitleX, playerInventoryTitleY, titleTextColor());
         super.drawForegroundText(matrix, mouseX, mouseY);
     }
 }

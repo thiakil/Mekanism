@@ -36,9 +36,8 @@ public class GuiSolarGenerator<TILE extends TileEntitySolarGenerator> extends Gu
               GeneratorsLang.OUTPUT_RATE_SHORT.translate(EnergyDisplay.of(tile.getMaxOutput()))
         )));
         addButton(new GuiRedstoneControlTab(this, tile));
-        addButton(new GuiSecurityTab<>(this, tile));
-        addButton(new GuiEnergyTab(() -> Arrays.asList(
-              GeneratorsLang.PRODUCING_AMOUNT.translate(EnergyDisplay.of(tile.getLastProductionAmount())),
+        addButton(new GuiSecurityTab(this, tile));
+        addButton(new GuiEnergyTab(() -> Arrays.asList(GeneratorsLang.PRODUCING_AMOUNT.translate(EnergyDisplay.of(tile.getLastProductionAmount())),
               MekanismLang.MAX_OUTPUT.translate(EnergyDisplay.of(tile.getMaxOutput()))), this));
         addButton(new GuiVerticalPowerBar(this, tile.getEnergyContainer(), 164, 15));
         addButton(new GuiStateTexture(this, 18, 35, tile::canSeeSun, MekanismGenerators.rl(ResourceType.GUI.getPrefix() + "sees_sun.png"),
@@ -48,7 +47,7 @@ public class GuiSolarGenerator<TILE extends TileEntitySolarGenerator> extends Gu
     @Override
     protected void drawForegroundText(@Nonnull MatrixStack matrix, int mouseX, int mouseY) {
         renderTitleText(matrix);
-        drawString(matrix, MekanismLang.INVENTORY.translate(), 8, (getYSize() - 96) + 2, titleTextColor());
+        drawString(matrix, playerInventory.getDisplayName(), playerInventoryTitleX, playerInventoryTitleY, titleTextColor());
         super.drawForegroundText(matrix, mouseX, mouseY);
     }
 }

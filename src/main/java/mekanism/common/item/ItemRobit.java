@@ -1,19 +1,24 @@
 package mekanism.common.item;
 
 import java.util.List;
+import java.util.UUID;
 import javax.annotation.Nonnull;
 import mekanism.api.Coord4D;
 import mekanism.api.NBTConstants;
 import mekanism.api.energy.IEnergyContainer;
 import mekanism.api.text.EnumColor;
+import mekanism.common.Mekanism;
 import mekanism.common.MekanismLang;
 import mekanism.common.entity.EntityRobit;
 import mekanism.common.item.interfaces.IItemSustainedInventory;
+import mekanism.common.lib.security.ISecurityItem;
+import mekanism.common.network.PacketSecurityUpdate;
 import mekanism.common.tile.TileEntityChargepad;
 import mekanism.common.tile.base.TileEntityMekanism;
 import mekanism.common.util.ItemDataUtils;
-import mekanism.common.util.MekanismUtils;
+import mekanism.common.util.SecurityUtils;
 import mekanism.common.util.StorageUtils;
+import mekanism.common.util.WorldUtils;
 import mekanism.common.util.text.BooleanStateDisplay.YesNo;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
@@ -28,7 +33,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-public class ItemRobit extends ItemEnergized implements IItemSustainedInventory {
+public class ItemRobit extends ItemEnergized implements IItemSustainedInventory, ISecurityItem {
 
     public ItemRobit(Properties properties) {
         super(() -> EntityRobit.MAX_ENERGY.multiply(0.005), () -> EntityRobit.MAX_ENERGY, properties.rarity(Rarity.RARE));
@@ -39,6 +44,7 @@ public class ItemRobit extends ItemEnergized implements IItemSustainedInventory 
     public void addInformation(@Nonnull ItemStack stack, World world, @Nonnull List<ITextComponent> tooltip, @Nonnull ITooltipFlag flag) {
         super.addInformation(stack, world, tooltip, flag);
         tooltip.add(MekanismLang.ROBIT_NAME.translateColored(EnumColor.INDIGO, EnumColor.GRAY, getName(stack)));
+        SecurityUtils.addSecurityTooltip(stack, tooltip);
         tooltip.add(MekanismLang.HAS_INVENTORY.translateColored(EnumColor.AQUA, EnumColor.GRAY, YesNo.of(hasInventory(stack))));
     }
 
@@ -51,7 +57,7 @@ public class ItemRobit extends ItemEnergized implements IItemSustainedInventory 
         }
         World world = context.getWorld();
         BlockPos pos = context.getPos();
-        TileEntityMekanism chargepad = MekanismUtils.getTileEntity(TileEntityChargepad.class, world, pos);
+        TileEntityMekanism chargepad = WorldUtils.getTileEntity(TileEntityChargepad.class, world, pos);
         if (chargepad != null) {
             if (!chargepad.getActive()) {
                 Hand hand = context.getHand();
@@ -63,9 +69,17 @@ public class ItemRobit extends ItemEnergized implements IItemSustainedInventory 
                     if (energyContainer != null) {
                         robit.getEnergyContainer().setEnergy(energyContainer.getEnergy());
                     }
-                    robit.setOwnerUUID(player.getUniqueID());
+                    UUID ownerUUID = getOwnerUUID(stack);
+                    if (ownerUUID == null) {
+                        robit.setOwnerUUID(player.getUniqueID());
+                        //If the robit doesn't already have an owner, make sure we portray this
+                        Mekanism.packetHandler.sendToAll(new PacketSecurityUpdate(player.getUniqueID(), null));
+                    } else {
+                        robit.setOwnerUUID(ownerUUID);
+                    }
                     robit.setInventory(getInventory(stack));
                     robit.setCustomName(getName(stack));
+                    robit.setSecurityMode(getSecurity(stack));
                     world.addEntity(robit);
                 }
                 player.setHeldItem(hand, ItemStack.EMPTY);

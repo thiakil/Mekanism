@@ -10,7 +10,7 @@ import mekanism.common.MekanismLang;
 import mekanism.common.item.interfaces.IUpgradeItem;
 import mekanism.common.tile.component.TileComponentUpgrade;
 import mekanism.common.tile.interfaces.IUpgradeTile;
-import mekanism.common.util.MekanismUtils;
+import mekanism.common.util.WorldUtils;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -54,23 +54,21 @@ public class ItemUpgrade extends Item implements IUpgradeItem {
         PlayerEntity player = context.getPlayer();
         if (player != null && player.isSneaking()) {
             World world = context.getWorld();
-            TileEntity tile = MekanismUtils.getTileEntity(world, context.getPos());
-            ItemStack stack = player.getHeldItem(context.getHand());
-            Upgrade type = getUpgradeType(stack);
+            TileEntity tile = WorldUtils.getTileEntity(world, context.getPos());
             if (tile instanceof IUpgradeTile) {
                 IUpgradeTile upgradeTile = (IUpgradeTile) tile;
-                if (!upgradeTile.supportsUpgrades()) {
-                    //Can't support upgrades so continue on
-                    return ActionResultType.PASS;
-                }
-                TileComponentUpgrade component = upgradeTile.getComponent();
-                if (component.supports(type)) {
-                    if (!world.isRemote && component.getUpgrades(type) < type.getMax()) {
-                        component.addUpgrade(type);
-                        stack.shrink(1);
+                if (upgradeTile.supportsUpgrades()) {
+                    TileComponentUpgrade component = upgradeTile.getComponent();
+                    ItemStack stack = player.getHeldItem(context.getHand());
+                    Upgrade type = getUpgradeType(stack);
+                    if (component.supports(type)) {
+                        if (!world.isRemote && component.getUpgrades(type) < type.getMax()) {
+                            component.addUpgrade(type);
+                            stack.shrink(1);
+                        }
                     }
+                    return ActionResultType.SUCCESS;
                 }
-                return ActionResultType.SUCCESS;
             }
         }
         return ActionResultType.PASS;

@@ -1,7 +1,6 @@
 package mekanism.client.gui.machine;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import java.util.Arrays;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import mekanism.client.gui.GuiConfigurableTile;
@@ -27,7 +26,6 @@ import mekanism.common.lib.effect.BoltEffect.BoltRenderInfo;
 import mekanism.common.lib.effect.BoltEffect.FadeFunction;
 import mekanism.common.lib.effect.BoltEffect.SpawnFunction;
 import mekanism.common.tile.machine.TileEntityAntiprotonicNucleosynthesizer;
-import mekanism.common.util.text.EnergyDisplay;
 import mekanism.common.util.text.TextUtils;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Tessellator;
@@ -53,6 +51,7 @@ public class GuiAntiprotonicNucleosynthesizer extends GuiConfigurableTile<TileEn
         dynamicSlots = true;
         ySize += 27;
         xSize += 20;
+        playerInventoryTitleY = ySize - 93;
     }
 
     @Override
@@ -60,11 +59,10 @@ public class GuiAntiprotonicNucleosynthesizer extends GuiConfigurableTile<TileEn
         super.init();
 
         addButton(new GuiInnerScreen(this, 45, 18, 104, 68).jeiCategory(tile));
-        addButton(new GuiSecurityTab<>(this, tile));
+        addButton(new GuiSecurityTab(this, tile));
         addButton(new GuiRedstoneControlTab(this, tile));
         addButton(new GuiUpgradeTab(this, tile));
-        addButton(new GuiEnergyTab(() -> Arrays.asList(MekanismLang.USING.translate(EnergyDisplay.of(tile.clientEnergyUsed)),
-              MekanismLang.NEEDED.translate(EnergyDisplay.of(tile.getEnergyContainer().getNeeded()))), this));
+        addButton(new GuiEnergyTab(tile.getEnergyContainer(), () -> tile.clientEnergyUsed, this));
         addButton(new GuiGasGauge(() -> tile.gasTank, () -> tile.getGasTanks(null), GaugeType.SMALL_MED, this, 5, 18));
         addButton(new GuiEnergyGauge(tile.getEnergyContainer(), GaugeType.SMALL_MED, this, 172, 18));
         addButton(new GuiDynamicHorizontalRateBar(this, new IBarInfoHandler() {
@@ -82,8 +80,8 @@ public class GuiAntiprotonicNucleosynthesizer extends GuiConfigurableTile<TileEn
 
     @Override
     protected void drawForegroundText(@Nonnull MatrixStack matrix, int mouseX, int mouseY) {
-        drawString(matrix, tile.getName(), (getXSize() / 2) - (getStringWidth(tile.getName()) / 2), 6, titleTextColor());
-        drawString(matrix, MekanismLang.INVENTORY.translate(), 8, (getYSize() - 96) + 3, titleTextColor());
+        drawString(matrix, tile.getName(), (xSize - getStringWidth(tile.getName())) / 2, titleY, titleTextColor());
+        drawString(matrix, playerInventory.getDisplayName(), playerInventoryTitleX, playerInventoryTitleY, titleTextColor());
         drawTextScaledBound(matrix, MekanismLang.PROCESS_RATE.translate(TextUtils.getPercent(tile.getProcessRate())), 48, 76, screenTextColor(), 100);
         super.drawForegroundText(matrix, mouseX, mouseY);
         matrix.push();

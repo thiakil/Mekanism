@@ -1,6 +1,7 @@
 package mekanism.generators.common.tile;
 
 import java.util.Arrays;
+import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import mekanism.api.Action;
@@ -26,9 +27,11 @@ import mekanism.common.inventory.slot.EnergyInventorySlot;
 import mekanism.common.util.CapabilityUtils;
 import mekanism.common.util.EnumUtils;
 import mekanism.common.util.MekanismUtils;
+import mekanism.common.util.WorldUtils;
 import mekanism.generators.common.config.MekanismGeneratorsConfig;
 import mekanism.generators.common.registries.GeneratorsBlocks;
 import mekanism.generators.common.slot.FluidFuelInventorySlot;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tileentity.TileEntity;
@@ -92,7 +95,7 @@ public class TileEntityHeatGenerator extends TileEntityGenerator {
         super.onUpdateServer();
         energySlot.drainContainer();
         fuelSlot.fillOrBurn();
-        FloatingLong prev = getEnergyContainer().getEnergy().copy();
+        FloatingLong prev = getEnergyContainer().getEnergy().copyAsConst();
         heatCapacitor.handleHeat(getBoost().doubleValue());
         if (MekanismUtils.canFunction(this) && !getEnergyContainer().getNeeded().isZero() &&
             lavaTank.extract(FLUID_RATE, Action.SIMULATE, AutomationType.INTERNAL).getAmount() == FLUID_RATE) {
@@ -113,7 +116,11 @@ public class TileEntityHeatGenerator extends TileEntityGenerator {
             return FloatingLong.ZERO;
         }
         //Lava boost
-        long lavaSides = Arrays.stream(EnumUtils.DIRECTIONS).filter(side -> world.getFluidState(pos.offset(side)).isTagged(FluidTags.LAVA)).count();
+        long lavaSides = Arrays.stream(EnumUtils.DIRECTIONS).filter(side -> {
+            //Only check and add loaded neighbors to the which sides have lava on them
+            Optional<FluidState> fluidState = WorldUtils.getFluidState(world, pos.offset(side));
+            return fluidState.isPresent() && fluidState.get().isTagged(FluidTags.LAVA);
+        }).count();
         if (getBlockState().getFluidState().isTagged(FluidTags.LAVA)) {
             //If the heat generator is lava-logged then add it as another side that is adjacent to lava for the heat calculations
             lavaSides++;
@@ -146,7 +153,7 @@ public class TileEntityHeatGenerator extends TileEntityGenerator {
     @Override
     public IHeatHandler getAdjacent(Direction side) {
         if (side == Direction.DOWN) {
-            TileEntity adj = MekanismUtils.getTileEntity(getWorld(), pos.down());
+            TileEntity adj = WorldUtils.getTileEntity(getWorld(), pos.down());
             return CapabilityUtils.getCapability(adj, Capabilities.HEAT_HANDLER_CAPABILITY, side.getOpposite()).resolve().orElse(null);
         }
         return null;

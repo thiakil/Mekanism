@@ -30,13 +30,12 @@ import mekanism.common.util.ItemDataUtils;
 import mekanism.common.util.MekanismUtils;
 import mekanism.common.util.SecurityUtils;
 import mekanism.common.util.StorageUtils;
+import mekanism.common.util.WorldUtils;
 import mekanism.common.util.text.BooleanStateDisplay.OnOff;
 import mekanism.common.util.text.BooleanStateDisplay.YesNo;
-import mekanism.common.util.text.OwnerDisplay;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.IBucketPickupHandler;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
@@ -59,8 +58,6 @@ import net.minecraft.util.math.RayTraceContext.FluidMode;
 import net.minecraft.util.math.RayTraceResult.Type;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
@@ -101,13 +98,8 @@ public class ItemBlockFluidTank extends ItemBlockTooltip<BlockFluidTank> impleme
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public void addDetails(@Nonnull ItemStack stack, World world, @Nonnull List<ITextComponent> tooltip, boolean advanced) {
-        tooltip.add(OwnerDisplay.of(Minecraft.getInstance().player, getOwnerUUID(stack)).getTextComponent());
-        tooltip.add(MekanismLang.SECURITY.translateColored(EnumColor.GRAY, SecurityUtils.getSecurity(stack, Dist.CLIENT)));
-        if (SecurityUtils.isOverridden(stack, Dist.CLIENT)) {
-            tooltip.add(MekanismLang.SECURITY_OVERRIDDEN.translateColored(EnumColor.RED));
-        }
+        SecurityUtils.addSecurityTooltip(stack, tooltip);
         tooltip.add(MekanismLang.BUCKET_MODE.translateColored(EnumColor.INDIGO, YesNo.of(getBucketMode(stack))));
         tooltip.add(MekanismLang.HAS_INVENTORY.translateColored(EnumColor.AQUA, EnumColor.GRAY, YesNo.of(hasInventory(stack))));
     }
@@ -153,7 +145,12 @@ public class ItemBlockFluidTank extends ItemBlockTooltip<BlockFluidTank> impleme
     public ActionResult<ItemStack> onItemRightClick(@Nonnull World world, PlayerEntity player, @Nonnull Hand hand) {
         ItemStack stack = player.getHeldItem(hand);
         if (getBucketMode(stack)) {
-            if (SecurityUtils.canAccess(player, stack)) {
+            if (getOwnerUUID(stack) == null) {
+                if (!world.isRemote) {
+                    SecurityUtils.claimItem(player, stack);
+                }
+                return new ActionResult<>(ActionResultType.SUCCESS, stack);
+            } else if (SecurityUtils.canAccess(player, stack)) {
                 BlockRayTraceResult result = rayTrace(world, player, !player.isSneaking() ? FluidMode.SOURCE_ONLY : FluidMode.NONE);
                 //It can be null if there is nothing in range
                 if (result.getType() == Type.BLOCK) {
@@ -180,15 +177,14 @@ public class ItemBlockFluidTank extends ItemBlockTooltip<BlockFluidTank> impleme
                         if (!player.canPlayerEdit(pos, result.getFace(), stack)) {
                             return new ActionResult<>(ActionResultType.FAIL, stack);
                         }
-                        FluidState fluidState = world.getFluidState(pos);
+                        //Note: we get the block state from the world so that we can get the proper block in case it is fluid logged
+                        BlockState blockState = world.getBlockState(pos);
+                        FluidState fluidState = blockState.getFluidState();
                         if (!fluidState.isEmpty() && fluidState.isSource()) {
                             //Just in case someone does weird things and has a fluid state that is empty and a source
                             // only allow collecting from non empty sources
                             Fluid fluid = fluidState.getFluid();
                             FluidStack fluidStack = new FluidStack(fluid, FluidAttributes.BUCKET_VOLUME);
-                            //Note: we get the block state from the world and not the fluid state
-                            // so that we can get the proper block in case it is fluid logged
-                            BlockState blockState = world.getBlockState(pos);
                             Block block = blockState.getBlock();
                             if (block instanceof IFluidBlock) {
                                 fluidStack = ((IFluidBlock) block).drain(world, pos, FluidAction.SIMULATE);
@@ -234,7 +230,7 @@ public class ItemBlockFluidTank extends ItemBlockTooltip<BlockFluidTank> impleme
                             || !player.canPlayerEdit(pos.offset(result.getFace()), result.getFace(), stack)) {
                             return new ActionResult<>(ActionResultType.FAIL, stack);
                         }
-                        if (MekanismUtils.tryPlaceContainedLiquid(player, world, pos, fluidHandlerItem.getFluidInTank(0), result.getFace())) {
+                        if (WorldUtils.tryPlaceContainedLiquid(player, world, pos, fluidHandlerItem.getFluidInTank(0), result.getFace())) {
                             if (!player.isCreative()) {
                                 MekanismUtils.logMismatchedStackSize(fluidTank.shrinkStack(FluidAttributes.BUCKET_VOLUME, Action.EXECUTE), FluidAttributes.BUCKET_VOLUME);
                             }
@@ -243,7 +239,10 @@ public class ItemBlockFluidTank extends ItemBlockTooltip<BlockFluidTank> impleme
                     }
                 }
             } else {
-                SecurityUtils.displayNoAccess(player);
+                if (!world.isRemote) {
+                    SecurityUtils.displayNoAccess(player);
+                }
+                return new ActionResult<>(ActionResultType.FAIL, stack);
             }
         }
         return new ActionResult<>(ActionResultType.PASS, stack);

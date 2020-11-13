@@ -13,7 +13,6 @@ import mekanism.client.gui.element.tab.GuiEnergyTab;
 import mekanism.client.gui.element.tab.GuiRedstoneControlTab;
 import mekanism.client.gui.element.tab.GuiSecurityTab;
 import mekanism.client.gui.element.tab.GuiUpgradeTab;
-import mekanism.common.MekanismLang;
 import mekanism.common.inventory.container.tile.MekanismTileContainer;
 import mekanism.common.tile.machine.TileEntityPressurizedReactionChamber;
 import net.minecraft.entity.player.PlayerInventory;
@@ -30,9 +29,9 @@ public class GuiPRC extends GuiConfigurableTile<TileEntityPressurizedReactionCha
     public void init() {
         super.init();
         addButton(new GuiRedstoneControlTab(this, tile));
-        addButton(new GuiSecurityTab<>(this, tile));
+        addButton(new GuiSecurityTab(this, tile));
         addButton(new GuiUpgradeTab(this, tile));
-        addButton(new GuiEnergyTab(tile.getEnergyContainer(), this));
+        addButton(new GuiEnergyTab(tile.getEnergyContainer(), tile::getActive, this));
         addButton(new GuiFluidGauge(() -> tile.inputFluidTank, () -> tile.getFluidTanks(null), GaugeType.STANDARD, this, 5, 10));
         addButton(new GuiGasGauge(() -> tile.inputGasTank, () -> tile.getGasTanks(null), GaugeType.STANDARD, this, 28, 10));
         addButton(new GuiGasGauge(() -> tile.outputGasTank, () -> tile.getGasTanks(null), GaugeType.SMALL, this, 140, 40));
@@ -42,8 +41,8 @@ public class GuiPRC extends GuiConfigurableTile<TileEntityPressurizedReactionCha
 
     @Override
     protected void drawForegroundText(@Nonnull MatrixStack matrix, int mouseX, int mouseY) {
-        drawTextScaledBound(matrix, tile.getName(), getXSize() / 3 - 7, 6, titleTextColor(), 2 * getXSize() / 3);
-        drawString(matrix, MekanismLang.INVENTORY.translate(), 8, (getYSize() - 96) + 2, titleTextColor());
+        drawTextScaledBound(matrix, tile.getName(), xSize / 3 - 7, titleY, titleTextColor(), 2 * xSize / 3);
+        drawString(matrix, playerInventory.getDisplayName(), playerInventoryTitleX, playerInventoryTitleY, titleTextColor());
         super.drawForegroundText(matrix, mouseX, mouseY);
     }
 }

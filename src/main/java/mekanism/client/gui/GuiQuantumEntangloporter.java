@@ -4,6 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import javax.annotation.Nonnull;
 import mekanism.api.text.EnumColor;
 import mekanism.client.gui.element.button.MekanismButton;
@@ -51,6 +52,7 @@ public class GuiQuantumEntangloporter extends GuiConfigurableTile<TileEntityQuan
             privateMode = frequency.isPrivate();
         }
         ySize += 64;
+        titleY = 4;
         dynamicSlots = true;
     }
 
@@ -59,17 +61,17 @@ public class GuiQuantumEntangloporter extends GuiConfigurableTile<TileEntityQuan
         super.init();
         addButton(scrollList = new GuiTextScrollList(this, 27, 36, 122, 42));
         addButton(new GuiUpgradeTab(this, tile));
-        addButton(new GuiSecurityTab<>(this, tile));
+        addButton(new GuiSecurityTab(this, tile));
 
-        addButton(publicButton = new TranslationButton(this, getGuiLeft() + 27, getGuiTop() + 14, 60, 20, MekanismLang.PUBLIC, () -> {
+        addButton(publicButton = new TranslationButton(this, guiLeft + 27, guiTop + 14, 60, 20, MekanismLang.PUBLIC, () -> {
             privateMode = false;
             updateButtons();
         }));
-        addButton(privateButton = new TranslationButton(this, getGuiLeft() + 89, getGuiTop() + 14, 60, 20, MekanismLang.PRIVATE, () -> {
+        addButton(privateButton = new TranslationButton(this, guiLeft + 89, guiTop + 14, 60, 20, MekanismLang.PRIVATE, () -> {
             privateMode = true;
             updateButtons();
         }));
-        addButton(setButton = new TranslationButton(this, getGuiLeft() + 27, getGuiTop() + 116, 60, 20, MekanismLang.BUTTON_SET, () -> {
+        addButton(setButton = new TranslationButton(this, guiLeft + 27, guiTop + 116, 60, 20, MekanismLang.BUTTON_SET, () -> {
             int selection = scrollList.getSelection();
             if (selection != -1) {
                 Frequency freq = privateMode ? tile.getPrivateCache(FrequencyType.INVENTORY).get(selection) : tile.getPublicCache(FrequencyType.INVENTORY).get(selection);
@@ -77,7 +79,7 @@ public class GuiQuantumEntangloporter extends GuiConfigurableTile<TileEntityQuan
             }
             updateButtons();
         }));
-        addButton(deleteButton = new TranslationButton(this, getGuiLeft() + 89, getGuiTop() + 116, 60, 20, MekanismLang.BUTTON_DELETE, () -> {
+        addButton(deleteButton = new TranslationButton(this, guiLeft + 89, guiTop + 116, 60, 20, MekanismLang.BUTTON_DELETE, () -> {
             int selection = scrollList.getSelection();
             if (selection != -1) {
                 Frequency freq = privateMode ? tile.getPrivateCache(FrequencyType.INVENTORY).get(selection) : tile.getPublicCache(FrequencyType.INVENTORY).get(selection);
@@ -120,7 +122,7 @@ public class GuiQuantumEntangloporter extends GuiConfigurableTile<TileEntityQuan
     }
 
     private void updateButtons() {
-        if (tile.getSecurity().getClientOwner() == null) {
+        if (tile.getOwnerName() == null) {
             return;
         }
         List<String> text = new ArrayList<>();
@@ -146,7 +148,8 @@ public class GuiQuantumEntangloporter extends GuiConfigurableTile<TileEntityQuan
                              tile.getPublicCache(FrequencyType.INVENTORY).get(scrollList.getSelection());
             Frequency frequency = tile.getFrequency(null);
             setButton.active = frequency == null || !frequency.equals(freq);
-            deleteButton.active = tile.getSecurity().getOwnerUUID().equals(freq.getOwner());
+            UUID ownerUUID = tile.getOwnerUUID();
+            deleteButton.active = ownerUUID != null && ownerUUID.equals(freq.getOwner());
         } else {
             setButton.active = false;
             deleteButton.active = false;
@@ -173,8 +176,8 @@ public class GuiQuantumEntangloporter extends GuiConfigurableTile<TileEntityQuan
 
     @Override
     protected void drawForegroundText(@Nonnull MatrixStack matrix, int mouseX, int mouseY) {
-        renderTitleText(matrix, 4);
-        drawString(matrix, OwnerDisplay.of(tile.getSecurity().getOwnerUUID(), tile.getSecurity().getClientOwner()).getTextComponent(), 8, (getYSize() - 96) + 4, titleTextColor());
+        renderTitleText(matrix);
+        drawString(matrix, OwnerDisplay.of(tile.getOwnerUUID(), tile.getOwnerName()).getTextComponent(), 8, ySize - 96 + 4, titleTextColor());
         ITextComponent frequencyComponent = MekanismLang.FREQUENCY.translate();
         drawString(matrix, frequencyComponent, 32, 81, titleTextColor());
         ITextComponent securityComponent = MekanismLang.SECURITY.translate("");

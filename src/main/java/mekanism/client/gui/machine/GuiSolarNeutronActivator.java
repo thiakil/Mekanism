@@ -9,7 +9,6 @@ import mekanism.client.gui.element.progress.GuiProgress;
 import mekanism.client.gui.element.progress.ProgressType;
 import mekanism.client.gui.element.tab.GuiRedstoneControlTab;
 import mekanism.client.gui.element.tab.GuiSecurityTab;
-import mekanism.common.MekanismLang;
 import mekanism.common.inventory.container.tile.MekanismTileContainer;
 import mekanism.common.tile.machine.TileEntitySolarNeutronActivator;
 import net.minecraft.entity.player.PlayerInventory;
@@ -19,13 +18,15 @@ public class GuiSolarNeutronActivator extends GuiMekanismTile<TileEntitySolarNeu
 
     public GuiSolarNeutronActivator(MekanismTileContainer<TileEntitySolarNeutronActivator> container, PlayerInventory inv, ITextComponent title) {
         super(container, inv, title);
+        playerInventoryTitleY += 2;
+        titleY = 4;
         dynamicSlots = true;
     }
 
     @Override
     public void init() {
         super.init();
-        addButton(new GuiSecurityTab<>(this, tile));
+        addButton(new GuiSecurityTab(this, tile));
         addButton(new GuiRedstoneControlTab(this, tile));
         addButton(new GuiGasGauge(() -> tile.inputTank, () -> tile.getGasTanks(null), GaugeType.STANDARD, this, 25, 13));
         addButton(new GuiGasGauge(() -> tile.outputTank, () -> tile.getGasTanks(null), GaugeType.STANDARD, this, 133, 13));
@@ -34,8 +35,8 @@ public class GuiSolarNeutronActivator extends GuiMekanismTile<TileEntitySolarNeu
 
     @Override
     protected void drawForegroundText(@Nonnull MatrixStack matrix, int mouseX, int mouseY) {
-        renderTitleText(matrix, 4);
-        drawString(matrix, MekanismLang.INVENTORY.translate(), 8, (getYSize() - 96) + 4, titleTextColor());
+        renderTitleText(matrix);
+        drawString(matrix, playerInventory.getDisplayName(), playerInventoryTitleX, playerInventoryTitleY, titleTextColor());
         super.drawForegroundText(matrix, mouseX, mouseY);
     }
 }

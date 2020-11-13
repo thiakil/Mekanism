@@ -21,6 +21,7 @@ public class GuiFusionReactorController extends GuiMekanismTile<TileEntityFusion
     public GuiFusionReactorController(MekanismTileContainer<TileEntityFusionReactorController> container, PlayerInventory inv, ITextComponent title) {
         super(container, inv, title);
         dynamicSlots = true;
+        titleY = 5;
     }
 
     @Override
@@ -29,8 +30,7 @@ public class GuiFusionReactorController extends GuiMekanismTile<TileEntityFusion
         if (tile.getMultiblock().isFormed()) {
             addButton(new GuiEnergyTab(() -> {
                 FusionReactorMultiblockData multiblock = tile.getMultiblock();
-                return Arrays.asList(MekanismLang.STORING.translate(
-                      EnergyDisplay.of(multiblock.energyContainer.getEnergy(), multiblock.energyContainer.getMaxEnergy())),
+                return Arrays.asList(MekanismLang.STORING.translate(EnergyDisplay.of(multiblock.energyContainer.getEnergy(), multiblock.energyContainer.getMaxEnergy())),
                       GeneratorsLang.PRODUCING_AMOUNT.translate(EnergyDisplay.of(multiblock.getPassiveGeneration(false, true))));
             }, this));
             addButton(new GuiFusionReactorTab(this, tile, FusionReactorTab.HEAT));
@@ -41,7 +41,7 @@ public class GuiFusionReactorController extends GuiMekanismTile<TileEntityFusion
 
     @Override
     protected void drawForegroundText(@Nonnull MatrixStack matrix, int mouseX, int mouseY) {
-        drawTitleText(matrix, GeneratorsLang.FUSION_REACTOR.translate(), 5);
+        drawTitleText(matrix, GeneratorsLang.FUSION_REACTOR.translate(), titleY);
         drawString(matrix, MekanismLang.MULTIBLOCK_FORMED.translate(), 8, 16, titleTextColor());
         super.drawForegroundText(matrix, mouseX, mouseY);
     }

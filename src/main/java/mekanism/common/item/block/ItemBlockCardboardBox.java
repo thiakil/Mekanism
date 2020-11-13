@@ -14,8 +14,8 @@ import mekanism.common.registration.impl.ItemDeferredRegister;
 import mekanism.common.tags.MekanismTags;
 import mekanism.common.tile.TileEntityCardboardBox;
 import mekanism.common.util.ItemDataUtils;
-import mekanism.common.util.MekanismUtils;
 import mekanism.common.util.SecurityUtils;
+import mekanism.common.util.WorldUtils;
 import mekanism.common.util.text.BooleanStateDisplay.YesNo;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
@@ -64,13 +64,13 @@ public class ItemBlockCardboardBox extends ItemBlockMekanism<BlockCardboardBox> 
         }
         World world = context.getWorld();
         BlockPos pos = context.getPos();
-        if (getBlockData(stack) == null && !player.isSneaking() && !world.isAirBlock(pos)) {
+        if (getBlockData(stack) == null && !player.isSneaking()) {
             BlockState state = world.getBlockState(pos);
-            if (state.getBlockHardness(world, pos) != -1) {
+            if (!state.isAir(world, pos) && state.getBlockHardness(world, pos) != -1) {
                 if (state.isIn(MekanismTags.Blocks.CARDBOARD_BLACKLIST) || MekanismConfig.general.cardboardModBlacklist.get().contains(state.getBlock().getRegistryName().getNamespace())) {
                     return ActionResultType.FAIL;
                 }
-                TileEntity tile = MekanismUtils.getTileEntity(world, pos);
+                TileEntity tile = WorldUtils.getTileEntity(world, pos);
                 if (tile != null) {
                     if (tile.getType().isIn(MekanismTags.TileEntityTypes.CARDBOARD_BLACKLIST) || !SecurityUtils.canAccess(player, tile)) {
                         //If the tile is in the tile entity type blacklist or the player cannot access the tile
@@ -97,7 +97,7 @@ public class ItemBlockCardboardBox extends ItemBlockMekanism<BlockCardboardBox> 
                     world.removeBlock(pos, false);
                     world.setBlockState(pos, getBlock().getDefaultState().with(BlockStateHelper.storageProperty, true));
                     CommonPlayerTracker.monitoringCardboardBox = false;
-                    TileEntityCardboardBox box = MekanismUtils.getTileEntity(TileEntityCardboardBox.class, world, pos);
+                    TileEntityCardboardBox box = WorldUtils.getTileEntity(TileEntityCardboardBox.class, world, pos);
                     if (box != null) {
                         box.storedData = data;
                     }
@@ -115,7 +115,7 @@ public class ItemBlockCardboardBox extends ItemBlockMekanism<BlockCardboardBox> 
             return true;
         }
         if (super.placeBlock(context, state)) {
-            TileEntityCardboardBox tile = MekanismUtils.getTileEntity(TileEntityCardboardBox.class, world, context.getPos());
+            TileEntityCardboardBox tile = WorldUtils.getTileEntity(TileEntityCardboardBox.class, world, context.getPos());
             if (tile != null) {
                 tile.storedData = getBlockData(context.getItem());
             }
