@@ -86,6 +86,7 @@ import mekanism.common.tile.machine.TileEntityEnrichmentChamber;
 import mekanism.common.tile.machine.TileEntityFluidicPlenisher;
 import mekanism.common.tile.machine.TileEntityFormulaicAssemblicator;
 import mekanism.common.tile.machine.TileEntityFuelwoodHeater;
+import mekanism.common.tile.machine.TileEntityHighPressurePump;
 import mekanism.common.tile.machine.TileEntityIsotopicCentrifuge;
 import mekanism.common.tile.machine.TileEntityMetallurgicInfuser;
 import mekanism.common.tile.machine.TileEntityNutritionalLiquifier;
@@ -300,6 +301,14 @@ public class MekanismBlockTypes {
           .withEnergyConfig(MekanismConfig.usage.fluidicPlenisher, MekanismConfig.storage.fluidicPlenisher)
           .withSupportedUpgrades(EnumSet.of(Upgrade.SPEED, Upgrade.ENERGY))
           .withCustomShape(BlockShapes.FLUIDIC_PLENISHER)
+          .build();
+    // High Pressure Pump
+    public static final Machine<TileEntityHighPressurePump> HIGH_PRESSURE_PUMP = MachineBuilder
+          .createMachine(() -> MekanismTileEntityTypes.HIGH_PRESSURE_PUMP, MekanismLang.DESCRIPTION_ELECTRIC_PUMP)
+          //.withGui(() -> MekanismContainerTypes.ELECTRIC_PUMP) TODO
+          .withEnergyConfig(MekanismConfig.usage.highPressurePump, MekanismConfig.storage.highPressurePump)
+          .withSupportedUpgrades(EnumSet.of(Upgrade.SPEED, Upgrade.ENERGY))
+          //.withCustomShape(BlockShapes.ELECTRIC_PUMP)
           .build();
     // Solar Neutron Activator
     public static final Machine<TileEntitySolarNeutronActivator> SOLAR_NEUTRON_ACTIVATOR = MachineBuilder

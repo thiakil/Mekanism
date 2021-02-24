@@ -1,0 +1,10 @@
+{
+  "parent": "mekanism:block/machine",
+  "textures": {
+    "sides": "mekanism:block/steel_casing",
+    "north": "mekanism:block/sps_port",
+    "south": "mekanism:block/sps_port_output",
+    "up": "mekanism:block/steel_casing",
+    "down": "mekanism:block/steel_casing"
+  }
+}
