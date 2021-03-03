@@ -86,9 +86,9 @@ public class BoilerMultiblockData extends MultiblockData implements IValveHandle
     @SyntheticComputerMethod(getter = "getSuperheaters")
     public int superheatingElements;
 
-    @ContainerSync(setter = "setWaterVolume")
+    @ContainerSync(setter = "setWaterVolume", getter = "getWaterVolume")
     private int waterVolume;
-    @ContainerSync(setter = "setSteamVolume")
+    @ContainerSync(setter = "setSteamVolume", getter = "getSteamVolume")
     private int steamVolume;
 
     private int waterTankCapacity;

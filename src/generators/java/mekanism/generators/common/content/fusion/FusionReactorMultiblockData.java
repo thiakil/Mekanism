@@ -74,7 +74,7 @@ public class FusionReactorMultiblockData extends MultiblockData {
     private final Set<ITileHeatHandler> heatHandlers = new ObjectOpenHashSet<>();
 
     @ContainerSync
-    private boolean burning = false;
+    protected boolean burning = false;
 
     @ContainerSync
     public IEnergyContainer energyContainer;
@@ -89,10 +89,10 @@ public class FusionReactorMultiblockData extends MultiblockData {
 
     @ContainerSync(tags = "heat")
     @SyntheticComputerMethod(getter = "getPlasmaTemperature")
-    private double lastPlasmaTemperature = HeatAPI.AMBIENT_TEMP;
+    protected double lastPlasmaTemperature = HeatAPI.AMBIENT_TEMP;
     @ContainerSync
     @SyntheticComputerMethod(getter = "getCaseTemperature")
-    private double lastCaseTemperature = HeatAPI.AMBIENT_TEMP;
+    protected double lastCaseTemperature = HeatAPI.AMBIENT_TEMP;
 
     @ContainerSync(tags = "fuel")
     @WrappingComputerMethod(wrapper = ComputerChemicalTankWrapper.class, methodNames = {"getDeuterium", "getDeuteriumCapacity", "getDeuteriumNeeded"})

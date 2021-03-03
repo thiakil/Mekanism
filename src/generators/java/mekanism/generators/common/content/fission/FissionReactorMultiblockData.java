@@ -104,7 +104,7 @@ public class FissionReactorMultiblockData extends MultiblockData implements IVal
     public double rateLimit = MekanismGeneratorsConfig.generators.defaultBurnRate.get();
     public double burnRemaining = 0, partialWaste = 0;
     @ContainerSync
-    private boolean active;
+    protected boolean active;
 
     private AxisAlignedBB hotZone;
 

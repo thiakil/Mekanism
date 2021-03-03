@@ -80,10 +80,10 @@ public class MultiblockData implements IMekanismInventory, IMekanismFluidHandler
     public BlockPos renderLocation;
 
     @ContainerSync
-    private VoxelCuboid bounds = new VoxelCuboid(0, 0, 0);
+    protected VoxelCuboid bounds = new VoxelCuboid(0, 0, 0);
 
     @ContainerSync
-    private boolean formed;
+    protected boolean formed;
 
     private int currentRedstoneLevel;
 

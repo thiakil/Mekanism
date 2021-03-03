@@ -22,23 +22,23 @@ public class MatrixMultiblockData extends MultiblockData {
     private final MatrixEnergyContainer energyContainer;
 
     @ContainerSync(getter = "getLastOutput")
-    private FloatingLong clientLastOutput = FloatingLong.ZERO;
+    protected FloatingLong clientLastOutput = FloatingLong.ZERO;
     @ContainerSync(getter = "getLastInput")
-    private FloatingLong clientLastInput = FloatingLong.ZERO;
+    protected FloatingLong clientLastInput = FloatingLong.ZERO;
 
     @ContainerSync(getter = "getEnergy")
-    private FloatingLong clientEnergy = FloatingLong.ZERO;
+    protected FloatingLong clientEnergy = FloatingLong.ZERO;
 
     @ContainerSync(tags = "stats", getter = "getTransferCap")
-    private FloatingLong clientMaxTransfer = FloatingLong.ZERO;
+    protected FloatingLong clientMaxTransfer = FloatingLong.ZERO;
 
     @ContainerSync(getter = "getStorageCap")
-    private FloatingLong clientMaxEnergy = FloatingLong.ZERO;
+    protected FloatingLong clientMaxEnergy = FloatingLong.ZERO;
 
     @ContainerSync(tags = "stats", getter = "getProviderCount")
-    private int clientProviders;
+    protected int clientProviders;
     @ContainerSync(tags = "stats", getter = "getCellCount")
-    private int clientCells;
+    protected int clientCells;
 
     @Nonnull
     @WrappingComputerMethod(wrapper = ComputerIInventorySlotWrapper.class, methodNames = "getInputItem")
