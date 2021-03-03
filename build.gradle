@@ -75,6 +75,15 @@ sourceSets {
     datagengenerators { setupDataGenSourceSet(datagengenerators, generators, 'generators') }
     datagendefense { setupDataGenSourceSet(datagendefense, defense, 'defense') }
     datagentools { setupDataGenSourceSet(datagentools, tools, 'tools') }
+
+    mekAnnotationProcessor {
+        java {
+            srcDir 'src/annotationProcessor/java'
+        }
+        resources {
+            srcDir 'src/annotationProcessor/resources'
+        }
+    }
 }
 
 //This method sets up an additional sourceSet in src/$name and adds a reference to the corresponding
@@ -388,6 +397,14 @@ dependencies {
     datagenmainImplementation fg.deobf("curse.maven:i-like-wood-324164:${ilikewood_id}")
     datagenmainImplementation fg.deobf("curse.maven:i-like-wood-biomes-o-plenty-437203:${ilikewood_bop_id}")
     datagenmainRuntimeOnly fg.deobf("curse.maven:projecte-226410:${projecte_id}")
+
+    mekAnnotationProcessorImplementation 'com.google.guava:guava:21.0'
+
+    annotationProcessor sourceSets.mekAnnotationProcessor.runtimeClasspath
+    additionsAnnotationProcessor sourceSets.mekAnnotationProcessor.runtimeClasspath
+    generatorsAnnotationProcessor sourceSets.mekAnnotationProcessor.runtimeClasspath
+    toolsAnnotationProcessor sourceSets.mekAnnotationProcessor.runtimeClasspath
+
 }
 
 processResources {
