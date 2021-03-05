@@ -9,5 +9,5 @@ public interface IClassSyncer<T> {
      * @param obj The value object we're syncing
      * @param consumer stores the resulting data syncers. TODO
      */
-    void register(T obj, Consumer<ISyncableData> consumer);
+    void register(T obj, Consumer<ISyncableData> consumer, String tag);
 }
