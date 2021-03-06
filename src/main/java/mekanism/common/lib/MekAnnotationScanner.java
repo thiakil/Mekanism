@@ -30,7 +30,7 @@ public class MekAnnotationScanner {
         Map<String, Class<?>> classNameCache = new Object2ObjectOpenHashMap<>();
         Map<BaseAnnotationScanner, ScanData> scanners = new Object2ObjectArrayMap<>();
         Map<ElementType, List<ScanData>> elementBasedScanData = new EnumMap<>(ElementType.class);
-        addScanningSupport(scanners, elementBasedScanData, SyncMapper.INSTANCE, ComputerMethodMapper.INSTANCE);
+        addScanningSupport(scanners, elementBasedScanData, ComputerMethodMapper.INSTANCE);
         for (ModFileScanData scanData : ModList.get().getAllScanData()) {
             for (AnnotationData data : scanData.getAnnotations()) {
                 //If the annotation is on a field, and is the sync type

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import mekanism.ContainerSyncRegistry;
 import mekanism.api.Coord4D;
 import mekanism.api.MekanismAPI;
 import mekanism.api.NBTConstants;
@@ -51,6 +52,7 @@ import mekanism.common.content.transporter.PathfinderCache;
 import mekanism.common.content.transporter.TransporterManager;
 import mekanism.common.integration.MekanismHooks;
 import mekanism.common.integration.crafttweaker.content.CrTContentUtils;
+import mekanism.common.inventory.container.sync.dynamic.SyncMapper;
 import mekanism.common.item.block.machine.ItemBlockFluidTank.FluidTankItemDispenseBehavior;
 import mekanism.common.lib.MekAnnotationScanner;
 import mekanism.common.lib.Version;
@@ -353,6 +355,9 @@ public class Mekanism {
 
         //Initialization notification
         logger.info("Version {} initializing...", versionNumber);
+
+        //Container Sync
+        SyncMapper.INSTANCE.addSyncItems(ContainerSyncRegistry.REGISTRY);
 
         //Register with TransmitterNetworkRegistry
         TransmitterNetworkRegistry.initiate();

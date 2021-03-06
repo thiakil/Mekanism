@@ -1,11 +1,13 @@
 package mekanism.generators.common;
 
+import mekanism.GeneratorsContainerSyncRegistry;
 import mekanism.api.chemical.gas.attribute.GasAttributes.Fuel;
 import mekanism.common.Mekanism;
 import mekanism.common.base.IModule;
 import mekanism.common.command.builders.BuildCommand;
 import mekanism.common.config.MekanismConfig;
 import mekanism.common.config.MekanismModConfig;
+import mekanism.common.inventory.container.sync.dynamic.SyncMapper;
 import mekanism.common.lib.Version;
 import mekanism.common.lib.multiblock.MultiblockManager;
 import mekanism.common.registries.MekanismGases;
@@ -94,6 +96,8 @@ public class MekanismGenerators implements IModule {
         BuildCommand.register("fusion", GeneratorsLang.FUSION_REACTOR, new FusionReactorBuilder());
 
         packetHandler.initialize();
+
+        SyncMapper.INSTANCE.addSyncItems(GeneratorsContainerSyncRegistry.REGISTRY);
 
         //Finalization
         Mekanism.logger.info("Loaded 'Mekanism Generators' module.");
