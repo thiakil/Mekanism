@@ -78,22 +78,22 @@ public class SyncMapperProccessor extends AbstractProcessor {
         typeUtils = processingEnv.getTypeUtils();
 
         declaredSyncGenerators = new LinkedHashMap<>();
-        addDeclaredSyncGenerator("mekanism.api.fluid.IExtendedFluidTank", (field, fieldSimpleName, valueParam, statementBuilder) -> {
+        addDeclaredSyncGenerator("mekanism.api.fluid.IExtendedFluidTank", (field, valueParam, statementBuilder) -> {
             CodeBlock getter = CodeBlock.of("()->$N.get().$L.getFluid()", valueParam, field);
             CodeBlock setter = CodeBlock.of("newValue -> $N.get().$L.setStack(newValue)", valueParam, field);
             basicSyncer(statementBuilder, "FluidStack", getter, setter);
         });
-        addDeclaredSyncGenerator("mekanism.api.chemical.gas.IGasTank", (field, fieldSimpleName, valueParam, statementBuilder) -> {
+        addDeclaredSyncGenerator("mekanism.api.chemical.gas.IGasTank", (field, valueParam, statementBuilder) -> {
             CodeBlock getter = CodeBlock.of("()->$N.get().$L.getStack()", valueParam, field);
             CodeBlock setter = CodeBlock.of("newValue -> $N.get().$L.setStack(newValue)", valueParam, field);
             basicSyncer(statementBuilder, "GasStack", getter, setter);
         });
-        addDeclaredSyncGenerator("mekanism.api.energy.IEnergyContainer", (field, fieldSimpleName, valueParam, statementBuilder) -> {
+        addDeclaredSyncGenerator("mekanism.api.energy.IEnergyContainer", (field, valueParam, statementBuilder) -> {
             CodeBlock getter = CodeBlock.of("()->$N.get().$L.getEnergy()", valueParam, field);
             CodeBlock setter = CodeBlock.of("newValue -> $N.get().$L.setEnergy(newValue)", valueParam, field);
             basicSyncer(statementBuilder, "FloatingLong", getter, setter);
         });
-        addDeclaredSyncGenerator("mekanism.common.capabilities.heat.BasicHeatCapacitor", (field, fieldSimpleName, valueParam, statementBuilder) -> {
+        addDeclaredSyncGenerator("mekanism.common.capabilities.heat.BasicHeatCapacitor", (field, valueParam, statementBuilder) -> {
             basicSyncer(statementBuilder, "Double",
                   CodeBlock.of("()->$N.get().$L.getHeatCapacity()", valueParam, field),
                   CodeBlock.of("newValue -> $N.get().$L.setHeatCapacityFromPacket(newValue)", valueParam, field)
@@ -103,7 +103,7 @@ public class SyncMapperProccessor extends AbstractProcessor {
                   CodeBlock.of("newValue -> $N.get().$L.setHeat(newValue)", valueParam, field)
             );
         });
-        DeclaredSyncGenerator mergedChemicalTankGenerator = (field, fieldSimpleName, valueParam, statementBuilder) -> {
+        DeclaredSyncGenerator mergedChemicalTankGenerator = (field, valueParam, statementBuilder) -> {
             basicSyncer(statementBuilder, "GasStack",
                   CodeBlock.of("()->$N.get().$L.getGasTank().getStack()", valueParam, field),
                   CodeBlock.of("newValue -> $N.get().$L.getGasTank().setStack(newValue)", valueParam, field)
@@ -121,16 +121,16 @@ public class SyncMapperProccessor extends AbstractProcessor {
                   CodeBlock.of("newValue -> $N.get().$L.getSlurryTank().setStack(newValue)", valueParam, field)
             );
         };
-        addDeclaredSyncGenerator("mekanism.common.capabilities.merged.MergedTank", (field, fieldSimpleName, valueParam, statementBuilder) -> {
+        addDeclaredSyncGenerator("mekanism.common.capabilities.merged.MergedTank", (field, valueParam, statementBuilder) -> {
             basicSyncer(statementBuilder, "FluidStack",
                   CodeBlock.of("()->$N.get().$L.getFluidTank().getFluid()", valueParam, field),
                   CodeBlock.of("newValue -> $N.get().$L.getFluidTank().setStack(newValue)", valueParam, field)
             );
             //process superclass
-            mergedChemicalTankGenerator.process(field, fieldSimpleName, valueParam, statementBuilder);
+            mergedChemicalTankGenerator.process(field, valueParam, statementBuilder);
         });
         addDeclaredSyncGenerator("mekanism.api.chemical.merged.MergedChemicalTank", mergedChemicalTankGenerator);
-        addDeclaredSyncGenerator("mekanism.common.lib.math.voxel.VoxelCuboid", (field, fieldSimpleName, valueParam, statementBuilder) -> {
+        addDeclaredSyncGenerator("mekanism.common.lib.math.voxel.VoxelCuboid", (field, valueParam, statementBuilder) -> {
             basicSyncer(statementBuilder, "BlockPos",
                   CodeBlock.of("()->$N.get().$L.getMinPos()", valueParam, field),
                   CodeBlock.of("newValue -> $N.get().$L.setMinPos(newValue)", valueParam, field)
@@ -402,7 +402,7 @@ public class SyncMapperProccessor extends AbstractProcessor {
                             Optional<DeclaredSyncGenerator> generator = declaredSyncGenerators.entrySet().stream()
                                   .filter(entry-> typeUtils.isAssignable(fieldType, entry.getKey())).map(Entry::getValue).findFirst();
                             if (generator.isPresent()){
-                                generator.get().process(field, fieldSimpleName, valueParam, statementBuilder);
+                                generator.get().process(field, valueParam, statementBuilder);
                             } else {
                                 messager.printMessage(Kind.ERROR, "Unhandle Declared Type: " + fieldType.toString(), field);
                             }
@@ -436,7 +436,7 @@ public class SyncMapperProccessor extends AbstractProcessor {
     }
 
     interface DeclaredSyncGenerator {
-        void process(VariableElement field, Name fieldSimpleName, ParameterSpec valueParam, Consumer<CodeBlock> statementBuilder);
+        void process(VariableElement field, ParameterSpec valueParam, Consumer<CodeBlock> statementBuilder);
     }
 
     static class ContainerSyncProxy {
