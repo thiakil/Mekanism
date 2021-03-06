@@ -48,7 +48,6 @@ import javax.tools.Diagnostic.Kind;
 
 @SupportedAnnotationTypes(SyncMapperProccessor.CONTAINER_SYNC)
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
-//@AutoService(Processor.class)
 public class SyncMapperProccessor extends AbstractProcessor {
 
     public static final String CONTAINER_SYNC = "mekanism.common.inventory.container.sync.dynamic.ContainerSync";
