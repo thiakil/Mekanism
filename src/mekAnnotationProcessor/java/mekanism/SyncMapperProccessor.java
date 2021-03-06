@@ -44,6 +44,7 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
+import javax.lang.model.util.ElementScanner8;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic.Kind;
@@ -177,14 +178,17 @@ public class SyncMapperProccessor extends AbstractProcessor {
             ParameterSpec consumerParam = ParameterSpec.builder(ParameterizedTypeName.get(ClassName.get(Consumer.class), ClassName.get(iSyncableData)), "consumer").build();
             ParameterSpec tagParam = ParameterSpec.builder(String.class, "tag").build();
 
-            for (TypeElement containingClass : annotatedElements.keySet()) {
+            Set<TypeElement> annotatedTypes = annotatedElements.keySet();
+            for (TypeElement containingClass : annotatedTypes) {
                 try {
                     ClassName containingClassName = ClassName.get(containingClass);
 
                     //build base type
                     ClassName builderClassName = getBuilderClassName(containingClassName);
                     TypeSpec.Builder builderClass = TypeSpec.classBuilder(builderClassName)
-                          .addModifiers(Modifier.PUBLIC, Modifier.FINAL).addSuperinterface(ParameterizedTypeName.get(classSyncer, containingClassName));
+                          .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+                          .addSuperinterface(ParameterizedTypeName.get(classSyncer, containingClassName))
+                          .addOriginatingElement(containingClass);
 
                     //add singleton instance
                     builderClass.addField(FieldSpec.builder(builderClassName, "INSTANCE", Modifier.FINAL, Modifier.PUBLIC, Modifier.STATIC).initializer("new $T()", builderClassName).build());
@@ -199,9 +203,10 @@ public class SyncMapperProccessor extends AbstractProcessor {
                           .addParameter(tagParam);
 
                     //Check if we need to pass to a parent class
-                    TypeElement parentContainer = findApplicableParent(containingClass, annotatedElements.keySet());
+                    TypeElement parentContainer = findApplicableParent(containingClass, annotatedTypes);
                     if (parentContainer != null) {
-                        registerMethod.addStatement("$T.INSTANCE.register($N, $N, $N)", getBuilderClassName(ClassName.get(parentContainer)), valueParam, consumerParam, tagParam);
+                        registerMethod.addStatement("$T.INSTANCE.register($N, $N, $N)", getBuilderClassName(parentContainer), valueParam, consumerParam, tagParam);
+                        builderClass.addOriginatingElement(parentContainer);
                     }
 
                     //sort tags into CodeBlocks
@@ -215,20 +220,23 @@ public class SyncMapperProccessor extends AbstractProcessor {
                     }
 
                     //output all the tags and their relevant syncers
+                    boolean isFirst = true;
+                    Builder ifBlockBuilder = CodeBlock.builder();
+                    String basePattern = "($N.equals($S))";
                     for (Entry<String, Builder> tagElement : tags.entrySet()) {
                         String tag = tagElement.getKey();
                         CodeBlock.Builder builder = tagElement.getValue();
                         if (!builder.isEmpty()) {
-                            registerMethod.addCode(
-                                  CodeBlock.builder()
-                                        .beginControlFlow("if ($N.equals($S))", tagParam, tag)
-                                        .add(builder.build())
-                                        .addStatement("return")
-                                        .endControlFlow()
-                                  .build()
-                            );
+                            if (isFirst) {
+                                ifBlockBuilder.beginControlFlow("if "+basePattern, tagParam, tag);
+                                isFirst = false;
+                            } else {
+                                ifBlockBuilder.nextControlFlow("else if "+basePattern, tagParam, tag);
+                            }
+                            ifBlockBuilder.add(builder.build());
                         }
                     }
+                    registerMethod.addCode(ifBlockBuilder.endControlFlow().build());
 
                     //finish up
                     builderClass.addMethod(registerMethod.build());
@@ -238,32 +246,46 @@ public class SyncMapperProccessor extends AbstractProcessor {
 
                     javaFile.writeTo(filer);
 
-                    registryInitialiser.addStatement("$N.put($T.class, $T.INSTANCE)", registryField, containingClassName, builderClassName);
                 } catch (IOException e) {
                     messager.printMessage(Kind.ERROR, e.toString());
                 }
             }
 
-            //build registry class. TODO: scan for classes who have parents who have processors, or perhaps we need to do this at runtime?
+            //build registry class.
             String registryClassName;
-            if (annotatedElements.keySet().stream().anyMatch(el-> el.getQualifiedName().toString().contains("mekanism.generators"))){
+            if (annotatedTypes.stream().anyMatch(el-> el.getQualifiedName().toString().contains("mekanism.generators"))){
                 registryClassName = "GeneratorsContainerSyncRegistry";
-            } else if (annotatedElements.keySet().stream().anyMatch(el-> el.getQualifiedName().toString().contains("mekanism.additions"))){
+            } else if (annotatedTypes.stream().anyMatch(el-> el.getQualifiedName().toString().contains("mekanism.additions"))){
                 registryClassName = "AdditionsContainerSyncRegistry";
-            } else if (annotatedElements.keySet().stream().anyMatch(el-> el.getQualifiedName().toString().contains("mekanism.tools"))){
+            } else if (annotatedTypes.stream().anyMatch(el-> el.getQualifiedName().toString().contains("mekanism.tools"))){
                 registryClassName = "ToolsContainerSyncRegistry";
-            } else if (annotatedElements.keySet().stream().anyMatch(el-> el.getQualifiedName().toString().contains("mekanism.defense"))){
+            } else if (annotatedTypes.stream().anyMatch(el-> el.getQualifiedName().toString().contains("mekanism.defense"))){
                 registryClassName = "DefenceContainerSyncRegistry";
             } else {
                 registryClassName = "ContainerSyncRegistry";
             }
-            TypeSpec registryClass = TypeSpec.classBuilder(registryClassName)
+            TypeSpec.Builder registryClass = TypeSpec.classBuilder(registryClassName)
                   .addModifiers(Modifier.PUBLIC)
                   .addField(
                         registryField
-                  ).addStaticBlock(registryInitialiser.build()).build();
+                  );
+            //locate any Types (incl inners) that have a syncer or have a superclass with one
+            for (Element rootElement : roundEnv.getRootElements()) {
+                rootElement.accept(new ElementScanner8<Void, Void>(){
+                    @Override
+                    public Void visitType(TypeElement e, Void unused) {
+                        TypeElement applicableClass = annotatedTypes.stream().anyMatch(el->typeUtils.isSameType(e.asType(), el.asType())) ? e : findApplicableParent(e, annotatedTypes);
+                        if (applicableClass != null) {
+                            registryInitialiser.addStatement("$N.put($T.class, $T.INSTANCE)", registryField, ClassName.get(e), getBuilderClassName(applicableClass));
+                            registryClass.addOriginatingElement(applicableClass);
+                        }
+                        return super.visitType(e, unused);
+                    }
+                }, null);
+            }
+            registryClass.addStaticBlock(registryInitialiser.build());
             try {
-                JavaFile.builder("mekanism", registryClass).build().writeTo(filer);
+                JavaFile.builder("mekanism", registryClass.build()).build().writeTo(filer);
             } catch (IOException e) {
                 messager.printMessage(Kind.ERROR, e.toString());
             }
@@ -274,6 +296,10 @@ public class SyncMapperProccessor extends AbstractProcessor {
 
     private static ClassName getBuilderClassName(ClassName containerClassName) {
         return containerClassName.peerClass(containerClassName.simpleName() + GENERATED_CLASS_SUFFIX);
+    }
+
+    private static ClassName getBuilderClassName(TypeElement containerClass) {
+        return getBuilderClassName(ClassName.get(containerClass));
     }
 
     /**
@@ -298,7 +324,7 @@ public class SyncMapperProccessor extends AbstractProcessor {
               .filter(el->typeUtils.isSameType(parentMirror, el.asType())) // if it's in our list of annotated items, it's valid
               .findFirst()
               .orElseGet(()->{//if the builder class exists (perhaps from another source set) it's valid
-            TypeElement parentBuilder = elementUtils.getTypeElement(getBuilderClassName(ClassName.get(parentEl)).canonicalName());
+            TypeElement parentBuilder = elementUtils.getTypeElement(getBuilderClassName(parentEl).canonicalName());
             if (parentBuilder != null) {
                 return parentEl;
             }
