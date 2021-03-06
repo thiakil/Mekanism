@@ -14,10 +14,8 @@ import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
 import com.squareup.javapoet.WildcardTypeName;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -26,7 +24,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
@@ -35,11 +32,8 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
@@ -435,56 +429,4 @@ public class SyncMapperProccessor extends AbstractProcessor {
         return typeEl;
     }
 
-    interface DeclaredSyncGenerator {
-        void process(VariableElement field, ParameterSpec valueParam, Consumer<CodeBlock> statementBuilder);
-    }
-
-    static class ContainerSyncProxy {
-        final String getter;
-        final String setter;
-        final List<String> tags;
-
-        private ContainerSyncProxy(String getter, String setter, List<String> tags) {
-            this.getter = getter;
-            this.setter = setter;
-            this.tags = tags;
-        }
-
-        private static final List<String> DEFAULT_TAG = Collections.singletonList("default");
-
-        static ContainerSyncProxy from(Messager messager, VariableElement field) {
-            AnnotationMirror annotationMirror = field.getAnnotationMirrors().stream().filter(mirror->mirror.getAnnotationType().toString().equals(CONTAINER_SYNC)).findFirst().orElse(null);
-            if (annotationMirror == null) {
-                messager.printMessage(Kind.ERROR, "Couldn't get Annotation info!", field);
-                throw new NullPointerException("Couldn't get Annotation info! "+field);
-            }
-            String getter = null, setter = null;
-            List<String> tags = DEFAULT_TAG;
-            for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> element : annotationMirror.getElementValues().entrySet()) {
-                String key = element.getKey().getSimpleName().toString();
-                switch (key) {
-                    case "getter":
-                        getter = element.getValue().getValue().toString();
-                        if (getter.equals("")) {
-                            getter = null;
-                        }
-                        break;
-                    case "setter":
-                        setter = element.getValue().getValue().toString();
-                        if (setter.equals("")) {
-                            setter = null;
-                        }
-                        break;
-                    case "tags":
-                        tags = ((List<?>) element.getValue().getValue()).stream().map(it -> {
-                            //messager.printMessage(Kind.WARNING, "found "+it.getClass(), element.getKey());
-                            AnnotationValue value = (AnnotationValue) it;
-                            return value.getValue().toString();
-                        }).collect(Collectors.toList());
-                        break;
-                }
-            }
-            return new ContainerSyncProxy(getter, setter, tags);
-        }
-    }
 }
