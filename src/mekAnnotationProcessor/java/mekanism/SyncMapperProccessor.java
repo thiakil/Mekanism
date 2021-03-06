@@ -73,8 +73,6 @@ public class SyncMapperProccessor extends AbstractProcessor {
         elementUtils = processingEnv.getElementUtils();
         typeUtils = processingEnv.getTypeUtils();
 
-        messager.printMessage(Kind.WARNING, "doing init");
-
         declaredSyncGenerators = new LinkedHashMap<>();
         addDeclaredSyncGenerator("mekanism.api.fluid.IExtendedFluidTank", (field, fieldSimpleName, valueParam, statementBuilder) -> {
             CodeBlock getter = CodeBlock.of("()->$N.$L.getFluid()", valueParam, field);
@@ -101,46 +99,33 @@ public class SyncMapperProccessor extends AbstractProcessor {
                   CodeBlock.of("newValue -> $N.$L.setHeat(newValue)", valueParam, field)
             );
         });
+        DeclaredSyncGenerator mergedChemicalTankGenerator = (field, fieldSimpleName, valueParam, statementBuilder) -> {
+            basicSyncer(statementBuilder, "GasStack",
+                  CodeBlock.of("()->$N.$L.getGasTank().getStack()", valueParam, field),
+                  CodeBlock.of("newValue -> $N.$L.getGasTank().setStack(newValue)", valueParam, field)
+            );
+            basicSyncer(statementBuilder, "InfusionStack",
+                  CodeBlock.of("()->$N.$L.getInfusionTank().getStack()", valueParam, field),
+                  CodeBlock.of("newValue -> $N.$L.getInfusionTank().setStack(newValue)", valueParam, field)
+            );
+            basicSyncer(statementBuilder, "PigmentStack",
+                  CodeBlock.of("()->$N.$L.getPigmentTank().getStack()", valueParam, field),
+                  CodeBlock.of("newValue -> $N.$L.getPigmentTank().setStack(newValue)", valueParam, field)
+            );
+            basicSyncer(statementBuilder, "SlurryStack",
+                  CodeBlock.of("()->$N.$L.getSlurryTank().getStack()", valueParam, field),
+                  CodeBlock.of("newValue -> $N.$L.getSlurryTank().setStack(newValue)", valueParam, field)
+            );
+        };
         addDeclaredSyncGenerator("mekanism.common.capabilities.merged.MergedTank", (field, fieldSimpleName, valueParam, statementBuilder) -> {
             basicSyncer(statementBuilder, "FluidStack",
                   CodeBlock.of("()->$N.$L.getFluidTank().getFluid()", valueParam, field),
                   CodeBlock.of("newValue -> $N.$L.getFluidTank().setStack(newValue)", valueParam, field)
             );
-            basicSyncer(statementBuilder, "GasStack",
-                  CodeBlock.of("()->$N.$L.getGasTank().getStack()", valueParam, field),
-                  CodeBlock.of("newValue -> $N.$L.getGasTank().setStack(newValue)", valueParam, field)
-            );
-            basicSyncer(statementBuilder, "InfusionStack",
-                  CodeBlock.of("()->$N.$L.getInfusionTank().getStack()", valueParam, field),
-                  CodeBlock.of("newValue -> $N.$L.getInfusionTank().setStack(newValue)", valueParam, field)
-            );
-            basicSyncer(statementBuilder, "PigmentStack",
-                  CodeBlock.of("()->$N.$L.getPigmentTank().getStack()", valueParam, field),
-                  CodeBlock.of("newValue -> $N.$L.getPigmentTank().setStack(newValue)", valueParam, field)
-            );
-            basicSyncer(statementBuilder, "SlurryStack",
-                  CodeBlock.of("()->$N.$L.getSlurryTank().getStack()", valueParam, field),
-                  CodeBlock.of("newValue -> $N.$L.getSlurryTank().setStack(newValue)", valueParam, field)
-            );
+            //process superclass
+            mergedChemicalTankGenerator.process(field, fieldSimpleName, valueParam, statementBuilder);
         });
-        addDeclaredSyncGenerator("mekanism.api.chemical.merged.MergedChemicalTank", (field, fieldSimpleName, valueParam, statementBuilder) -> {
-            basicSyncer(statementBuilder, "GasStack",
-                  CodeBlock.of("()->$N.$L.getGasTank().getStack()", valueParam, field),
-                  CodeBlock.of("newValue -> $N.$L.getGasTank().setStack(newValue)", valueParam, field)
-            );
-            basicSyncer(statementBuilder, "InfusionStack",
-                  CodeBlock.of("()->$N.$L.getInfusionTank().getStack()", valueParam, field),
-                  CodeBlock.of("newValue -> $N.$L.getInfusionTank().setStack(newValue)", valueParam, field)
-            );
-            basicSyncer(statementBuilder, "PigmentStack",
-                  CodeBlock.of("()->$N.$L.getPigmentTank().getStack()", valueParam, field),
-                  CodeBlock.of("newValue -> $N.$L.getPigmentTank().setStack(newValue)", valueParam, field)
-            );
-            basicSyncer(statementBuilder, "SlurryStack",
-                  CodeBlock.of("()->$N.$L.getSlurryTank().getStack()", valueParam, field),
-                  CodeBlock.of("newValue -> $N.$L.getSlurryTank().setStack(newValue)", valueParam, field)
-            );
-        });
+        addDeclaredSyncGenerator("mekanism.api.chemical.merged.MergedChemicalTank", mergedChemicalTankGenerator);
         addDeclaredSyncGenerator("mekanism.common.lib.math.voxel.VoxelCuboid", (field, fieldSimpleName, valueParam, statementBuilder) -> {
             basicSyncer(statementBuilder, "BlockPos",
                   CodeBlock.of("()->$N.$L.getMinPos()", valueParam, field),
@@ -259,12 +244,24 @@ public class SyncMapperProccessor extends AbstractProcessor {
                 }
             }
 
-            //build registry class
-            TypeSpec registryClass = TypeSpec.classBuilder("ContainerSyncRegistry")
+            //build registry class. TODO: scan for classes who have parents who have processors, or perhaps we need to do this at runtime?
+            String registryClassName;
+            if (annotatedElements.keySet().stream().anyMatch(el-> el.getQualifiedName().toString().contains("mekanism.generators"))){
+                registryClassName = "GeneratorsContainerSyncRegistry";
+            } else if (annotatedElements.keySet().stream().anyMatch(el-> el.getQualifiedName().toString().contains("mekanism.additions"))){
+                registryClassName = "AdditionsContainerSyncRegistry";
+            } else if (annotatedElements.keySet().stream().anyMatch(el-> el.getQualifiedName().toString().contains("mekanism.tools"))){
+                registryClassName = "ToolsContainerSyncRegistry";
+            } else if (annotatedElements.keySet().stream().anyMatch(el-> el.getQualifiedName().toString().contains("mekanism.defense"))){
+                registryClassName = "DefenceContainerSyncRegistry";
+            } else {
+                registryClassName = "ContainerSyncRegistry";
+            }
+            TypeSpec registryClass = TypeSpec.classBuilder(registryClassName)
                   .addModifiers(Modifier.PUBLIC)
                   .addField(
                         registryField
-                  ).addInitializerBlock(registryInitialiser.build()).build();
+                  ).addStaticBlock(registryInitialiser.build()).build();
             try {
                 JavaFile.builder("mekanism", registryClass).build().writeTo(filer);
             } catch (IOException e) {
@@ -279,7 +276,13 @@ public class SyncMapperProccessor extends AbstractProcessor {
         return containerClassName.peerClass(containerClassName.simpleName() + GENERATED_CLASS_SUFFIX);
     }
 
-    //@Nullable
+    /**
+     * Recursively find a superclass which has annotated methods (i.e. a builder does or will exist)
+     *
+     * @param current The type whose parent we want to find
+     * @param allTypes the set of annotated type elements we found in this round
+     * @return an applicable parent or null
+     */
     private TypeElement findApplicableParent(TypeElement current, Set<TypeElement> allTypes) {
         TypeMirror parentMirror = current.getSuperclass();
         if (parentMirror.getKind() == TypeKind.NONE) {
@@ -291,7 +294,16 @@ public class SyncMapperProccessor extends AbstractProcessor {
             return null;
         }
         TypeElement parentEl = (TypeElement) element;
-        return allTypes.stream().filter(el->typeUtils.isSameType(parentMirror, el.asType())).findFirst().orElseGet(()->findApplicableParent(parentEl, allTypes));
+        return allTypes.stream()
+              .filter(el->typeUtils.isSameType(parentMirror, el.asType())) // if it's in our list of annotated items, it's valid
+              .findFirst()
+              .orElseGet(()->{//if the builder class exists (perhaps from another source set) it's valid
+            TypeElement parentBuilder = elementUtils.getTypeElement(getBuilderClassName(ClassName.get(parentEl)).canonicalName());
+            if (parentBuilder != null) {
+                return parentEl;
+            }
+            return findApplicableParent(parentEl, allTypes);
+        });
     }
 
     private void processField(VariableElement field, ContainerSyncProxy containerSyncAnnotation, ParameterSpec valueParam, Consumer<CodeBlock> statementBuilder) {
