@@ -345,7 +345,6 @@ public class SyncMapperProccessor extends AbstractProcessor {
         if (containerSyncAnnotation.setter != null) {
             setter = CodeBlock.of("$N::$L", valueParam, containerSyncAnnotation.setter);
         }
-        //todo tags
 
         if (field.getModifiers().contains(Modifier.PRIVATE) && (containerSyncAnnotation.getter == null || containerSyncAnnotation.setter == null)) {
             messager.printMessage(Kind.ERROR, "Getter and Setter required for private fields. Alternatively, use protected/package-private modifier", field);
