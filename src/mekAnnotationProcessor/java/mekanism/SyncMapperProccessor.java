@@ -11,6 +11,8 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.TypeVariableName;
+import com.squareup.javapoet.WildcardTypeName;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -23,6 +25,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
@@ -76,52 +79,52 @@ public class SyncMapperProccessor extends AbstractProcessor {
 
         declaredSyncGenerators = new LinkedHashMap<>();
         addDeclaredSyncGenerator("mekanism.api.fluid.IExtendedFluidTank", (field, fieldSimpleName, valueParam, statementBuilder) -> {
-            CodeBlock getter = CodeBlock.of("()->$N.$L.getFluid()", valueParam, field);
-            CodeBlock setter = CodeBlock.of("newValue -> $N.$L.setStack(newValue)", valueParam, field);
+            CodeBlock getter = CodeBlock.of("()->$N.get().$L.getFluid()", valueParam, field);
+            CodeBlock setter = CodeBlock.of("newValue -> $N.get().$L.setStack(newValue)", valueParam, field);
             basicSyncer(statementBuilder, "FluidStack", getter, setter);
         });
         addDeclaredSyncGenerator("mekanism.api.chemical.gas.IGasTank", (field, fieldSimpleName, valueParam, statementBuilder) -> {
-            CodeBlock getter = CodeBlock.of("()->$N.$L.getStack()", valueParam, field);
-            CodeBlock setter = CodeBlock.of("newValue -> $N.$L.setStack(newValue)", valueParam, field);
+            CodeBlock getter = CodeBlock.of("()->$N.get().$L.getStack()", valueParam, field);
+            CodeBlock setter = CodeBlock.of("newValue -> $N.get().$L.setStack(newValue)", valueParam, field);
             basicSyncer(statementBuilder, "GasStack", getter, setter);
         });
         addDeclaredSyncGenerator("mekanism.api.energy.IEnergyContainer", (field, fieldSimpleName, valueParam, statementBuilder) -> {
-            CodeBlock getter = CodeBlock.of("()->$N.$L.getEnergy()", valueParam, field);
-            CodeBlock setter = CodeBlock.of("newValue -> $N.$L.setEnergy(newValue)", valueParam, field);
+            CodeBlock getter = CodeBlock.of("()->$N.get().$L.getEnergy()", valueParam, field);
+            CodeBlock setter = CodeBlock.of("newValue -> $N.get().$L.setEnergy(newValue)", valueParam, field);
             basicSyncer(statementBuilder, "FloatingLong", getter, setter);
         });
         addDeclaredSyncGenerator("mekanism.common.capabilities.heat.BasicHeatCapacitor", (field, fieldSimpleName, valueParam, statementBuilder) -> {
             basicSyncer(statementBuilder, "Double",
-                  CodeBlock.of("()->$N.$L.getHeatCapacity()", valueParam, field),
-                  CodeBlock.of("newValue -> $N.$L.setHeatCapacityFromPacket(newValue)", valueParam, field)
+                  CodeBlock.of("()->$N.get().$L.getHeatCapacity()", valueParam, field),
+                  CodeBlock.of("newValue -> $N.get().$L.setHeatCapacityFromPacket(newValue)", valueParam, field)
             );
             basicSyncer(statementBuilder, "Double",
-                  CodeBlock.of("()->$N.$L.getHeat()", valueParam, field),
-                  CodeBlock.of("newValue -> $N.$L.setHeat(newValue)", valueParam, field)
+                  CodeBlock.of("()->$N.get().$L.getHeat()", valueParam, field),
+                  CodeBlock.of("newValue -> $N.get().$L.setHeat(newValue)", valueParam, field)
             );
         });
         DeclaredSyncGenerator mergedChemicalTankGenerator = (field, fieldSimpleName, valueParam, statementBuilder) -> {
             basicSyncer(statementBuilder, "GasStack",
-                  CodeBlock.of("()->$N.$L.getGasTank().getStack()", valueParam, field),
-                  CodeBlock.of("newValue -> $N.$L.getGasTank().setStack(newValue)", valueParam, field)
+                  CodeBlock.of("()->$N.get().$L.getGasTank().getStack()", valueParam, field),
+                  CodeBlock.of("newValue -> $N.get().$L.getGasTank().setStack(newValue)", valueParam, field)
             );
             basicSyncer(statementBuilder, "InfusionStack",
-                  CodeBlock.of("()->$N.$L.getInfusionTank().getStack()", valueParam, field),
-                  CodeBlock.of("newValue -> $N.$L.getInfusionTank().setStack(newValue)", valueParam, field)
+                  CodeBlock.of("()->$N.get().$L.getInfusionTank().getStack()", valueParam, field),
+                  CodeBlock.of("newValue -> $N.get().$L.getInfusionTank().setStack(newValue)", valueParam, field)
             );
             basicSyncer(statementBuilder, "PigmentStack",
-                  CodeBlock.of("()->$N.$L.getPigmentTank().getStack()", valueParam, field),
-                  CodeBlock.of("newValue -> $N.$L.getPigmentTank().setStack(newValue)", valueParam, field)
+                  CodeBlock.of("()->$N.get().$L.getPigmentTank().getStack()", valueParam, field),
+                  CodeBlock.of("newValue -> $N.get().$L.getPigmentTank().setStack(newValue)", valueParam, field)
             );
             basicSyncer(statementBuilder, "SlurryStack",
-                  CodeBlock.of("()->$N.$L.getSlurryTank().getStack()", valueParam, field),
-                  CodeBlock.of("newValue -> $N.$L.getSlurryTank().setStack(newValue)", valueParam, field)
+                  CodeBlock.of("()->$N.get().$L.getSlurryTank().getStack()", valueParam, field),
+                  CodeBlock.of("newValue -> $N.get().$L.getSlurryTank().setStack(newValue)", valueParam, field)
             );
         };
         addDeclaredSyncGenerator("mekanism.common.capabilities.merged.MergedTank", (field, fieldSimpleName, valueParam, statementBuilder) -> {
             basicSyncer(statementBuilder, "FluidStack",
-                  CodeBlock.of("()->$N.$L.getFluidTank().getFluid()", valueParam, field),
-                  CodeBlock.of("newValue -> $N.$L.getFluidTank().setStack(newValue)", valueParam, field)
+                  CodeBlock.of("()->$N.get().$L.getFluidTank().getFluid()", valueParam, field),
+                  CodeBlock.of("newValue -> $N.get().$L.getFluidTank().setStack(newValue)", valueParam, field)
             );
             //process superclass
             mergedChemicalTankGenerator.process(field, fieldSimpleName, valueParam, statementBuilder);
@@ -129,12 +132,12 @@ public class SyncMapperProccessor extends AbstractProcessor {
         addDeclaredSyncGenerator("mekanism.api.chemical.merged.MergedChemicalTank", mergedChemicalTankGenerator);
         addDeclaredSyncGenerator("mekanism.common.lib.math.voxel.VoxelCuboid", (field, fieldSimpleName, valueParam, statementBuilder) -> {
             basicSyncer(statementBuilder, "BlockPos",
-                  CodeBlock.of("()->$N.$L.getMinPos()", valueParam, field),
-                  CodeBlock.of("newValue -> $N.$L.setMinPos(newValue)", valueParam, field)
+                  CodeBlock.of("()->$N.get().$L.getMinPos()", valueParam, field),
+                  CodeBlock.of("newValue -> $N.get().$L.setMinPos(newValue)", valueParam, field)
             );
             basicSyncer(statementBuilder, "BlockPos",
-                  CodeBlock.of("()->$N.$L.getMaxPos()", valueParam, field),
-                  CodeBlock.of("newValue -> $N.$L.setMaxPos(newValue)", valueParam, field)
+                  CodeBlock.of("()->$N.get().$L.getMaxPos()", valueParam, field),
+                  CodeBlock.of("newValue -> $N.get().$L.setMaxPos(newValue)", valueParam, field)
             );
         });
 
@@ -168,8 +171,8 @@ public class SyncMapperProccessor extends AbstractProcessor {
             FieldSpec registryField = FieldSpec.builder(
                   ParameterizedTypeName.get(
                         ClassName.get(Map.class),
-                        ClassName.get(Class.class),
-                        classSyncer
+                        ParameterizedTypeName.get(ClassName.get(Class.class), WildcardTypeName.subtypeOf(Object.class)),//Class<?>
+                        ParameterizedTypeName.get(classSyncer, WildcardTypeName.subtypeOf(Object.class))//IClassSyncer<?>
                   ), "REGISTRY", Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL
             ).initializer("new $T<>()", HashMap.class).build();
             CodeBlock.Builder registryInitialiser = CodeBlock.builder();
@@ -185,16 +188,18 @@ public class SyncMapperProccessor extends AbstractProcessor {
 
                     //build base type
                     ClassName builderClassName = getBuilderClassName(containingClassName);
+                    TypeVariableName targetTypeVariable = TypeVariableName.get("TARGET");
                     TypeSpec.Builder builderClass = TypeSpec.classBuilder(builderClassName)
                           .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-                          .addSuperinterface(ParameterizedTypeName.get(classSyncer, containingClassName))
-                          .addOriginatingElement(containingClass);
+                          .addSuperinterface(ParameterizedTypeName.get(classSyncer, targetTypeVariable))
+                          .addOriginatingElement(containingClass)
+                          .addTypeVariable(targetTypeVariable.withBounds(containingClassName));
 
                     //add singleton instance
                     builderClass.addField(FieldSpec.builder(builderClassName, "INSTANCE", Modifier.FINAL, Modifier.PUBLIC, Modifier.STATIC).initializer("new $T()", builderClassName).build());
 
                     //build register method
-                    ParameterSpec valueParam = ParameterSpec.builder(containingClassName, "obj").build();
+                    ParameterSpec valueParam = ParameterSpec.builder(ParameterizedTypeName.get(ClassName.get(Supplier.class), targetTypeVariable), "target").build();
                     MethodSpec.Builder registerMethod = MethodSpec.methodBuilder("register")
                           .addModifiers(Modifier.PUBLIC).addAnnotation(Override.class)
                           .returns(void.class)
@@ -266,9 +271,7 @@ public class SyncMapperProccessor extends AbstractProcessor {
             }
             TypeSpec.Builder registryClass = TypeSpec.classBuilder(registryClassName)
                   .addModifiers(Modifier.PUBLIC)
-                  .addField(
-                        registryField
-                  );
+                  .addField(registryField);
             //locate any Types (incl inners) that have a syncer or have a superclass with one
             for (Element rootElement : roundEnv.getRootElements()) {
                 rootElement.accept(new ElementScanner8<Void, Void>(){
@@ -336,14 +339,14 @@ public class SyncMapperProccessor extends AbstractProcessor {
         TypeMirror fieldType = field.asType();
 
         Name fieldSimpleName = field.getSimpleName();
-        CodeBlock getter = CodeBlock.of("()->$N.$L", valueParam, field);
-        CodeBlock setter = CodeBlock.of("newValue->$N.$L = newValue", valueParam, field);
+        CodeBlock getter = CodeBlock.of("()->$N.get().$L", valueParam, field);
+        CodeBlock setter = CodeBlock.of("newValue->$N.get().$L = newValue", valueParam, field);
 
         if (containerSyncAnnotation.getter != null) {
-            getter = CodeBlock.of("$N::$L", valueParam, containerSyncAnnotation.getter);
+            getter = CodeBlock.of("()->$N.get().$L()", valueParam, containerSyncAnnotation.getter);
         }
         if (containerSyncAnnotation.setter != null) {
-            setter = CodeBlock.of("$N::$L", valueParam, containerSyncAnnotation.setter);
+            setter = CodeBlock.of("newValue->$N.get().$L(newValue)", valueParam, containerSyncAnnotation.setter);
         }
 
         if (field.getModifiers().contains(Modifier.PRIVATE) && (containerSyncAnnotation.getter == null || containerSyncAnnotation.setter == null)) {
