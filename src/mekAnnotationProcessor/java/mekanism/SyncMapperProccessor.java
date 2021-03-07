@@ -397,7 +397,7 @@ public class SyncMapperProccessor extends AbstractProcessor {
                             if (generator.isPresent()){
                                 generator.get().process(field, valueParam, statementBuilder);
                             } else {
-                                messager.printMessage(Kind.ERROR, "Unhandle Declared Type: " + fieldType.toString(), field);
+                                messager.printMessage(Kind.ERROR, "Unhandled Declared Type: " + fieldType.toString(), field);
                             }
                         }
                         break;
