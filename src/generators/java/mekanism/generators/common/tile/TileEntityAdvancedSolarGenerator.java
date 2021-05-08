@@ -5,7 +5,7 @@ import mekanism.api.IEvaporationSolar;
 import mekanism.api.RelativeSide;
 import mekanism.api.math.FloatingLong;
 import mekanism.common.capabilities.Capabilities;
-import mekanism.common.capabilities.resolver.basic.BasicCapabilityResolver;
+import mekanism.common.capabilities.resolver.BasicCapabilityResolver;
 import mekanism.common.tile.interfaces.IBoundingBlock;
 import mekanism.common.util.WorldUtils;
 import mekanism.generators.common.config.MekanismGeneratorsConfig;
@@ -13,7 +13,6 @@ import mekanism.generators.common.registries.GeneratorsBlocks;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
 public class TileEntityAdvancedSolarGenerator extends TileEntitySolarGenerator implements IBoundingBlock, IEvaporationSolar {
 
@@ -23,8 +22,8 @@ public class TileEntityAdvancedSolarGenerator extends TileEntitySolarGenerator i
     }
 
     @Override
-    protected RelativeSide getEnergySide() {
-        return RelativeSide.FRONT;
+    protected RelativeSide[] getEnergySides() {
+        return new RelativeSide[]{RelativeSide.FRONT, RelativeSide.BOTTOM};
     }
 
     @Override
@@ -60,9 +59,8 @@ public class TileEntityAdvancedSolarGenerator extends TileEntitySolarGenerator i
     }
 
     @Override
-    protected boolean canSeeSky() {
-        World world = getWorld();
-        return world != null && world.canBlockSeeSky(getPos().up(2));
+    protected BlockPos getSkyCheckPos() {
+        return pos.up(2);
     }
 
     @Nonnull

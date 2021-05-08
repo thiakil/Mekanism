@@ -63,7 +63,7 @@ public class MekanismTags {
         public static final INamedTag<Item> CONFIGURATORS = tag("configurators");
         public static final INamedTag<Item> WRENCHES = forgeTag("wrenches");
         public static final INamedTag<Item> TOOLS = forgeTag("tools");
-        public static final INamedTag<Item> TOOLS_WRENCHES = forgeTag("tools/wrenches");
+        public static final INamedTag<Item> TOOLS_WRENCH = forgeTag("tools/wrench");
 
         public static final INamedTag<Item> BATTERIES = forgeTag("batteries");
 
@@ -229,6 +229,9 @@ public class MekanismTags {
         }
 
         public static final INamedTag<Gas> WATER_VAPOR = tag("water_vapor");
+        //TODO - 10.1: Think of some way via tooltips or something to portray easier which gases won't decay
+        // rather than forcing people to know or use a dictionary
+        public static final INamedTag<Gas> WASTE_BARREL_DECAY_BLACKLIST = tag("waste_barrel_decay_blacklist");
 
         private static INamedTag<Gas> tag(String name) {
             return ChemicalTags.GAS.tag(Mekanism.rl(name));

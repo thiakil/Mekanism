@@ -4,7 +4,6 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager.DestFactor;
 import com.mojang.blaze3d.platform.GlStateManager.SourceFactor;
 import com.mojang.blaze3d.systems.RenderSystem;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
@@ -12,26 +11,23 @@ import javax.annotation.Nonnull;
 import mekanism.api.text.ILangEntry;
 import mekanism.client.gui.GuiMekanism;
 import mekanism.client.gui.GuiUtils;
+import mekanism.client.gui.GuiUtils.TilingDirection;
 import mekanism.client.gui.IGuiWrapper;
 import mekanism.client.render.IFancyFontRenderer;
 import mekanism.client.render.MekanismRenderer;
-import mekanism.common.config.MekanismConfig;
 import mekanism.common.util.MekanismUtils;
 import mekanism.common.util.MekanismUtils.ResourceType;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 
 public abstract class GuiElement extends Widget implements IFancyFontRenderer {
 
-    private static final NumberFormat intFormatter = NumberFormat.getIntegerInstance();
     private static final int BUTTON_TEX_X = 200, BUTTON_TEX_Y = 60;
 
     public static final Minecraft minecraft = Minecraft.getInstance();
@@ -357,17 +353,17 @@ public abstract class GuiElement extends Widget implements IFancyFontRenderer {
     @Override
     public void playDownSound(@Nonnull SoundHandler soundHandler) {
         if (playClickSound) {
-            //Respect the sound config
-            soundHandler.play(SimpleSound.master(SoundEvents.UI_BUTTON_CLICK, 1, MekanismConfig.client.baseSoundVolume.get()));
+            super.playDownSound(soundHandler);
         }
     }
 
-    protected void drawTiledSprite(MatrixStack matrix, int xPosition, int yPosition, int yOffset, int desiredWidth, int desiredHeight, TextureAtlasSprite sprite) {
-        GuiUtils.drawTiledSprite(matrix, xPosition, yPosition, yOffset, desiredWidth, desiredHeight, sprite, 16, 16, getBlitOffset());
+    protected void playClickSound() {
+        super.playDownSound(minecraft.getSoundHandler());
     }
 
-    protected static String formatInt(long l) {
-        return intFormatter.format(l);
+    protected void drawTiledSprite(MatrixStack matrix, int xPosition, int yPosition, int yOffset, int desiredWidth, int desiredHeight, TextureAtlasSprite sprite,
+          TilingDirection tilingDirection) {
+        GuiUtils.drawTiledSprite(matrix, xPosition, yPosition, yOffset, desiredWidth, desiredHeight, sprite, 16, 16, getBlitOffset(), tilingDirection);
     }
 
     public enum ButtonBackground {

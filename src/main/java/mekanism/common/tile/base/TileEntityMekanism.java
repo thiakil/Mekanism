@@ -408,9 +408,13 @@ public abstract class TileEntityMekanism extends CapabilityTileEntity implements
             int newRedstoneLevel = getRedstoneLevel();
             if (newRedstoneLevel != currentRedstoneLevel) {
                 currentRedstoneLevel = newRedstoneLevel;
-                world.updateComparatorOutputLevel(pos, getBlockType());
+                notifyComparatorChange();
             }
         }
+    }
+
+    protected void notifyComparatorChange() {
+        world.updateComparatorOutputLevel(pos, getBlockType());
     }
 
     public WrenchResult tryWrench(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult rayTrace) {
@@ -477,7 +481,7 @@ public abstract class TileEntityMekanism extends CapabilityTileEntity implements
             }
             if (isActivatable()) {
                 if (ticker == 0) {
-                    WorldUtils.updateBlock(getWorld(), getPos());
+                    WorldUtils.updateBlock(getWorld(), getPos(), this);
                 }
             }
             onUpdateClient();
@@ -739,7 +743,17 @@ public abstract class TileEntityMekanism extends CapabilityTileEntity implements
     @Override
     public Direction getDirection() {
         if (isDirectional()) {
-            return Attribute.getFacing(getBlockState());
+            BlockState state = getBlockState();
+            Direction facing = Attribute.getFacing(state);
+            if (facing != null) {
+                return facing;
+            } else if (!getType().isValidBlock(state.getBlock())) {
+                //This is probably always true if we couldn't get the direction it is facing
+                // but double check just in case before logging
+                Mekanism.logger.warn("Error invalid block for tile {} at {} in {}. Unable to get direction, falling back to north, "
+                                     + "things will probably not work correctly. This is almost certainly due to another mod incorrectly "
+                                     + "trying to move this tile and not properly updating the position.", getType().getRegistryName(), pos, world);
+            }
         }
         //TODO: Remove, give it some better default, or allow it to be null
         return Direction.NORTH;
@@ -1016,15 +1030,15 @@ public abstract class TileEntityMekanism extends CapabilityTileEntity implements
     }
 
     private boolean getClientActive() {
-        return Attribute.isActive(getBlockState());
+        return isActivatable() && Attribute.isActive(getBlockState());
     }
 
     @Override
     public void setActive(boolean active) {
-        if (isActivatable()) {
+        if (isActivatable() && active != currentActive) {
             BlockState state = getBlockState();
             Block block = state.getBlock();
-            if (active != currentActive && Attribute.has(block, AttributeStateActive.class)) {
+            if (Attribute.has(block, AttributeStateActive.class)) {
                 currentActive = active;
                 if (getClientActive() != active) {
                     if (active) {
@@ -1073,13 +1087,13 @@ public abstract class TileEntityMekanism extends CapabilityTileEntity implements
             // If this machine isn't fully muffled and we don't seem to be playing a sound for it, go ahead and
             // play it
             if (!isFullyMuffled() && (activeSound == null || !Minecraft.getInstance().getSoundHandler().isPlaying(activeSound))) {
-                activeSound = SoundHandler.startTileSound(soundEvent, getSoundCategory(), getInitialVolume(), getPos());
+                activeSound = SoundHandler.startTileSound(soundEvent, getSoundCategory(), getInitialVolume(), getSoundPos());
             }
             // Always reset the cooldown; either we just attempted to play a sound or we're fully muffled; either way
             // we don't want to try again
             playSoundCooldown = 20;
         } else if (activeSound != null) {
-            SoundHandler.stopTileSound(getPos());
+            SoundHandler.stopTileSound(getSoundPos());
             activeSound = null;
             playSoundCooldown = 0;
         }

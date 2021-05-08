@@ -37,16 +37,13 @@ import mekanism.common.content.gear.Module;
 import mekanism.common.content.gear.Modules;
 import mekanism.common.content.gear.shared.ModuleEnergyUnit;
 import mekanism.common.item.interfaces.IModeItem;
-import mekanism.common.item.interfaces.ISpecialGear;
 import mekanism.common.registries.MekanismGases;
 import mekanism.common.util.StorageUtils;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.monster.EndermanEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Rarity;
@@ -59,7 +56,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
-public class ItemMekaSuitArmor extends ArmorItem implements IModuleContainerItem, IModeItem, ISpecialGear {
+public class ItemMekaSuitArmor extends ItemSpecialArmor implements IModuleContainerItem, IModeItem {
 
     // TODO separate these into individual modules maybe (specifically fire-related - on_fire, in_fire, lava)
     private static final Set<DamageSource> ALWAYS_SUPPORTED_SOURCES = new HashSet<>(Arrays.asList(
@@ -224,11 +221,6 @@ public class ItemMekaSuitArmor extends ArmorItem implements IModuleContainerItem
         return slotType == getEquipmentSlot() && Modules.loadAll(stack).stream().anyMatch(Module::handlesModeChange);
     }
 
-    @Override
-    public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlotType slot, String type) {
-        return "mekanism:render/null_armor.png";
-    }
-
     @Nonnull
     @Override
     @OnlyIn(Dist.CLIENT)
@@ -265,15 +257,17 @@ public class ItemMekaSuitArmor extends ArmorItem implements IModuleContainerItem
         IEnergyContainer energyContainer = StorageUtils.getEnergyContainer(stack, 0);
         if (energyContainer != null && amount > 0) {
             float toAbsorb = amount * absorption;
-            FloatingLong usage = MekanismConfig.gear.mekaSuitEnergyUsageDamage.get().multiply(toAbsorb);
-            return absorption * energyContainer.extract(usage, Action.EXECUTE, AutomationType.MANUAL).divide(usage).floatValue();
+            if (toAbsorb > 0) {
+                FloatingLong usage = MekanismConfig.gear.mekaSuitEnergyUsageDamage.get().multiply(toAbsorb);
+                if (usage.isZero()) {
+                    //No energy is actually needed to absorb the damage, either because of the config
+                    // or how small the amount to absorb is
+                    return absorption;
+                }
+                return absorption * energyContainer.extract(usage, Action.EXECUTE, AutomationType.MANUAL).divide(usage).floatValue();
+            }
         }
         return 0;
-    }
-
-    @Override
-    public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
-        return material.getEnchantability() > 0;
     }
 
     public List<HUDElement> getHUDElements(ItemStack stack) {

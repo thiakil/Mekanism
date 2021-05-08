@@ -29,6 +29,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.pathfinding.PathType;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
@@ -47,7 +48,7 @@ public abstract class BlockTransmitter extends BlockMekanism implements IStateFl
     private static final Map<ConnectionInfo, VoxelShape> cachedShapes = new HashMap<>();
 
     protected BlockTransmitter() {
-        super(AbstractBlock.Properties.create(Material.PISTON).hardnessAndResistance(1F, 10F));
+        super(AbstractBlock.Properties.create(Material.PISTON).hardnessAndResistance(1, 6));
     }
 
     @Nonnull
@@ -95,6 +96,12 @@ public abstract class BlockTransmitter extends BlockMekanism implements IStateFl
             Direction side = Direction.getFacingFromVector(neighbor.getX() - pos.getX(), neighbor.getY() - pos.getY(), neighbor.getZ() - pos.getZ());
             tile.onNeighborTileChange(side);
         }
+    }
+
+    @Override
+    @Deprecated
+    public boolean allowsMovement(@Nonnull BlockState state, @Nonnull IBlockReader world, @Nonnull BlockPos pos, @Nonnull PathType type) {
+        return false;
     }
 
     @Nonnull
@@ -151,7 +158,7 @@ public abstract class BlockTransmitter extends BlockMekanism implements IStateFl
             return getCenter();
         }
         Transmitter<?, ?, ?> transmitter = tile.getTransmitter();
-        ConnectionType[] connectionTypes = new ConnectionType[transmitter.connectionTypes.length];
+        ConnectionType[] connectionTypes = new ConnectionType[transmitter.getConnectionTypesRaw().length];
         for (int i = 0; i < EnumUtils.DIRECTIONS.length; i++) {
             //Get the actual connection types
             connectionTypes[i] = transmitter.getConnectionType(EnumUtils.DIRECTIONS[i]);

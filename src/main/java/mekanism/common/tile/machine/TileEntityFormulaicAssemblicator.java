@@ -24,7 +24,7 @@ import mekanism.common.capabilities.holder.energy.EnergyContainerHelper;
 import mekanism.common.capabilities.holder.energy.IEnergyContainerHolder;
 import mekanism.common.capabilities.holder.slot.IInventorySlotHolder;
 import mekanism.common.capabilities.holder.slot.InventorySlotHelper;
-import mekanism.common.capabilities.resolver.basic.BasicCapabilityResolver;
+import mekanism.common.capabilities.resolver.BasicCapabilityResolver;
 import mekanism.common.content.assemblicator.RecipeFormula;
 import mekanism.common.inventory.container.MekanismContainer;
 import mekanism.common.inventory.container.sync.SyncableBoolean;
@@ -272,6 +272,7 @@ public class TileEntityFormulaicAssemblicator extends TileEntityMekanism impleme
     @Override
     public void markDirty(boolean recheckBlockState) {
         super.markDirty(recheckBlockState);
+        //TODO: Should this be changed to being in onContentsChanged instead of markDirty?
         recalculateRecipe();
     }
 
@@ -451,7 +452,7 @@ public class TileEntityFormulaicAssemblicator extends TileEntityMekanism impleme
         for (IInventorySlot inputSlot : inputSlots) {
             ItemStack stack = inputSlot.getStack();
             if (!stack.isEmpty()) {
-                HashedItem hashed = new HashedItem(stack);
+                HashedItem hashed = HashedItem.create(stack);
                 storedMap.put(hashed, storedMap.getOrDefault(hashed, 0) + stack.getCount());
             }
         }
@@ -474,9 +475,11 @@ public class TileEntityFormulaicAssemblicator extends TileEntityMekanism impleme
                 //If we don't have the item stored anymore (already filled all previous slots with it),
                 // then we need to empty the slot as the items in it has been moved to a more "optimal" slot
                 //Note: We only set them to empty if they are not already empty to avoid onContentsChanged being called
+                // Technically our default implementation doesn't fire onContentsChanged if the stack was already empty
+                // but this is not an API contract
                 IInventorySlot slot = inputSlots.get(i);
                 if (!slot.isEmpty()) {
-                    slot.setStack(ItemStack.EMPTY);
+                    slot.setEmpty();
                 }
             }
         }
@@ -487,8 +490,10 @@ public class TileEntityFormulaicAssemblicator extends TileEntityMekanism impleme
             if (empty) {
                 //If we don't have any more items to sort, clear all the other slots that we haven't set something in
                 //Note: We only set them to empty if they are not already empty to avoid onContentsChanged being called
+                // Technically our default implementation doesn't fire onContentsChanged if the stack was already empty
+                // but this is not an API contract
                 if (!slot.isEmpty()) {
-                    slot.setStack(ItemStack.EMPTY);
+                    slot.setEmpty();
                 }
             } else {
                 empty = setSlotIfChanged(storedMap, slot);
@@ -546,7 +551,7 @@ public class TileEntityFormulaicAssemblicator extends TileEntityMekanism impleme
                 stockControlMap[j] = null;
                 stockControlMap[j + 1] = null;
             } else {
-                HashedItem hashedItem = new HashedItem(stack);
+                HashedItem hashedItem = HashedItem.create(stack);
                 stockControlMap[j] = hashedItem;
                 stockControlMap[j + 1] = hashedItem;
             }
@@ -651,6 +656,7 @@ public class TileEntityFormulaicAssemblicator extends TileEntityMekanism impleme
         super.addContainerTrackers(container);
         container.track(SyncableBoolean.create(() -> autoMode, value -> autoMode = value));
         container.track(SyncableInt.create(() -> operatingTicks, value -> operatingTicks = value));
+        container.track(SyncableInt.create(() -> ticksRequired, value -> ticksRequired = value));
         container.track(SyncableBoolean.create(() -> isRecipe, value -> isRecipe = value));
         container.track(SyncableBoolean.create(() -> stockControl, value -> stockControl = value));
         container.track(SyncableBoolean.create(() -> formula != null, hasFormula -> {

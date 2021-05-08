@@ -1,23 +1,22 @@
 package mekanism.additions.common.entity.baby;
 
 import javax.annotation.Nonnull;
-import mekanism.additions.common.MekanismAdditions;
 import mekanism.additions.common.registries.AdditionsItems;
 import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.Pose;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.entity.monster.EndermanEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.IPacket;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.network.NetworkHooks;
 
-public class EntityBabyEnderman extends EndermanEntity {
+public class EntityBabyEnderman extends EndermanEntity implements IBabyEntity {
 
     private static final DataParameter<Boolean> IS_CHILD = EntityDataManager.createKey(EntityBabyEnderman.class, DataSerializers.BOOLEAN);
 
@@ -29,7 +28,7 @@ public class EntityBabyEnderman extends EndermanEntity {
     @Override
     protected void registerData() {
         super.registerData();
-        this.getDataManager().register(IS_CHILD, false);
+        getDataManager().register(IS_CHILD, false);
     }
 
     @Override
@@ -39,14 +38,7 @@ public class EntityBabyEnderman extends EndermanEntity {
 
     @Override
     public void setChild(boolean child) {
-        getDataManager().set(IS_CHILD, child);
-        if (world != null && !world.isRemote) {
-            ModifiableAttributeInstance attributeInstance = getAttribute(Attributes.MOVEMENT_SPEED);
-            attributeInstance.removeModifier(MekanismAdditions.babySpeedBoostModifier);
-            if (child) {
-                attributeInstance.applyNonPersistentModifier(MekanismAdditions.babySpeedBoostModifier);
-            }
-        }
+        setChild(IS_CHILD, child);
     }
 
     @Override
@@ -67,16 +59,22 @@ public class EntityBabyEnderman extends EndermanEntity {
 
     @Override
     public double getYOffset() {
-        return isChild() ? 0.0D : super.getYOffset();
+        return isChild() ? 0 : super.getYOffset();
     }
 
     @Override
     protected float getStandingEyeHeight(@Nonnull Pose pose, @Nonnull EntitySize size) {
-        return this.isChild() ? 1.36F : super.getStandingEyeHeight(pose, size);
+        return this.isChild() ? 1.3F : super.getStandingEyeHeight(pose, size);
     }
 
     @Override
     public ItemStack getPickedResult(RayTraceResult target) {
         return AdditionsItems.BABY_ENDERMAN_SPAWN_EGG.getItemStack();
+    }
+
+    @Nonnull
+    @Override
+    public IPacket<?> createSpawnPacket() {
+        return NetworkHooks.getEntitySpawningPacket(this);
     }
 }
