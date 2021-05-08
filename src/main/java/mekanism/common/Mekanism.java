@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import javax.annotation.Nonnull;
 import mekanism.api.Coord4D;
 import mekanism.api.MekanismAPI;
 import mekanism.api.NBTConstants;
@@ -51,7 +50,7 @@ import mekanism.common.content.transporter.TransporterManager;
 import mekanism.common.entity.EntityRobit;
 import mekanism.common.integration.MekanismHooks;
 import mekanism.common.inventory.container.sync.dynamic.SyncMapper;
-import mekanism.common.item.block.machine.ItemBlockFluidTank;
+import mekanism.common.item.block.machine.ItemBlockFluidTank.FluidTankItemDispenseBehavior;
 import mekanism.common.lib.Version;
 import mekanism.common.lib.frequency.FrequencyManager;
 import mekanism.common.lib.frequency.FrequencyType;
@@ -79,13 +78,11 @@ import mekanism.common.registries.MekanismRecipeSerializers;
 import mekanism.common.registries.MekanismSlurries;
 import mekanism.common.registries.MekanismSounds;
 import mekanism.common.registries.MekanismTileEntityTypes;
+import mekanism.common.tile.component.TileComponentChunkLoader.ChunkValidationCallback;
 import mekanism.common.world.GenHandler;
 import net.minecraft.block.DispenserBlock;
-import net.minecraft.dispenser.DefaultDispenseItemBehavior;
-import net.minecraft.dispenser.IBlockSource;
 import net.minecraft.dispenser.IDispenseItemBehavior;
 import net.minecraft.entity.ai.attributes.GlobalEntityTypeAttributes;
-import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
@@ -94,6 +91,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.CraftingHelper;
+import net.minecraftforge.common.world.ForgeChunkManager;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.RegistryEvent;
@@ -271,17 +269,17 @@ public class Mekanism {
     }
 
     private void registerCommands(RegisterCommandsEvent event) {
-        BuildCommand.register("boiler", new BoilerBuilder());
-        BuildCommand.register("matrix", new MatrixBuilder());
-        BuildCommand.register("tank", new TankBuilder());
-        BuildCommand.register("evaporation", new EvaporationBuilder());
-        BuildCommand.register("sps", new SPSBuilder());
+        BuildCommand.register("boiler", MekanismLang.BOILER, new BoilerBuilder());
+        BuildCommand.register("matrix", MekanismLang.MATRIX, new MatrixBuilder());
+        BuildCommand.register("tank", MekanismLang.DYNAMIC_TANK, new TankBuilder());
+        BuildCommand.register("evaporation", MekanismLang.EVAPORATION_PLANT, new EvaporationBuilder());
+        BuildCommand.register("sps", MekanismLang.SPS, new SPSBuilder());
         event.getDispatcher().register(CommandMek.register());
     }
 
     private void serverStopped(FMLServerStoppedEvent event) {
         //Clear all cache data, wait until server stopper though so that we make sure saving can use any data it needs
-        playerState.clear();
+        playerState.clear(false);
         activeVibrators.clear();
         worldTickHandler.resetRegenChunks();
         FrequencyType.clear();
@@ -310,25 +308,14 @@ public class Mekanism {
             GenHandler.setupWorldGenFeatures();
             //Collect sync mapper scan data
             SyncMapper.collectScanData();
+            //Add chunk loading callbacks
+            ForgeChunkManager.setForcedChunkLoadingCallback(Mekanism.MODID, ChunkValidationCallback.INSTANCE);
             //Entity attribute assignments
             GlobalEntityTypeAttributes.put(MekanismEntityTypes.ROBIT.get(), EntityRobit.getDefaultAttributes().create());
             //Register dispenser behaviors
             MekanismFluids.FLUIDS.registerBucketDispenserBehavior();
-            registerDispenseBehavior(new DefaultDispenseItemBehavior() {
-                                         @Nonnull
-                                         @Override
-                                         public ItemStack dispenseStack(@Nonnull IBlockSource source, @Nonnull ItemStack stack) {
-                                             if (stack.getItem() instanceof ItemBlockFluidTank && ((ItemBlockFluidTank) stack.getItem()).getBucketMode(stack)) {
-                                                 //If the fluid tank is in bucket mode allow for it to act as a bucket
-                                                 //TODO: Once https://github.com/MinecraftForge/MinecraftForge/pull/7422 gets merged uncomment the line below
-                                                 //return DispenseFluidContainer.getInstance().dispenseStack(source, stack);
-                                             }
-                                             //Otherwise eject it as a normal item
-                                             return super.dispenseStack(source, stack);
-                                         }
-                                     },
-                  MekanismBlocks.BASIC_FLUID_TANK, MekanismBlocks.ADVANCED_FLUID_TANK, MekanismBlocks.ELITE_FLUID_TANK, MekanismBlocks.ULTIMATE_FLUID_TANK,
-                  MekanismBlocks.CREATIVE_FLUID_TANK);
+            registerDispenseBehavior(FluidTankItemDispenseBehavior.INSTANCE, MekanismBlocks.BASIC_FLUID_TANK, MekanismBlocks.ADVANCED_FLUID_TANK,
+                  MekanismBlocks.ELITE_FLUID_TANK, MekanismBlocks.ULTIMATE_FLUID_TANK, MekanismBlocks.CREATIVE_FLUID_TANK);
         });
 
         //Register player tracker

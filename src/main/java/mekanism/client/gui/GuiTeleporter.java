@@ -3,6 +3,7 @@ package mekanism.client.gui;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import javax.annotation.Nonnull;
 import mekanism.api.text.EnumColor;
 import mekanism.client.gui.element.bar.GuiVerticalPowerBar;
@@ -141,7 +142,8 @@ public class GuiTeleporter extends GuiMekanismTile<TileEntityTeleporter, Mekanis
                              tile.getPublicCache(FrequencyType.TELEPORTER).get(scrollList.getSelection());
             TeleporterFrequency teleporterFrequency = tile.getFrequency(FrequencyType.TELEPORTER);
             setButton.active = teleporterFrequency == null || !teleporterFrequency.equals(freq);
-            deleteButton.active = tile.getOwnerUUID().equals(freq.getOwner());
+            UUID ownerUUID = tile.getOwnerUUID();
+            deleteButton.active = ownerUUID != null && freq.ownerMatches(ownerUUID);
         } else {
             setButton.active = false;
             deleteButton.active = false;
@@ -182,14 +184,14 @@ public class GuiTeleporter extends GuiMekanismTile<TileEntityTeleporter, Mekanis
         drawString(matrix, frequencyComponent, 32, 81, titleTextColor());
         ITextComponent securityComponent = MekanismLang.SECURITY.translate("");
         drawString(matrix, securityComponent, 32, 91, titleTextColor());
-        int frequencyOffset = getStringWidth(frequencyComponent) + 1;
         Frequency freq = tile.getFrequency(FrequencyType.TELEPORTER);
-        if (freq != null) {
-            drawTextScaledBound(matrix, freq.getName(), 32 + frequencyOffset, 81, subheadingTextColor(), xSize - 32 - frequencyOffset - 4);
-            drawString(matrix, getSecurity(freq), 32 + getStringWidth(securityComponent), 91, subheadingTextColor());
-        } else {
+        int frequencyOffset = getStringWidth(frequencyComponent) + 1;
+        if (freq == null) {
             drawString(matrix, MekanismLang.NONE.translateColored(EnumColor.DARK_RED), 32 + frequencyOffset, 81, subheadingTextColor());
             drawString(matrix, MekanismLang.NONE.translateColored(EnumColor.DARK_RED), 32 + getStringWidth(securityComponent), 91, subheadingTextColor());
+        } else {
+            drawTextScaledBound(matrix, freq.getName(), 32 + frequencyOffset, 81, subheadingTextColor(), xSize - 32 - frequencyOffset - 4);
+            drawString(matrix, getSecurity(freq), 32 + getStringWidth(securityComponent), 91, subheadingTextColor());
         }
         drawTextScaledBound(matrix, MekanismLang.SET.translate(), 27, 104, titleTextColor(), 20);
         super.drawForegroundText(matrix, mouseX, mouseY);

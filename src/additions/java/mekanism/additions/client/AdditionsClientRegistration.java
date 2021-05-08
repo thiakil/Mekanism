@@ -71,11 +71,12 @@ public class AdditionsClientRegistration {
               AdditionsBlocks.LIGHT_BLUE_PLASTIC_TRANSPARENT_STAIRS, AdditionsBlocks.MAGENTA_PLASTIC_TRANSPARENT_STAIRS, AdditionsBlocks.ORANGE_PLASTIC_TRANSPARENT_STAIRS,
               AdditionsBlocks.WHITE_PLASTIC_TRANSPARENT_STAIRS);
 
-        ClientRegistrationUtil.setPropertyOverride(AdditionsItems.WALKIE_TALKIE, MekanismAdditions.rl("channel"), (stack, world, entity) -> {
-            ItemWalkieTalkie item = (ItemWalkieTalkie) stack.getItem();
-            return item.getOn(stack) ? item.getChannel(stack) : 0;
+        event.enqueueWork(() -> {
+            ClientRegistrationUtil.setPropertyOverride(AdditionsItems.WALKIE_TALKIE, MekanismAdditions.rl("channel"), (stack, world, entity) -> {
+                ItemWalkieTalkie item = (ItemWalkieTalkie) stack.getItem();
+                return item.getOn(stack) ? item.getChannel(stack) : 0;
+            });
         });
-
     }
 
     @SubscribeEvent

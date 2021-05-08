@@ -35,6 +35,7 @@ import mekanism.common.tile.machine.TileEntityDigitalMiner;
 import mekanism.common.util.MekanismUtils;
 import mekanism.common.util.MekanismUtils.ResourceType;
 import mekanism.common.util.text.EnergyDisplay;
+import mekanism.common.util.text.TextUtils;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
@@ -71,8 +72,7 @@ public class GuiDigitalMiner extends GuiMekanismTile<TileEntityDigitalMiner, Mek
             }
             list.add(runningType.translate());
             list.add(tile.searcher.state.getTextComponent());
-
-            list.add(MekanismLang.MINER_TO_MINE.translate(formatInt(tile.cachedToMine)));
+            list.add(MekanismLang.MINER_TO_MINE.translate(TextUtils.format(tile.cachedToMine)));
             return list;
         }).spacing(1).clearFormat());
         addButton(new GuiDigitalSwitch(this, 19, 56, eject, () -> tile.doEject, MekanismLang.AUTO_EJECT.translate(),
@@ -86,7 +86,7 @@ public class GuiDigitalMiner extends GuiMekanismTile<TileEntityDigitalMiner, Mek
         addButton(new GuiUpgradeTab(this, tile));
         addButton(new GuiVerticalPowerBar(this, tile.getEnergyContainer(), 157, 39, 47));
         addButton(new GuiVisualsTab(this, tile));
-        addButton(new GuiSlot(SlotType.DIGITAL, this, 64, 21).validity(() -> tile.missingStack)
+        addButton(new GuiSlot(SlotType.DIGITAL, this, 64, 21).setRenderAboveSlots().validity(() -> tile.missingStack)
               .with(() -> tile.missingStack.isEmpty() ? SlotOverlay.CHECK : null)
               .hover(getOnHover(() -> tile.missingStack.isEmpty() ? MekanismLang.MINER_WELL.translate() : MekanismLang.MINER_MISSING_BLOCK.translate())));
         addButton(new GuiEnergyTab(() -> {

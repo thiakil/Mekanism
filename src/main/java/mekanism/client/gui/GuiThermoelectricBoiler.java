@@ -22,6 +22,7 @@ import mekanism.common.tile.multiblock.TileEntityBoilerCasing;
 import mekanism.common.util.HeatUtils;
 import mekanism.common.util.MekanismUtils;
 import mekanism.common.util.UnitDisplayUtils.TemperatureUnit;
+import mekanism.common.util.text.TextUtils;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.text.ITextComponent;
 
@@ -41,31 +42,32 @@ public class GuiThermoelectricBoiler extends GuiMekanismTile<TileEntityBoilerCas
         addButton(new GuiInnerScreen(this, 60, 23, 96, 40, () -> {
             BoilerMultiblockData multiblock = tile.getMultiblock();
             return Arrays.asList(MekanismLang.TEMPERATURE.translate(MekanismUtils.getTemperatureDisplay(multiblock.getTotalTemperature(), TemperatureUnit.KELVIN, true)),
-                  MekanismLang.BOIL_RATE.translate(formatInt(multiblock.lastBoilRate)), MekanismLang.MAX_BOIL_RATE.translate(formatInt(multiblock.lastMaxBoil)));
+                  MekanismLang.BOIL_RATE.translate(TextUtils.format(multiblock.lastBoilRate)), MekanismLang.MAX_BOIL_RATE.translate(TextUtils.format(multiblock.lastMaxBoil)));
         }));
         addButton(new GuiBoilerTab(this, tile, BoilerTab.STAT));
         addButton(new GuiVerticalRateBar(this, new IBarInfoHandler() {
             @Override
             public ITextComponent getTooltip() {
-                return MekanismLang.BOIL_RATE.translate(formatInt(tile.getMultiblock().lastBoilRate));
+                return MekanismLang.BOIL_RATE.translate(TextUtils.format(tile.getMultiblock().lastBoilRate));
             }
 
             @Override
             public double getLevel() {
                 BoilerMultiblockData multiblock = tile.getMultiblock();
-                return multiblock.lastBoilRate / (double) multiblock.lastMaxBoil;
+                return Math.min(1, multiblock.lastBoilRate / (double) multiblock.lastMaxBoil);
             }
         }, 44, 13));
         addButton(new GuiVerticalRateBar(this, new IBarInfoHandler() {
             @Override
             public ITextComponent getTooltip() {
-                return MekanismLang.MAX_BOIL_RATE.translate(formatInt(tile.getMultiblock().lastMaxBoil));
+                return MekanismLang.MAX_BOIL_RATE.translate(TextUtils.format(tile.getMultiblock().lastMaxBoil));
             }
 
             @Override
             public double getLevel() {
                 BoilerMultiblockData multiblock = tile.getMultiblock();
-                return multiblock.lastMaxBoil * HeatUtils.getWaterThermalEnthalpy() / (multiblock.superheatingElements * MekanismConfig.general.superheatingHeatTransfer.get());
+                return Math.min(1, multiblock.lastMaxBoil * HeatUtils.getWaterThermalEnthalpy() /
+                                   (multiblock.superheatingElements * MekanismConfig.general.superheatingHeatTransfer.get()));
             }
         }, 164, 13));
         addButton(new GuiGasGauge(() -> tile.getMultiblock().superheatedCoolantTank, () -> tile.getMultiblock().getGasTanks(null), GaugeType.STANDARD, this, 6, 13)

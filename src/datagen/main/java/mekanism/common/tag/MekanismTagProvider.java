@@ -50,6 +50,7 @@ public class MekanismTagProvider extends BaseTagProvider {
         addFuels();
         addAlloys();
         addCircuits();
+        addEndermanBlacklist();
         addEnriched();
         addChests();
         addOres();
@@ -209,9 +210,9 @@ public class MekanismTagProvider extends BaseTagProvider {
 
     private void addWrenches() {
         addToTag(MekanismTags.Items.WRENCHES, MekanismItems.CONFIGURATOR);
-        getItemBuilder(MekanismTags.Items.TOOLS).add(MekanismTags.Items.TOOLS_WRENCHES);
-        addToTag(MekanismTags.Items.TOOLS_WRENCHES, MekanismItems.CONFIGURATOR);
-        getItemBuilder(MekanismTags.Items.CONFIGURATORS).add(MekanismTags.Items.WRENCHES, MekanismTags.Items.TOOLS_WRENCHES);
+        getItemBuilder(MekanismTags.Items.TOOLS).add(MekanismTags.Items.TOOLS_WRENCH);
+        addToTag(MekanismTags.Items.TOOLS_WRENCH, MekanismItems.CONFIGURATOR);
+        getItemBuilder(MekanismTags.Items.CONFIGURATORS).add(MekanismTags.Items.WRENCHES, MekanismTags.Items.TOOLS_WRENCH);
     }
 
     private void addRods() {
@@ -246,6 +247,26 @@ public class MekanismTagProvider extends BaseTagProvider {
         addToTag(MekanismTags.Items.CIRCUITS_ULTIMATE, MekanismItems.ULTIMATE_CONTROL_CIRCUIT);
         getItemBuilder(MekanismTags.Items.CIRCUITS).add(MekanismTags.Items.CIRCUITS_BASIC, MekanismTags.Items.CIRCUITS_ADVANCED, MekanismTags.Items.CIRCUITS_ELITE,
               MekanismTags.Items.CIRCUITS_ULTIMATE);
+    }
+
+    private void addEndermanBlacklist() {
+        addToTag(Tags.Blocks.ENDERMAN_PLACE_ON_BLACKLIST,
+              MekanismBlocks.DYNAMIC_TANK,
+              MekanismBlocks.DYNAMIC_VALVE,
+              MekanismBlocks.BOILER_CASING,
+              MekanismBlocks.BOILER_VALVE,
+              MekanismBlocks.PRESSURE_DISPERSER,
+              MekanismBlocks.SUPERHEATING_ELEMENT,
+              MekanismBlocks.INDUCTION_CASING,
+              MekanismBlocks.INDUCTION_PORT,
+              MekanismBlocks.THERMAL_EVAPORATION_CONTROLLER,
+              MekanismBlocks.THERMAL_EVAPORATION_VALVE,
+              MekanismBlocks.THERMAL_EVAPORATION_BLOCK,
+              MekanismBlocks.STRUCTURAL_GLASS,
+              MekanismBlocks.SPS_CASING,
+              MekanismBlocks.SPS_PORT,
+              MekanismBlocks.SUPERCHARGED_COIL
+        );
     }
 
     private void addEnriched() {
@@ -368,6 +389,7 @@ public class MekanismTagProvider extends BaseTagProvider {
 
     private void addGasTags() {
         addToTag(MekanismTags.Gases.WATER_VAPOR, MekanismGases.WATER_VAPOR, MekanismGases.STEAM);
+        addToTag(MekanismTags.Gases.WASTE_BARREL_DECAY_BLACKLIST, MekanismGases.PLUTONIUM, MekanismGases.POLONIUM);
     }
 
     private void addSlurryTags(SlurryRegistryObject<?, ?>... slurryRegistryObjects) {

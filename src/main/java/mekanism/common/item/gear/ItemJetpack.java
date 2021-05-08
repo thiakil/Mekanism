@@ -116,8 +116,8 @@ public class ItemJetpack extends ItemGasArmor implements IItemHUDProvider, IMode
         if (mode != newMode) {
             setMode(stack, newMode);
             if (displayChangeMessage) {
-                player.sendMessage(MekanismLang.LOG_FORMAT.translateColored(EnumColor.DARK_BLUE, MekanismLang.MEKANISM,
-                      MekanismLang.JETPACK_MODE_CHANGE.translateColored(EnumColor.GRAY, newMode)), Util.DUMMY_UUID);
+                player.sendMessage(MekanismLang.LOG_FORMAT.translateColored(EnumColor.DARK_BLUE, MekanismLang.MEKANISM, EnumColor.GRAY,
+                      MekanismLang.JETPACK_MODE_CHANGE.translate(newMode)), Util.DUMMY_UUID);
             }
         }
     }
@@ -136,11 +136,6 @@ public class ItemJetpack extends ItemGasArmor implements IItemHUDProvider, IMode
             stack.getTag().putInt("HideFlags", 2);
         }
         return super.initCapabilities(stack, nbt);
-    }
-
-    @Override
-    public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
-        return material.getEnchantability() > 0;
     }
 
     public enum JetpackMode implements IIncrementalEnum<JetpackMode>, IHasTextComponent {

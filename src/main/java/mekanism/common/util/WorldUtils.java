@@ -389,6 +389,14 @@ public class WorldUtils {
         world.playSound(player, pos, soundevent, SoundCategory.BLOCKS, 1.0F, 1.0F);
     }
 
+    public static void playFillSound(@Nullable PlayerEntity player, IWorld world, BlockPos pos, @Nonnull FluidStack fluidStack) {
+        SoundEvent soundevent = fluidStack.getFluid().getAttributes().getFillSound(world, pos);
+        if (soundevent == null) {
+            soundevent = fluidStack.getFluid().isIn(FluidTags.LAVA) ? SoundEvents.ITEM_BUCKET_FILL_LAVA : SoundEvents.ITEM_BUCKET_FILL;
+        }
+        world.playSound(player, pos, soundevent, SoundCategory.BLOCKS, 1.0F, 1.0F);
+    }
+
     /**
      * Better version of the World.getRedstonePowerFromNeighbors() method that doesn't load chunks.
      *
@@ -495,34 +503,28 @@ public class WorldUtils {
     }
 
     /**
-     * Calls BOTH neighbour changed functions because nobody can decide on which one to implement.
+     * Calls BOTH neighbour changed functions because nobody can decide on which one to implement, assuming that the neighboring position is loaded.
      *
      * @param world   world the change exists in
      * @param pos     neighbor to notify
      * @param fromPos pos of our block that updated
      */
     public static void notifyNeighborOfChange(@Nullable World world, BlockPos pos, BlockPos fromPos) {
-        if (world != null) {
-            BlockState state = world.getBlockState(pos);
-            state.getBlock().onNeighborChange(state, world, pos, fromPos);
+        getBlockState(world, pos).ifPresent(state -> {
+            state.onNeighborChange(world, pos, fromPos);
             state.neighborChanged(world, pos, world.getBlockState(fromPos).getBlock(), fromPos, false);
-        }
+        });
     }
 
     /**
-     * Calls BOTH neighbour changed functions because nobody can decide on which one to implement.
+     * Calls BOTH neighbour changed functions because nobody can decide on which one to implement, assuming that the neighboring position is loaded.
      *
      * @param world        world the change exists in
      * @param neighborSide The side the neighbor to notify is on
      * @param fromPos      pos of our block that updated
      */
     public static void notifyNeighborOfChange(@Nullable World world, Direction neighborSide, BlockPos fromPos) {
-        if (world != null) {
-            BlockPos neighbor = fromPos.offset(neighborSide);
-            BlockState state = world.getBlockState(neighbor);
-            state.getBlock().onNeighborChange(state, world, neighbor, fromPos);
-            state.neighborChanged(world, neighbor, world.getBlockState(fromPos).getBlock(), fromPos, false);
-        }
+        notifyNeighborOfChange(world, fromPos.offset(neighborSide), fromPos);
     }
 
     /**
@@ -575,8 +577,9 @@ public class WorldUtils {
      *
      * @param world world the block is in
      * @param pos   Position of the block
+     * @param tile The tile entity at the position
      */
-    public static void updateBlock(@Nullable World world, BlockPos pos) {
+    public static void updateBlock(@Nullable World world, BlockPos pos, TileEntity tile) {
         if (!isBlockLoaded(world, pos)) {
             return;
         }
@@ -590,7 +593,6 @@ public class WorldUtils {
         //TODO: Fix this as it is not ideal to just pretend the block was previously air to force it to update
         // Maybe should use notifyUpdate
         world.markBlockRangeForRenderUpdate(pos, Blocks.AIR.getDefaultState(), blockState);
-        TileEntity tile = getTileEntity(world, pos);
         if (!(tile instanceof IActiveState) || ((IActiveState) tile).lightUpdate() && MekanismConfig.client.machineEffects.get()) {
             //Update all light types at the position
             recheckLighting(world, pos);
@@ -618,5 +620,41 @@ public class WorldUtils {
         f1 = (float) (f1 * (1.0D - world.getRainStrength(partialTicks) * 5.0F / 16.0D));
         f1 = (float) (f1 * (1.0D - world.getThunderStrength(partialTicks) * 5.0F / 16.0D));
         return f1 * 0.8F + 0.2F;
+    }
+
+    /**
+     * Checks to see if the block at the position can see the sky and it is daytime.
+     *
+     * @param world World to check in.
+     * @param pos   Position to check.
+     *
+     * @return {@code true} if it can.
+     */
+    @Contract("null, _ -> false")
+    public static boolean canSeeSun(@Nullable World world, BlockPos pos) {
+        //Note: We manually handle the world#isDaytime check by just checking the subtracted skylight
+        // as vanilla returns false if the world's time is set to a fixed value even if that time
+        // would effectively be daytime
+        return world != null && world.getDimensionType().hasSkyLight() && world.getSkylightSubtracted() < 4 && world.canBlockSeeSky(pos);
+    }
+
+    /**
+     * Converts a {@link BlockPos} to a long representing the {@link ChunkPos} it is in without creating a temporary {@link ChunkPos} object.
+     *
+     * @param pos Pos to convert.
+     */
+    public static long getChunkPosAsLong(BlockPos pos) {
+        long x = pos.getX() >> 4;
+        long z = pos.getZ() >> 4;
+        return x & 0xFFFFFFFFL | (z & 0xFFFFFFFFL) << 32;
+    }
+
+    /**
+     * Converts a long representing a {@link ChunkPos} to a {@link BlockPos} without creating a temporary {@link ChunkPos} object.
+     *
+     * @param chunkPos Pos to convert.
+     */
+    public static BlockPos getBlockPosFromChunkPos(long chunkPos) {
+        return new BlockPos((int) chunkPos, 0, (int) (chunkPos >> 32));
     }
 }

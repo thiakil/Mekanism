@@ -531,6 +531,7 @@ public class MekanismLangProvider extends BaseLanguageProvider {
         add(MekanismLang.KEY_HAND_MODE, "Item Mode Switch");
         add(MekanismLang.KEY_HEAD_MODE, "Head Mode Switch");
         add(MekanismLang.KEY_CHEST_MODE, "Chest Mode Switch");
+        add(MekanismLang.KEY_LEGS_MODE, "Legs Mode Switch");
         add(MekanismLang.KEY_FEET_MODE, "Feet Mode Switch");
         add(MekanismLang.KEY_DETAILS_MODE, "Show Details");
         add(MekanismLang.KEY_DESCRIPTION_MODE, "Show Description");
@@ -589,22 +590,28 @@ public class MekanismLangProvider extends BaseLanguageProvider {
         add(MekanismLang.HOLD_FOR_MODULES, "Hold %s for installed modules.");
         add(MekanismLang.HOLD_FOR_SUPPORTED_ITEMS, "Hold %s for supporting items.");
         //Commands
-        add(MekanismLang.COMMAND_CHUNK, "%s chunk %d, %d");
-        add(MekanismLang.COMMAND_CHUNK_WATCH, "Chunk %d, %d added to watch list");
-        add(MekanismLang.COMMAND_CHUNK_UNWATCH, "Chunk %d, %d removed from watch list");
-        add(MekanismLang.COMMAND_CHUNK_CLEAR, "%d chunks removed from watch list");
-        add(MekanismLang.COMMAND_CHUNK_FLUSH, "%d chunks unloaded");
-        add(MekanismLang.COMMAND_CHUNK_LOADED, "Loaded");
-        add(MekanismLang.COMMAND_CHUNK_UNLOADED, "Unloaded");
+        add(MekanismLang.COMMAND_CHUNK_WATCH, "Chunk (%s) added to watch list.");
+        add(MekanismLang.COMMAND_CHUNK_UNWATCH, "Chunk (%s) removed from watch list.");
+        add(MekanismLang.COMMAND_CHUNK_CLEAR, "%s chunks removed from watch list.");
+        add(MekanismLang.COMMAND_CHUNK_FLUSH, "%s chunks unloaded.");
+        add(MekanismLang.COMMAND_CHUNK_LOADED, "Loaded chunk (%s).");
+        add(MekanismLang.COMMAND_CHUNK_UNLOADED, "Unloaded chunk (%s).");
         add(MekanismLang.COMMAND_DEBUG, "Toggled debug mode: %s.");
         add(MekanismLang.COMMAND_TEST_RULES, "Enabled keepInventory, and disabled doMobSpawning, doDaylightCycle, doWeatherCycle and mobGriefing!");
-        add(MekanismLang.COMMAND_TP, "Teleported to %d, %d, %d - saved last position on stack");
-        add(MekanismLang.COMMAND_TPOP, "Returned to %d, %d, %d; %d positions on stack");
-        add(MekanismLang.COMMAND_TPOP_EMPTY, "No positions on stack");
-        add(MekanismLang.COMMAND_RADIATION_ADD, "Added radiation at pos %s.");
-        add(MekanismLang.COMMAND_RADIATION_GET, "Current radiation (sV/h): %s");
+        add(MekanismLang.COMMAND_TP, "Teleported to (%s) - saved last position on stack.");
+        add(MekanismLang.COMMAND_TPOP, "Returned to (%s); %s positions on stack.");
+        add(MekanismLang.COMMAND_ERROR_TPOP_EMPTY, "No positions on stack.");
+        add(MekanismLang.COMMAND_BUILD_REMOVED, "Build successfully removed.");
+        add(MekanismLang.COMMAND_BUILD_BUILT, "Finished building: %s.");
+        add(MekanismLang.COMMAND_ERROR_BUILD_MISS, "No valid target found.");
+        add(MekanismLang.COMMAND_RADIATION_ADD, "Added %s radiation at (%s) in %s.");
+        add(MekanismLang.COMMAND_RADIATION_GET, "Current radiation at (%s) in %s: %s");
         add(MekanismLang.COMMAND_RADIATION_CLEAR, "Cleared player radiation.");
+        add(MekanismLang.COMMAND_RADIATION_CLEAR_PLAYER, "Cleared player radiation for: %s.");
         add(MekanismLang.COMMAND_RADIATION_REMOVE_ALL, "Removed all radiation sources.");
+        add(MekanismLang.COMMAND_RETROGEN_CHUNK_QUEUED, "Queued chunk (%s) in %s for retrogen.");
+        add(MekanismLang.COMMAND_ERROR_RETROGEN_DISABLED, "Retrogen is disabled, please enable it in the config.");
+        add(MekanismLang.COMMAND_ERROR_RETROGEN_FAILURE, "Failed to queue any chunks for retrogen.");
         //Tooltip stuff
         add(MekanismLang.MODE, "Mode: %s");
         add(MekanismLang.FIRE_MODE, "Fire Mode: %s");
@@ -798,7 +805,7 @@ public class MekanismLangProvider extends BaseLanguageProvider {
         add(MekanismLang.DIVERSION_CONTROL_LOW, "Active without signal");
         add(MekanismLang.TOGGLE_DIVERTER, "Diverter mode changed to: %s");
         add(MekanismLang.PUMP_RATE, "Pump Rate: %s/s");
-        add(MekanismLang.PUMP_RATE_MB, "Pump Rate: %s mB/s");
+        add(MekanismLang.PUMP_RATE_MB, "Pump Rate: %s mB/t");
         add(MekanismLang.SPEED, "Speed: %s m/s");
         //Condensentrator
         add(MekanismLang.CONDENSENTRATOR_TOGGLE, "Toggle operation");
@@ -1029,7 +1036,7 @@ public class MekanismLangProvider extends BaseLanguageProvider {
         add(MekanismLang.SORTER_AUTO_EJECT, "Auto:");
         add(MekanismLang.SORTER_SINGLE_ITEM_DESCRIPTION, "Sends a single item instead of a whole stack each time (overrides min and max set in ItemStack filters).");
         add(MekanismLang.SORTER_ROUND_ROBIN_DESCRIPTION, "Cycles between all connected inventories when sending items.");
-        add(MekanismLang.SORTER_AUTO_EJECT_DESCRIPTION, "Ejects items automatically to connected inventories.");
+        add(MekanismLang.SORTER_AUTO_EJECT_DESCRIPTION, "Ejects unfiltered items automatically to connected inventories, using the default configuration.");
         //Side data/config
         add(MekanismLang.SIDE_DATA_NONE, "None");
         add(MekanismLang.SIDE_DATA_INPUT, "Input");

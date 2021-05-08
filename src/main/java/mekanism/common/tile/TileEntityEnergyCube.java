@@ -12,7 +12,7 @@ import mekanism.common.capabilities.holder.energy.EnergyContainerHelper;
 import mekanism.common.capabilities.holder.energy.IEnergyContainerHolder;
 import mekanism.common.capabilities.holder.slot.IInventorySlotHolder;
 import mekanism.common.capabilities.holder.slot.InventorySlotHelper;
-import mekanism.common.capabilities.resolver.basic.BasicCapabilityResolver;
+import mekanism.common.capabilities.resolver.BasicCapabilityResolver;
 import mekanism.common.inventory.container.slot.SlotOverlay;
 import mekanism.common.inventory.slot.EnergyInventorySlot;
 import mekanism.common.lib.transmitter.TransmissionType;
@@ -136,7 +136,8 @@ public class TileEntityEnergyCube extends TileEntityMekanism implements ISideCon
             setControlType(data.controlType);
             getEnergyContainer().setEnergy(data.energyContainer.getEnergy());
             chargeSlot.setStack(data.chargeSlot.getStack());
-            dischargeSlot.setStack(data.dischargeSlot.getStack());
+            //Copy the contents using NBT so that if it is not actually valid due to a reload we don't crash
+            dischargeSlot.deserializeNBT(data.dischargeSlot.serializeNBT());
             for (ITileComponent component : getComponents()) {
                 component.read(data.components);
             }

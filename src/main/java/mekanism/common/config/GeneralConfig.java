@@ -77,6 +77,8 @@ public class GeneralConfig extends BaseMekanismConfig {
     public final CachedDoubleValue radiationTargetDecayRate;
     public final CachedDoubleValue radiationNegativeEffectsMinSeverity;
     public final CachedLongValue radioactiveWasteBarrelMaxGas;
+    public final CachedIntValue radioactiveWasteBarrelProcessTicks;
+    public final CachedLongValue radioactiveWasteBarrelDecayAmount;
     //Digital Miner
     public final CachedIntValue minerSilkMultiplier;
     public final CachedIntValue minerMaxRadius;
@@ -119,7 +121,7 @@ public class GeneralConfig extends BaseMekanismConfig {
               .define("allowChunkloading", true));
         blockDeactivationDelay = CachedIntValue.wrap(this, builder.comment("How many ticks must pass until a block's active state is synced with the client, if it has been rapidly changing.")
               .define("blockDeactivationDelay", 60));
-        cardboardModBlacklist = CachedConfigValue.wrap(this, builder.comment("Any mod ids added to this list will not be able to have any of their blocks, picked up by the cardboard box.")
+        cardboardModBlacklist = CachedConfigValue.wrap(this, builder.comment("Any mod ids added to this list will not be able to have any of their blocks, picked up by the cardboard box. For example: [\"mekanism\"]")
               .define("cardboardModBlacklist", new ArrayList<>()));
         transmitterAlloyUpgrade = CachedBooleanValue.wrap(this, builder.comment("Allow right clicking on Cables/Pipes/Tubes with alloys to upgrade the tier.")
               .define("transmitterAlloyUpgrade", true));
@@ -200,6 +202,10 @@ public class GeneralConfig extends BaseMekanismConfig {
               .defineInRange("negativeEffectsMinSeverity", 0.1D, 0, 1));
         radioactiveWasteBarrelMaxGas = CachedLongValue.wrap(this, builder.comment("Amount of gas (mB) that can be stored in a Radioactive Waste Barrel.")
               .defineInRange("radioactiveWasteBarrelMaxGas", 64_000, 1, Long.MAX_VALUE));
+        radioactiveWasteBarrelProcessTicks = CachedIntValue.wrap(this, builder.comment("Number of ticks required for radioactive gas stored in a Radioactive Waste Barrel to decay radioactiveWasteBarrelDecayAmount mB.")
+              .defineInRange("radioactiveWasteBarrelProcessTicks", 1_200, 1, Integer.MAX_VALUE));
+        radioactiveWasteBarrelDecayAmount = CachedLongValue.wrap(this, builder.comment("Number of mB of gas that decay every radioactiveWasteBarrelProcessTicks ticks when stored in a Radioactive Waste Barrel. Set to zero to disable decay all together. (Gases in the mekanism:waste_barrel_decay_blacklist tag will not decay).")
+              .defineInRange("radioactiveWasteBarrelDecayAmount", 1, 0, Long.MAX_VALUE));
         builder.pop();
 
         builder.comment("Digital Miner Settings").push(MINER_CATEGORY);

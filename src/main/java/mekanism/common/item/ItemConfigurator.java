@@ -54,7 +54,6 @@ import net.minecraft.item.Rarity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
@@ -91,8 +90,7 @@ public class ItemConfigurator extends ItemEnergized implements IMekWrench, IRadi
         if (!world.isRemote && player != null) {
             BlockPos pos = context.getPos();
             Direction side = context.getFace();
-            Hand hand = context.getHand();
-            ItemStack stack = player.getHeldItem(hand);
+            ItemStack stack = context.getItem();
             TileEntity tile = WorldUtils.getTileEntity(world, pos);
             ConfiguratorMode mode = getMode(stack);
             if (mode.isConfigurating()) { //Configurate
@@ -104,9 +102,9 @@ public class ItemConfigurator extends ItemEnergized implements IMekWrench, IRadi
                         RelativeSide relativeSide = RelativeSide.fromDirections(config.getOrientation(), side);
                         DataType dataType = info.getDataType(relativeSide);
                         if (!player.isSneaking()) {
-                            player.sendMessage(MekanismLang.LOG_FORMAT.translateColored(EnumColor.DARK_BLUE, MekanismLang.MEKANISM,
-                                  MekanismLang.CONFIGURATOR_VIEW_MODE.translateColored(EnumColor.GRAY, transmissionType, dataType.getColor(), dataType,
-                                        dataType.getColor().getColoredName())), Util.DUMMY_UUID);
+                            player.sendMessage(MekanismLang.LOG_FORMAT.translateColored(EnumColor.DARK_BLUE, MekanismLang.MEKANISM, EnumColor.GRAY,
+                                  MekanismLang.CONFIGURATOR_VIEW_MODE.translate(transmissionType, dataType.getColor(), dataType, dataType.getColor().getColoredName())),
+                                  Util.DUMMY_UUID);
                         } else if (SecurityUtils.canAccess(player, tile)) {
                             if (!player.isCreative()) {
                                 IEnergyContainer energyContainer = StorageUtils.getEnergyContainer(stack, 0);
@@ -117,9 +115,9 @@ public class ItemConfigurator extends ItemEnergized implements IMekWrench, IRadi
                                 energyContainer.extract(energyPerConfigure, Action.EXECUTE, AutomationType.MANUAL);
                             }
                             dataType = info.incrementDataType(relativeSide);
-                            player.sendMessage(MekanismLang.LOG_FORMAT.translateColored(EnumColor.DARK_BLUE, MekanismLang.MEKANISM,
-                                  MekanismLang.CONFIGURATOR_TOGGLE_MODE.translateColored(EnumColor.GRAY, transmissionType,
-                                        dataType.getColor(), dataType, dataType.getColor().getColoredName())), Util.DUMMY_UUID);
+                            player.sendMessage(MekanismLang.LOG_FORMAT.translateColored(EnumColor.DARK_BLUE, MekanismLang.MEKANISM, EnumColor.GRAY,
+                                  MekanismLang.CONFIGURATOR_TOGGLE_MODE.translate(transmissionType, dataType.getColor(), dataType, dataType.getColor().getColoredName())),
+                                  Util.DUMMY_UUID);
                             config.getConfig().sideChanged(transmissionType, relativeSide);
                         } else {
                             SecurityUtils.displayNoAccess(player);
@@ -161,7 +159,7 @@ public class ItemConfigurator extends ItemEnergized implements IMekWrench, IRadi
                                         energyContainer.extract(energyPerItemDump, Action.EXECUTE, AutomationType.MANUAL);
                                     }
                                     Block.spawnAsEntity(world, pos, inventorySlot.getStack().copy());
-                                    inventorySlot.setStack(ItemStack.EMPTY);
+                                    inventorySlot.setEmpty();
                                 }
                             }
                             return ActionResultType.SUCCESS;
@@ -220,8 +218,8 @@ public class ItemConfigurator extends ItemEnergized implements IMekWrench, IRadi
         if (mode != newMode) {
             setMode(stack, player, newMode);
             if (displayChangeMessage) {
-                player.sendMessage(MekanismLang.LOG_FORMAT.translateColored(EnumColor.DARK_BLUE, MekanismLang.MEKANISM,
-                      MekanismLang.CONFIGURE_STATE.translateColored(EnumColor.GRAY, newMode)), Util.DUMMY_UUID);
+                player.sendMessage(MekanismLang.LOG_FORMAT.translateColored(EnumColor.DARK_BLUE, MekanismLang.MEKANISM, EnumColor.GRAY,
+                      MekanismLang.CONFIGURE_STATE.translate(newMode)), Util.DUMMY_UUID);
             }
         }
     }
@@ -341,7 +339,7 @@ public class ItemConfigurator extends ItemEnergized implements IMekWrench, IRadi
 
         @Override
         public ITextComponent getShortText() {
-            return configurating ? transmissionType.getLangEntry().translateColored(color) : getTextComponent();
+            return configurating && transmissionType != null ? transmissionType.getLangEntry().translateColored(color) : getTextComponent();
         }
 
         @Override

@@ -106,8 +106,8 @@ public class ItemScubaTank extends ItemGasArmor implements IItemHUDProvider, IMo
             boolean newState = !getFlowing(stack);
             setFlowing(stack, newState);
             if (displayChangeMessage) {
-                player.sendMessage(MekanismLang.LOG_FORMAT.translateColored(EnumColor.DARK_BLUE, MekanismLang.MEKANISM,
-                      MekanismLang.FLOWING.translateColored(EnumColor.GRAY, OnOff.of(newState, true))), Util.DUMMY_UUID);
+                player.sendMessage(MekanismLang.LOG_FORMAT.translateColored(EnumColor.DARK_BLUE, MekanismLang.MEKANISM, EnumColor.GRAY,
+                      MekanismLang.FLOWING.translate(OnOff.of(newState, true))), Util.DUMMY_UUID);
             }
         }
     }
@@ -124,11 +124,6 @@ public class ItemScubaTank extends ItemGasArmor implements IItemHUDProvider, IMo
     @Override
     public boolean supportsSlotType(ItemStack stack, @Nonnull EquipmentSlotType slotType) {
         return slotType == getEquipmentSlot();
-    }
-
-    @Override
-    public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
-        return material.getEnchantability() > 0;
     }
 
     @ParametersAreNonnullByDefault

@@ -2,12 +2,14 @@ package mekanism.common.tile.machine;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -29,7 +31,7 @@ import mekanism.common.capabilities.holder.energy.EnergyContainerHelper;
 import mekanism.common.capabilities.holder.energy.IEnergyContainerHolder;
 import mekanism.common.capabilities.holder.slot.IInventorySlotHolder;
 import mekanism.common.capabilities.holder.slot.InventorySlotHelper;
-import mekanism.common.capabilities.resolver.basic.BasicCapabilityResolver;
+import mekanism.common.capabilities.resolver.BasicCapabilityResolver;
 import mekanism.common.config.MekanismConfig;
 import mekanism.common.content.filter.BaseFilter;
 import mekanism.common.content.filter.IFilter;
@@ -96,7 +98,7 @@ import net.minecraftforge.items.ItemHandlerHelper;
 public class TileEntityDigitalMiner extends TileEntityMekanism implements ISustainedData, IChunkLoader, IAdvancedBoundingBlock, ITileFilterHolder<MinerFilter<?>>,
       IHasSortableFilters {
 
-    public Map<ChunkPos, BitSet> oresToMine = new Object2ObjectOpenHashMap<>();
+    public Long2ObjectMap<BitSet> oresToMine = new Long2ObjectOpenHashMap<>();
     public Int2ObjectMap<MinerFilter<?>> replaceMap = new Int2ObjectOpenHashMap<>();
     private HashList<MinerFilter<?>> filters = new HashList<>();
     public ThreadMinerSearch searcher = new ThreadMinerSearch(this);
@@ -216,8 +218,8 @@ public class TileEntityDigitalMiner extends TileEntityMekanism implements ISusta
                 energyContainer.extract(energyPerTick, Action.EXECUTE, AutomationType.INTERNAL);
                 if (delay == 0) {
                     boolean did = false;
-                    for (Iterator<ChunkPos> it = oresToMine.keySet().iterator(); it.hasNext(); ) {
-                        ChunkPos chunk = it.next();
+                    for (LongIterator it = oresToMine.keySet().iterator(); it.hasNext(); ) {
+                        long chunk = it.nextLong();
                         BitSet set = oresToMine.get(chunk);
                         int next = 0;
                         while (!did) {
@@ -324,7 +326,7 @@ public class TileEntityDigitalMiner extends TileEntityMekanism implements ISusta
         return maxY;
     }
 
-    public void setSilkTouch(boolean newSilkTouch) {
+    private void setSilkTouch(boolean newSilkTouch) {
         boolean changed = silkTouch != newSilkTouch;
         silkTouch = newSilkTouch;
         if (changed && (hasWorld() && !isRemote())) {
@@ -764,6 +766,13 @@ public class TileEntityDigitalMiner extends TileEntityMekanism implements ISusta
                     filters.add((MinerFilter<?>) filter);
                 }
             }
+        }
+        if (!hasWorld()) {
+            //If we don't have a world yet (reading from save), update the energy per tick in case any of the values changed.
+            // It would be slightly cleaner to also validate the fact the values changed, but it would make the code a decent
+            // bit messier as we couldn't use NBTUtils, and it is a rather quick check to update the energy per tick, and in
+            // most cases at least one of the settings will not be at the default value
+            energyContainer.updateMinerEnergyPerTick();
         }
     }
 
