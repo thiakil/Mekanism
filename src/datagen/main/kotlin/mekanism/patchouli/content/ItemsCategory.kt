@@ -184,91 +184,40 @@ fun PatchouliBook.itemCategory() {
             }
         }
         GuideCategory.ITEMS_MODULES {
-            MODULES[Modules.ATTACK_AMPLIFICATION_UNIT]?.invoke {
-                name = "Attack Amplification Unit"
-                +"Increases the damage of your ${link(MEKA_TOOL, "MekaTool")}.  Up to 8 can be installed, for a max of 32 damage."
+            MODULES[Modules.ATTACK_AMPLIFICATION_UNIT]?.invoke("ttack Amplification Units will boost your ${link(MEKA_TOOL, "MekaTool")}\'s attack damage.\$(p)Max units per Mekatool: 4.\$(br)Max damage: 32.")
+            MODULES[Modules.CHARGE_DISTRIBUTION_UNIT]?.invoke("Charge Distribution Units will distribute gained energy evenly to all MekaSuit armor pieces.  Normally if you have installed Solar Recharging Units onto your MekaSuit Helmet, only the helmet will gain all the energy it's producing.") {
+                text {
+                    text = "With the Charge Distribution Unit installed, the produced energy will be evenly distributed throughout all MekaSuit armor pieces.  (I know this sounds like an ad, but trust me it's not.\$(p)Max units per bodyarmor: 1"
+                }
             }
-            MODULES[Modules.CHARGE_DISTRIBUTION_UNIT]?.invoke {
-                name = "Charge Distribution Unit"
-                +"Distributes energy evenly throughout your ${link(MEKASUIT_BODYARMOR, "MekaSuit")}.  Can be installed on any piece of the armor."
-            }
-            MODULES[Modules.DOSIMETER_UNIT]?.invoke {
-                name = "Dosimeter Unit"
-                +"Shows your radiation exposure on the HUD.  Installed on ${link(MEKASUIT_BODYARMOR, "MekaSuit Bodyarmor")}."
-            }
-            MODULES[Modules.ELECTROLYTIC_BREATHING_UNIT]?.invoke {
-                name = "Electrolytic Breathing Unit"
-                +"Produces breathable oxygen underwater.  Will also produce hydrogen, which fills your jetpack, if present.  Installed on ${link(MEKASUIT_HELMET, "MekaSuit Helmet")}."
-            }
-            MODULES[Modules.ENERGY_UNIT]?.invoke {
-                name = "Energy Unit"
-                +"Increases the energy capacity of any ${link(MEKASUIT_BODYARMOR, "MekaSuit")} armor, as well as the ${link(MEKA_TOOL, "MekaTool")}.  Up to 8 can be installed, for a max energy storage of 1.63 GFE."
-            }
-            MODULES[Modules.EXCAVATION_ESCALATION_UNIT]?.invoke {
-                name = "Excavation Escalation Unit"
-                +"Increases the maximum mining speed of your ${link(MEKA_TOOL, "MekaTool")}.  Up to 4 can be installed, for a max speed of 128."
-            }
-            MODULES[Modules.FARMING_UNIT]?.invoke {
-                name = "Farming Unit"
-                +"Gives your ${link(MEKA_TOOL, "MekaTool")} the ability to act as a hoe."
-            }
+            MODULES[Modules.DOSIMETER_UNIT]?.invoke("Dosimeter Units will display your radiation dose in the HUD on the bottom right corner.\$(br)Max unit per bodyarmor: 1")
+            MODULES[Modules.ELECTROLYTIC_BREATHING_UNIT]?.invoke("Electrolytic Breathing Units will allow you to breathe underwater.  In addition, if the Jetpack Unit is installed onto the MekaSuit Bodyarmor, it will automatically begin to refuel its hydrogen supply while underwater or out in the rain.\$(p)Max units per helmet: 4")
+            MODULES[Modules.ENERGY_UNIT]?.invoke("Energy Units will increase the energy capacity of the selected equipment.  Max units per equipment: 8.\$(br)Max energy: 1.63 GFE.")
+            MODULES[Modules.EXCAVATION_ESCALATION_UNIT]?.invoke("Increases the maximum mining speed of your ${link(MEKA_TOOL, "MekaTool")}.\$(br)Max units per mekatool: 4.\$(br)Max speed: 128.")
+            MODULES[Modules.FARMING_UNIT]?.invoke("Farming Units allow you to tilt soil, strip logs, and flatten soil. Well, yeah.\$(br)Max units per Meka-Tool: 4")
             //TODO: Uncomment when/if this gets merged into 10.1
-            /*MODULES[Modules.GEIGER_UNIT]?.invoke {
-                name = "Geiger Unit"
-                +"Shows ambient radiation on the HUD.  Installed on ${link(MEKASUIT_BODYARMOR, "MekaSuit Bodyarmor)}"
-            }*/
-            MODULES[Modules.GRAVITATIONAL_MODULATING_UNIT]?.invoke {
-                name = "Gravitation Modulating Unit"
-                +"Using the power of antimatter, gives the user to ability to fly using purely energy.  Installed on ${link(MEKASUIT_BODYARMOR, "MekaSuit Bodyarmor")}."
+            /*MODULES[Modules.GEIGER_UNIT]?.invoke("Shows ambient radiation on the HUD.  Installed on ${link(MEKASUIT_BODYARMOR, "MekaSuit Bodyarmor")}")*/
+            MODULES[Modules.GRAVITATIONAL_MODULATING_UNIT]?.invoke("Gravitational Modulating Units allows you to utilize creative flight.  If the MekaSuit bodyarmor also has a Jetpack Unit installed, the Jetpack Unit will be automatically disabled if the Gravitational Modulating Unit is enabled, and vice versa.\$(p)Max unit per bodyarmor: 1")
+            MODULES[Modules.HYDRAULIC_PROPULSION_UNIT]?.invoke("Hydraulic Propulsion Units will allow you to climb over increased heights without jumping. It also allows you to jump higher when you hold \$(k:key.mekanism.key_boost) and press \$(k:key.jump). \$(p)Max units per boots: 4.\$(br)Max step height:2.\$(br)Max jump height:5.")
+            MODULES[Modules.INHALATION_PURIFICATION_UNIT]?.invoke("Inhalation Purification Units will protect you from selected potion effects including beneficial, neutral, and harmful ones. Using its stored energy, it can nullify the potion effects.") {
+                text {
+                    text = "The potion may still look like it is in effect (e.g. black hearts and injuring noises when hit with a Potion of Decay), but in actuality the player will not receive any of its effects.\$(p)Max unit per helmet: 1"
+                }
             }
-            MODULES[Modules.HYDRAULIC_PROPULSION_UNIT]?.invoke {
-                name = "Hydraulic Propulsion Unit"
-                +"Increases your step height and jump height.  Up to 4 can be installed on your ${link(MEKASUIT_BOOTS, "MekaSuit Boots")}, for a max step height of 2 and jump height of 5."
+            MODULES[Modules.JETPACK_UNIT]?.invoke("Jetpack Units will allow your MekaSuit Bodyarmor to have the functions of a ${link(JETPACK, "Jetpack")}. Once applied, the MekaSuit Bodyarmor will have an internal storage for hydrogen (48,000mb).") {
+                text {
+                    text = "The Jetpack Unit is best paired with the ${link(Modules.ELECTROLYTIC_BREATHING_UNIT, "Electrolytic Breathing Unit")}. Doing so allows the accumulation of hydrogen when underwater or in the rain. \$(br)Alternatively, hydrogen can manually be refueled using a ${link(GuideEntry.TANKS_GAS, "Chemical Tank")} or anything else that can output Hydrogen.\$(p)Max units per bodyarmor: 1."
+                }
             }
-            MODULES[Modules.INHALATION_PURIFICATION_UNIT]?.invoke {
-                name = "Inhalation Purification Unit"
-                +"Removes status effects.  Can be configured to block harmful, neutral, beneficial, or a combination.  Installed on ${link(MEKASUIT_HELMET, "MekaSuit Helmet")}."
-            }
-            MODULES[Modules.JETPACK_UNIT]?.invoke {
-                name = "Jetpack Unit"
-                +"Integrates a ${link(JETPACK, "Jetpack")} into your ${link(MEKASUIT_BODYARMOR, "MekaSuit Bodyarmor")}.  Functions in the same way as a regular jetpack."
-            }
-            MODULES[Modules.LOCOMOTIVE_BOOSTING_UNIT]?.invoke {
-                name = "Locomotive Boosting Unit"
-                +"Increases your sprint speed.  Up to 4 can be installed on your ${link(MEKASUIT_PANTS, "MekaSuit Pants")}."
-            }
-            MODULES[Modules.MAGNETIC_ATTRACTION_UNIT]?.invoke {
-                name = "Magnetic Attraction Unit"
-                +"Increases your item pickup distance.  Installed on ${link(MEKASUIT_BOOTS, "MekaSuit Boots")}."
-            }
-            MODULES[Modules.NUTRITIONAL_INJECTION_UNIT]?.invoke {
-                name = "Nutritional Injection Unit"
-                +"Automatically feeds you ${link(NUTRITIONAL_PASTE, "Nutritional Paste")} when hungry.  Installed on ${link(MEKASUIT_HELMET, "MekaSuit Helmet")}."
-            }
-            MODULES[Modules.RADIATION_SHIELDING_UNIT]?.invoke {
-                name = "Radiation Sheilding Unit"
-                +"Reduces radiation damage.  Can be installed on any ${link(MEKASUIT_BODYARMOR, "MekaSuit")} armor.  Needs to be installed on every piece to be invulnerable to radiation."
-            }
-            MODULES[Modules.SILK_TOUCH_UNIT]?.invoke {
-                name = "Silk Touch Unit"
-                +"Gives your ${link(MEKA_TOOL, "MekaTool")} the ability to mine blocks as if affected by Silk Touch."
-            }
-            MODULES[Modules.SOLAR_RECHARGING_UNIT]?.invoke {
-                name = "Solar Recharging Unit"
-                +"Gives your ${link(MEKASUIT_BODYARMOR, "MekaSuit")} the ability to recharge in the day.  Installed on ${link(MEKASUIT_HELMET, "MekaSuit Helmet")}."
-            }
-            MODULES[Modules.TELEPORTATION_UNIT]?.invoke {
-                name = "Teleportation Unit"
-                +"Gives your ${link(MEKA_TOOL, "MekaTool")} the ability to teleport you to nearby blocks."
-            }
-            MODULES[Modules.VEIN_MINING_UNIT]?.invoke {
-                name = "Vein Mining Unit"
-                +"Gives you ${link(MEKA_TOOL, "MekaTool")} the ability to mine identical connected blocks at once.  By default only works on ores, but can be configured to use \"Extended Mode\", i.e all blocks. "
-            }
-            MODULES[Modules.VISION_ENHANCEMENT_UNIT]?.invoke {
-                name = "Vision Enhancement Unit"
-                +"Makes it easier to see in small dark areas, however it reduces the visible distance.  Installed on ${link(MEKASUIT_HELMET, "MekaSuit Helmet")}."
-            }
+            MODULES[Modules.LOCOMOTIVE_BOOSTING_UNIT]?.invoke("Locomotive Boosting Units will allow you to boost your sprinting speed. It can be configured from 0.0 sprint boost, to a 0.5 sprint boost.\$(br)Note that your hunger consumption rate would also increase as you run faster.\$(p)Max units per pants: 4.")
+            MODULES[Modules.MAGNETIC_ATTRACTION_UNIT]?.invoke("Magnet Attraction Units allow you to attract dropped items on the ground. When an is item being pulled towards you, there will have a blue lightning looking line in between you and the item.\$(p)Max units per boots: 4.")
+            MODULES[Modules.NUTRITIONAL_INJECTION_UNIT]?.invoke("Nutritional Injection Units can be installed on a MekaSuit Helmet to remove the need to manually eat. When installed, the MekaSuit helmet will have an internal storage for ${link(NUTRITIONAL_PASTE, "Nutritional Paste")} (128,000mb).\$(p)Max units per helmet: 1.")
+            MODULES[Modules.RADIATION_SHIELDING_UNIT]?.invoke("Radiation Shielding Units will allow your MekaSuit armor piece to protect you from radiation, similar to the ${link(HAZMAT_GOWN, "Hazmat Gown")}.  \$(br)Note that once you have been exposed to deadly doses of radiation without protection and began taking damage, wearing MekaSuit armor pieces with Radiation Shielding Units installed will \$(bold)not\$() prevent you from taking damage. Instead, it will only prevent the increase of radiation dosage.\$(br)In addition, all of your MekaSuit armor pieces must have a Radiation Shielding Unit installed for full protection against radiation.\$(p)Max units per armor piece: 1.")
+            MODULES[Modules.SILK_TOUCH_UNIT]?.invoke("Silk Touch Units, when installed and enabled, will \"enchant\" your Meka-Tool with Silk Touch. \$(br)If you are unfamiliar with what Silk Touch does, it basically makes the mined blocks drop themsleves instead of their mined counterparts (e.g. stone will drop stone instead of cobblestone when mined).")
+            MODULES[Modules.SOLAR_RECHARGING_UNIT]?.invoke("Solar Recharging Units will charge your${link(MEKASUIT_BODYARMOR, "MekaSuit")} during direct exposure to sunlight. Blocks such as glass will not impede the charging process. \$(p)Max units per helmet: 8.")
+            MODULES[Modules.TELEPORTATION_UNIT]?.invoke("Teleportation Units allow you to teleport similar to an ender pearl, except that it will be instant. There is a limited range and teleportation will consume power.\$(p)Max units per Meka-Tool: 1.")
+            MODULES[Modules.VEIN_MINING_UNIT]?.invoke("Vein Mining Units will allow you to mine ore veins and cut down trees with usually just one break of a block.\$(br)Extended Mode will vein mine any blocks rather than just logs and ores.\$(p)Max units per Meka-Tool: 4.")
+            MODULES[Modules.VISION_ENHANCEMENT_UNIT]?.invoke("Vision Enhancement Units will improve your night vision.  You can press \$(k:key.mekanism.head_mode) to toggle it on or off without going into the Module Tweaker.\$(p)Max units per helmet: 4.")
         }
         GuideCategory.ITEMS_METAL_AND_ORE {
             name = "Metals & Ores"
