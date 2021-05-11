@@ -56,7 +56,11 @@ fun PatchouliBook.itemCategory() {
                             "\$(li)The Jetpack can be paired with the Free Runners to protect against fall damage."
                 }
             }
-            MEKA_TOOL("The ultimate in personal equipment and weaponry.  Can serve a variety of tasks.  Mining speed can be configured by pressing \"Item Mode Switch\".  All other settings are configured using the \"Module Tweaker\" key.")
+            MEKA_TOOL("The Meka-Tool is a highly configurable late-game tool. It is very versatile in that it can act as a weapon, a pickaxe, an axe, etc. Using a ${link(MODIFICATION_STATION, "Modification Station")}, modules/units can be installed onto Meka-Tool.") {
+                text {
+                    text = "Press \$(k:key.mekanism.module_tweaker) to access the Module Tweaker GUI. Here you can configurate the modules installed on each MekaSuit armor piece.\$(p)Note: even though the Meka-Tool includes a ${link(CONFIGURATOR, "Configurator")}, it does not have a Configurator's capabilities."
+                }
+            }
             ATOMIC_DISASSEMBLER("The Atomic Disassembler is Mekanism's an all-in-one tool, essentially the ultimate, electronic version of the Paxel (working at any mining level). Also functions as a Hoe & Scoop (Forestry)$(p)The Atomic Disassembler has multiple modes that can be cycled with $(k:sneak) + right click.") {
                 text {
                     title = "Normal Mode"
@@ -175,7 +179,12 @@ fun PatchouliBook.itemCategory() {
             }
             entry(MEKASUIT_BODYARMOR) {
                 name = "MekaSuit"
-                +"The ultimate in personal protection.  A high-powered energy suit that makes you nearly invincible.  Can be upgraded with even more functions and protections using modules"
+                text {
+                    text = "The MekaSuit is a highly configurable late-game armor set. Like many other Mekanism tools/equipments, it uses power instead of having durability. Using a ${link(MODIFICATION_STATION, "Modification Station")}, modules/units can be installed onto MekaSuit armor pieces."
+                }
+                text {
+                    text = "Press \$(k:key.mekanism.module_tweaker) to access the Module Tweaker GUI. Here you can configurate the modules installed on each MekaSuit armor piece."
+                }
                 spotlight(MEKASUIT_HELMET, "Protect your head.")
                 spotlight(MEKASUIT_BODYARMOR, "Protect your torso.")
                 spotlight(MEKASUIT_PANTS, "Protect your legs.")
