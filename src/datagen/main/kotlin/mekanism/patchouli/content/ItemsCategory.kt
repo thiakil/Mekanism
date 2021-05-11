@@ -56,6 +56,11 @@ fun PatchouliBook.itemCategory() {
                             "\$(li)The Jetpack can be paired with the Free Runners to protect against fall damage."
                 }
             }
+            MEKA_TOOL("The Meka-Tool is a highly configurable late-game tool. It is very versatile in that it can act as a weapon, a pickaxe, an axe, etc. Using a ${link(MODIFICATION_STATION, "Modification Station")}, modules/units can be installed onto Meka-Tool.") {
+                text {
+                    text = "Press \$(k:key.mekanism.module_tweaker) to access the Module Tweaker GUI. Here you can configurate the modules installed on each MekaSuit armor piece.\$(p)Note: even though the Meka-Tool includes a ${link(CONFIGURATOR, "Configurator")}, it does not have a Configurator's capabilities."
+                }
+            }
             ATOMIC_DISASSEMBLER("The Atomic Disassembler is Mekanism's an all-in-one tool, essentially the ultimate, electronic version of the Paxel (working at any mining level). Also functions as a Hoe & Scoop (Forestry)$(p)The Atomic Disassembler has multiple modes that can be cycled with $(k:sneak) + right click.") {
                 text {
                     title = "Normal Mode"
@@ -172,6 +177,56 @@ fun PatchouliBook.itemCategory() {
                 spotlight(HAZMAT_PANTS, "For your legs.")
                 spotlight(HAZMAT_BOOTS, "For your feet.")
             }
+            entry(MEKASUIT_BODYARMOR) {
+                name = "MekaSuit"
+                text {
+                    text = "The MekaSuit is a highly configurable late-game armor set. Like many other Mekanism tools/equipments, it uses power instead of having durability. Using a ${link(MODIFICATION_STATION, "Modification Station")}, modules/units can be installed onto MekaSuit armor pieces."
+                }
+                text {
+                    text = "Press \$(k:key.mekanism.module_tweaker) to access the Module Tweaker GUI. Here you can configurate the modules installed on each MekaSuit armor piece."
+                }
+                spotlight(MEKASUIT_HELMET, "Protect your head.")
+                spotlight(MEKASUIT_BODYARMOR, "Protect your torso.")
+                spotlight(MEKASUIT_PANTS, "Protect your legs.")
+                spotlight(MEKASUIT_BOOTS, "Protect your feet.")
+
+            }
+        }
+        GuideCategory.ITEMS_MODULES {
+            MODULES[Modules.ATTACK_AMPLIFICATION_UNIT]?.invoke("ttack Amplification Units will boost your ${link(MEKA_TOOL, "MekaTool")}\'s attack damage.\$(p)Max units per Mekatool: 4.\$(br)Max damage: 32.")
+            MODULES[Modules.CHARGE_DISTRIBUTION_UNIT]?.invoke("Charge Distribution Units will distribute gained energy evenly to all MekaSuit armor pieces.  Normally if you have installed Solar Recharging Units onto your MekaSuit Helmet, only the helmet will gain all the energy it's producing.") {
+                text {
+                    text = "With the Charge Distribution Unit installed, the produced energy will be evenly distributed throughout all MekaSuit armor pieces.  (I know this sounds like an ad, but trust me it's not.\$(p)Max units per bodyarmor: 1"
+                }
+            }
+            MODULES[Modules.DOSIMETER_UNIT]?.invoke("Dosimeter Units will display your radiation dose in the HUD on the bottom right corner.\$(br)Max unit per bodyarmor: 1")
+            MODULES[Modules.ELECTROLYTIC_BREATHING_UNIT]?.invoke("Electrolytic Breathing Units will allow you to breathe underwater.  In addition, if the Jetpack Unit is installed onto the MekaSuit Bodyarmor, it will automatically begin to refuel its hydrogen supply while underwater or out in the rain.\$(p)Max units per helmet: 4")
+            MODULES[Modules.ENERGY_UNIT]?.invoke("Energy Units will increase the energy capacity of the selected equipment.  Max units per equipment: 8.\$(br)Max energy: 1.63 GFE.")
+            MODULES[Modules.EXCAVATION_ESCALATION_UNIT]?.invoke("Increases the maximum mining speed of your ${link(MEKA_TOOL, "MekaTool")}.\$(br)Max units per mekatool: 4.\$(br)Max speed: 128.")
+            MODULES[Modules.FARMING_UNIT]?.invoke("Farming Units allow you to tilt soil, strip logs, and flatten soil. Well, yeah.\$(br)Max units per Meka-Tool: 4")
+            //TODO: Uncomment when/if this gets merged into 10.1
+            /*MODULES[Modules.GEIGER_UNIT]?.invoke("Shows ambient radiation on the HUD.  Installed on ${link(MEKASUIT_BODYARMOR, "MekaSuit Bodyarmor")}")*/
+            MODULES[Modules.GRAVITATIONAL_MODULATING_UNIT]?.invoke("Gravitational Modulating Units allows you to utilize creative flight.  If the MekaSuit bodyarmor also has a Jetpack Unit installed, the Jetpack Unit will be automatically disabled if the Gravitational Modulating Unit is enabled, and vice versa.\$(p)Max unit per bodyarmor: 1")
+            MODULES[Modules.HYDRAULIC_PROPULSION_UNIT]?.invoke("Hydraulic Propulsion Units will allow you to climb over increased heights without jumping. It also allows you to jump higher when you hold \$(k:key.mekanism.key_boost) and press \$(k:key.jump). \$(p)Max units per boots: 4.\$(br)Max step height:2.\$(br)Max jump height:5.")
+            MODULES[Modules.INHALATION_PURIFICATION_UNIT]?.invoke("Inhalation Purification Units will protect you from selected potion effects including beneficial, neutral, and harmful ones. Using its stored energy, it can nullify the potion effects.") {
+                text {
+                    text = "The potion may still look like it is in effect (e.g. black hearts and injuring noises when hit with a Potion of Decay), but in actuality the player will not receive any of its effects.\$(p)Max unit per helmet: 1"
+                }
+            }
+            MODULES[Modules.JETPACK_UNIT]?.invoke("Jetpack Units will allow your MekaSuit Bodyarmor to have the functions of a ${link(JETPACK, "Jetpack")}. Once applied, the MekaSuit Bodyarmor will have an internal storage for hydrogen (48,000mb).") {
+                text {
+                    text = "The Jetpack Unit is best paired with the ${link(Modules.ELECTROLYTIC_BREATHING_UNIT, "Electrolytic Breathing Unit")}. Doing so allows the accumulation of hydrogen when underwater or in the rain. \$(br)Alternatively, hydrogen can manually be refueled using a ${link(GuideEntry.TANKS_GAS, "Chemical Tank")} or anything else that can output Hydrogen.\$(p)Max units per bodyarmor: 1."
+                }
+            }
+            MODULES[Modules.LOCOMOTIVE_BOOSTING_UNIT]?.invoke("Locomotive Boosting Units will allow you to boost your sprinting speed. It can be configured from 0.0 sprint boost, to a 0.5 sprint boost.\$(br)Note that your hunger consumption rate would also increase as you run faster.\$(p)Max units per pants: 4.")
+            MODULES[Modules.MAGNETIC_ATTRACTION_UNIT]?.invoke("Magnet Attraction Units allow you to attract dropped items on the ground. When an is item being pulled towards you, there will have a blue lightning looking line in between you and the item.\$(p)Max units per boots: 4.")
+            MODULES[Modules.NUTRITIONAL_INJECTION_UNIT]?.invoke("Nutritional Injection Units can be installed on a MekaSuit Helmet to remove the need to manually eat. When installed, the MekaSuit helmet will have an internal storage for ${link(NUTRITIONAL_PASTE, "Nutritional Paste")} (128,000mb).\$(p)Max units per helmet: 1.")
+            MODULES[Modules.RADIATION_SHIELDING_UNIT]?.invoke("Radiation Shielding Units will allow your MekaSuit armor piece to protect you from radiation, similar to the ${link(HAZMAT_GOWN, "Hazmat Gown")}.  \$(br)Note that once you have been exposed to deadly doses of radiation without protection and began taking damage, wearing MekaSuit armor pieces with Radiation Shielding Units installed will \$(bold)not\$() prevent you from taking damage. Instead, it will only prevent the increase of radiation dosage.\$(br)In addition, all of your MekaSuit armor pieces must have a Radiation Shielding Unit installed for full protection against radiation.\$(p)Max units per armor piece: 1.")
+            MODULES[Modules.SILK_TOUCH_UNIT]?.invoke("Silk Touch Units, when installed and enabled, will \"enchant\" your Meka-Tool with Silk Touch. \$(br)If you are unfamiliar with what Silk Touch does, it basically makes the mined blocks drop themsleves instead of their mined counterparts (e.g. stone will drop stone instead of cobblestone when mined).")
+            MODULES[Modules.SOLAR_RECHARGING_UNIT]?.invoke("Solar Recharging Units will charge your${link(MEKASUIT_BODYARMOR, "MekaSuit")} during direct exposure to sunlight. Blocks such as glass will not impede the charging process. \$(p)Max units per helmet: 8.")
+            MODULES[Modules.TELEPORTATION_UNIT]?.invoke("Teleportation Units allow you to teleport similar to an ender pearl, except that it will be instant. There is a limited range and teleportation will consume power.\$(p)Max units per Meka-Tool: 1.")
+            MODULES[Modules.VEIN_MINING_UNIT]?.invoke("Vein Mining Units will allow you to mine ore veins and cut down trees with usually just one break of a block.\$(br)Extended Mode will vein mine any blocks rather than just logs and ores.\$(p)Max units per Meka-Tool: 4.")
+            MODULES[Modules.VISION_ENHANCEMENT_UNIT]?.invoke("Vision Enhancement Units will improve your night vision.  You can press \$(k:key.mekanism.head_mode) to toggle it on or off without going into the Module Tweaker.\$(p)Max units per helmet: 4.")
         }
         GuideCategory.ITEMS_METAL_AND_ORE {
             name = "Metals & Ores"

@@ -9,6 +9,7 @@ enum class GuideCategory : IGuideCategory {
     ITEMS,
     ITEMS_METAL_AND_ORE,
     ITEMS_GEAR,
+    ITEMS_MODULES,
     ITEMS_UPGRADES,
     BLOCKS,
     MULTIBLOCKS,
