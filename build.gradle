@@ -53,6 +53,7 @@ sourceSets {
     api {
         //The API has no resources
         resources.srcDirs = []
+        kotlin.srcDirs = []
     }
     main {
         resources {
@@ -67,20 +68,17 @@ sourceSets {
         }
         compileClasspath += api.output
         runtimeClasspath += api.output
+        kotlin.srcDirs = []
     }
     test {
         //The test module has no resources
         resources.srcDirs = []
+        kotlin.srcDirs = []
         //Add the api to the output, all other ones that need to will get added via setupExtraSourceSets
         compileClasspath += api.output
         runtimeClasspath += api.output
     }
 }
-
-// no kotlin for the main mod
-sourceSets.api.kotlin.srcDirs.removeAll()
-sourceSets.main.kotlin.srcDirs.removeAll()
-sourceSets.test.kotlin.srcDirs.removeAll()
 
 configurations {
     //Make sure all our sub source set stuff extends the proper base methods so that
@@ -108,7 +106,7 @@ for (def name : secondaryModules) {
     }
     sourceSet.compileClasspath += sourceSets.api.output
     sourceSet.compileClasspath += sourceSets.main.output
-    sourceSet.kotlin.srcDirs.removeAll()
+    sourceSet.kotlin.srcDirs = []
     //Create all secondary sourceSets for this module
     setupExtraSourceSets(sourceSet)
 }
