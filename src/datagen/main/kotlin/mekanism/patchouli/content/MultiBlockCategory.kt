@@ -438,7 +438,7 @@ fun PatchouliBook.multiblocks() {
                             +STRUCTURAL_GLASS; +STRUCTURAL_GLASS; +STRUCTURAL_GLASS
                             +SPS_CASING
                         }
-                        row { +SPS_CASING; +SPS_CASING; +SPS_CASING }
+                        row { +SPS_CASING; +SPS_CASING; center(SPS_CASING) }
                     }
                 }
             }
