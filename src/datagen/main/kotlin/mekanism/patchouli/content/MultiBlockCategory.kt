@@ -2,6 +2,7 @@ package mekanism.patchouli.content
 
 import mekanism.common.MekanismLang
 import mekanism.common.registries.MekanismBlocks.*
+import mekanism.common.registries.MekanismItems.*
 import mekanism.common.registries.MekanismGases.*
 import mekanism.patchouli.GuideCategory
 import mekanism.patchouli.GuideEntry
@@ -134,6 +135,33 @@ fun PatchouliBook.multiblocks() {
             name = "Teleporter"
             icon = TELEPORTER
             +TELEPORTER_FRAME
+
+            +"The teleporter allows instant teleportation between faraway destinations (including in different dimensions).  The teleporter consists of a 3x4 frame of ${link(TELEPORTER_FRAME, "Teleporter Frame")}, with a ${link(TELEPORTER, "Teleporter Block")} in the bottom center.  The teleporter can be horizontal or vertical."
+            +"The destination must be loaded.  It is recommended to install an ${link(ANCHOR_UPGRADE, "Anchor Upgrade")} to ensure that this is always the case."
+
+            multiblock {
+                name = "Vertical Teleporter"
+                definition {
+                    layer { row { +TELEPORTER_FRAME; +TELEPORTER_FRAME; +TELEPORTER_FRAME } }
+                    for (middleLayer in 1..2) {
+                        layer { row { +TELEPORTER_FRAME; space(); space(); +TELEPORTER_FRAME } }
+                    }
+                    layer { row {+TELEPORTER_FRAME; center(TELEPORTER); +TELEPORTER_FRAME } }
+                }
+            }
+
+            multiblock {
+                name = "Horizontal Teleporter"
+                definition {
+                    layer {
+                        row { +TELEPORTER_FRAME; +TELEPORTER_FRAME; +TELEPORTER_FRAME }
+                        for (middleRow in 1..2) {
+                            row { +TELEPORTER_FRAME; space(); space(); +TELEPORTER_FRAME }
+                        }
+                        row { +TELEPORTER_FRAME; center(TELEPORTER); +TELEPORTER_FRAME }
+                    }
+                }
+            }
         }
         GuideEntry.INDUCTION {
             name = "Induction Matrix"
