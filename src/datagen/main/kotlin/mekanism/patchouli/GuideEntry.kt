@@ -26,6 +26,7 @@ enum class GuideEntry(folder: String?, name: String): IGuideEntry {
     TELEPORTER("multiblocks", "teleporter"),
     INDUCTION("multiblocks", "induction_matrix"),
     BOILER("multiblocks", "boiler"),
+    SPS("multiblocks", "sps"),
     ORE_DOUBLING("ore_processing", "doubling"),
     ORE_TRIPLING("ore_processing", "tripling"),
     ORE_QUADRUPLING("ore_processing", "quadrupling"),

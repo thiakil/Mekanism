@@ -2,9 +2,12 @@ package mekanism.patchouli.content
 
 import mekanism.common.MekanismLang
 import mekanism.common.registries.MekanismBlocks.*
+import mekanism.common.registries.MekanismItems.*
+import mekanism.common.registries.MekanismGases.*
 import mekanism.patchouli.GuideCategory
 import mekanism.patchouli.GuideEntry
 import mekanism.patchouli.dsl.PatchouliBook
+import mekanism.patchouli.dsl.link
 import net.minecraft.core.Direction
 
 fun PatchouliBook.multiblocks() {
@@ -132,6 +135,33 @@ fun PatchouliBook.multiblocks() {
             name = "Teleporter"
             icon = TELEPORTER
             +TELEPORTER_FRAME
+
+            +"The teleporter allows instant teleportation between faraway destinations (including in different dimensions).  The teleporter consists of a 3x4 frame of ${link(TELEPORTER_FRAME, "Teleporter Frame")}, with a ${link(TELEPORTER, "Teleporter Block")} in the bottom center.  The teleporter can be horizontal or vertical."
+            +"The destination must be loaded.  It is recommended to install an ${link(ANCHOR_UPGRADE, "Anchor Upgrade")} to ensure that this is always the case."
+
+            multiblock {
+                name = "Vertical Teleporter"
+                definition {
+                    layer { row { +TELEPORTER_FRAME; +TELEPORTER_FRAME; +TELEPORTER_FRAME } }
+                    for (middleLayer in 1..2) {
+                        layer { row { +TELEPORTER_FRAME; space(); space(); +TELEPORTER_FRAME } }
+                    }
+                    layer { row {+TELEPORTER_FRAME; center(TELEPORTER); +TELEPORTER_FRAME } }
+                }
+            }
+
+            multiblock {
+                name = "Horizontal Teleporter"
+                definition {
+                    layer {
+                        row { +TELEPORTER_FRAME; +TELEPORTER_FRAME; +TELEPORTER_FRAME }
+                        for (middleRow in 1..2) {
+                            row { +TELEPORTER_FRAME; space(); space(); +TELEPORTER_FRAME }
+                        }
+                        row { +TELEPORTER_FRAME; center(TELEPORTER); +TELEPORTER_FRAME }
+                    }
+                }
+            }
         }
         GuideEntry.INDUCTION {
             name = "Induction Matrix"
@@ -146,6 +176,111 @@ fun PatchouliBook.multiblocks() {
             +ADVANCED_INDUCTION_PROVIDER
             +ELITE_INDUCTION_PROVIDER
             +ULTIMATE_INDUCTION_PROVIDER
+
+            +"The induction matrix is a multiblock used to store potentially huge amounts of power.  It can be any size from 3x3x3 to 18x18x18.  The edges and corners must be made of ${link(INDUCTION_CASING, "Induction Casing")}, while the sides can be made of casing and or ${link(STRUCTURAL_GLASS, "structural glass")}."
+            +"The inside of the matrix is filled with ${link(GuideEntry.INDUCTION_CELL, "Induction Cells")} and ${link(GuideEntry.INDUCTION_PROVIDER, "Induction Providers")}, which provide power storage and transfer, respectively.  Note that not every block in the matrix must be filled, so you can build a matrix bigger than you currently need and upgrade it as required.  ${link(INDUCTION_PORT, "induction ports")} are used for input and output, and can be placed anywhere on any side."
+
+            multiblock {
+                name = "A basic 5x5x5 induction matrix, with all glass sides"
+                definition {
+                    //Structural glass ceiling + floor
+                    layer {
+                        row {
+                            for (casing in 1..5) { +INDUCTION_CASING }
+                        }
+                        for (glassRow in 1..3) {
+                            row {
+                                +INDUCTION_CASING
+                                +STRUCTURAL_GLASS; +STRUCTURAL_GLASS; +STRUCTURAL_GLASS
+                                +INDUCTION_CASING
+                            }
+                        }
+                        row {
+                            for (casing in 1..5) { +INDUCTION_CASING }
+                        }
+                    }
+                    //Layer of providers
+                    layer {
+                        row {
+                            +INDUCTION_CASING
+                            +STRUCTURAL_GLASS; +STRUCTURAL_GLASS; +STRUCTURAL_GLASS
+                            +INDUCTION_CASING
+                        }
+                        for (providerRow in 1..3) {
+                            row {
+                                +STRUCTURAL_GLASS
+                                +BASIC_INDUCTION_PROVIDER; +BASIC_INDUCTION_PROVIDER; +BASIC_INDUCTION_PROVIDER
+                                +STRUCTURAL_GLASS
+                            }
+                        }
+                        row {
+                            +INDUCTION_CASING
+                            +STRUCTURAL_GLASS; +STRUCTURAL_GLASS; +STRUCTURAL_GLASS
+                            +INDUCTION_CASING
+                        }
+                    }
+                    //First layer of cells - with ports in the sides
+                    layer {
+                        row {
+                            +INDUCTION_CASING
+                            +STRUCTURAL_GLASS
+                            +INDUCTION_PORT
+                            +STRUCTURAL_GLASS
+                            +INDUCTION_CASING
+                        }
+                        for (cellRow in 1..3) {
+                            row {
+                                +STRUCTURAL_GLASS
+                                +BASIC_INDUCTION_CELL; +BASIC_INDUCTION_CELL; +BASIC_INDUCTION_CELL
+                                +STRUCTURAL_GLASS
+                            }
+                        }
+                        row {
+                            +INDUCTION_CASING
+                            +STRUCTURAL_GLASS
+                            +INDUCTION_PORT
+                            +STRUCTURAL_GLASS
+                            +INDUCTION_CASING
+                        }
+                    }
+                    //Second layer of cells
+                    layer {
+                        row {
+                            +INDUCTION_CASING
+                            +STRUCTURAL_GLASS; +STRUCTURAL_GLASS; +STRUCTURAL_GLASS
+                            +INDUCTION_CASING
+                        }
+                        for (cellRow in 1..3) {
+                            row {
+                                +STRUCTURAL_GLASS
+                                +BASIC_INDUCTION_CELL; +BASIC_INDUCTION_CELL; +BASIC_INDUCTION_CELL
+                                +STRUCTURAL_GLASS
+                            }
+                        }
+                        row {
+                            +INDUCTION_CASING
+                            +STRUCTURAL_GLASS; +STRUCTURAL_GLASS; +STRUCTURAL_GLASS
+                            +INDUCTION_CASING
+                        }
+                    }
+                    layer {
+                        row {
+                            for (casing in 1..5) { +INDUCTION_CASING }
+                        }
+                        for (glassRow in 1..3) {
+                            row {
+                                +INDUCTION_CASING
+                                +STRUCTURAL_GLASS; +STRUCTURAL_GLASS; +STRUCTURAL_GLASS
+                                +INDUCTION_CASING
+                            }
+                        }
+                        row {
+                            for (casing in 1..4) { +INDUCTION_CASING }
+                            center(INDUCTION_CASING)
+                        }
+                    }
+                }
+            }
         }
         GuideEntry.BOILER {
             name = MekanismLang.BOILER.translationKey
@@ -154,6 +289,187 @@ fun PatchouliBook.multiblocks() {
             +PRESSURE_DISPERSER
             +BOILER_CASING
             +BOILER_VALVE
+        }
+        GuideEntry.SPS {
+            name = "Supercritical Phase Shifter (SPS)"
+            icon = SPS_CASING
+
+            +"The SPS is a late-game multiblock that uses large amounts of energy to convert ${link(POLONIUM, "polonium")} into ${link(ANTIMATTER, "antimatter")}."
+            +"The SPS is made of ${link(SPS_CASING, "SPS Casing")}, ${link(STRUCTURAL_GLASS, "Structural Glass (technically optional)")}, ${link(SPS_PORT, "SPS Port")}, and ${link(SUPERCHARGED_COIL, "Supercharged Coil")}.  It has a unique rounded cuboid-like structure.  The faces can be made of casing and/or glass, but using as much glass as possible is recommended since casing is expensive."
+            +"Energy is inputted into ports with coils placed behind them, inside the multiblock.  Follow this template, and then add the two extra ports for polonium input and antimatter output (on any face), as well as more energy port/coils as needed."
+
+            multiblock {
+                name = "Basic SPS with one port and coil"
+                definition {
+                    layer {
+                        row { +SPS_CASING; +SPS_CASING; +SPS_CASING }
+                        row {
+                            +SPS_CASING
+                            +STRUCTURAL_GLASS; +STRUCTURAL_GLASS; +STRUCTURAL_GLASS
+                            +SPS_CASING
+                        }
+                        for (fullRow in 1..3) {
+                            row {
+                                +SPS_CASING
+                                for (glass in 1..5) { +STRUCTURAL_GLASS }
+                                +SPS_CASING
+                            }
+                        }
+                        row {
+                            +SPS_CASING
+                            +STRUCTURAL_GLASS; +STRUCTURAL_GLASS; +STRUCTURAL_GLASS
+                            +SPS_CASING
+                        }
+                        row { +SPS_CASING; +SPS_CASING; +SPS_CASING }
+                    }
+                    layer {
+                        row {
+                            +SPS_CASING
+                            +STRUCTURAL_GLASS; +STRUCTURAL_GLASS; +STRUCTURAL_GLASS
+                            +SPS_CASING
+                        }
+                        row {
+                            +SPS_CASING
+                            for (space in 1..5) { space() }
+                            +SPS_CASING
+                        }
+                        for (glassRow in 1..3) {
+                            row {
+                                +STRUCTURAL_GLASS
+                                for (space in 1..5) { space() }
+                                +STRUCTURAL_GLASS
+                            }
+                        }
+                        row {
+                            +SPS_CASING
+                            for (space in 1..5) { space() }
+                            +SPS_CASING
+                        }
+                        row {
+                            +SPS_CASING
+                            +STRUCTURAL_GLASS; +STRUCTURAL_GLASS; +STRUCTURAL_GLASS
+                            +SPS_CASING
+                        }
+                    }
+                    layer {
+                        row {
+                            +SPS_CASING
+                            for (glass in 1..5) { +STRUCTURAL_GLASS }
+                            +SPS_CASING
+                        }
+                        for (innerRow in 1..5) {
+                            row {
+                                +STRUCTURAL_GLASS
+                                for (space in 1..5) { space() }
+                                +STRUCTURAL_GLASS
+                            }
+                        }
+                        row {
+                            +SPS_CASING
+                            for (glass in 1..5) { +STRUCTURAL_GLASS }
+                            +SPS_CASING
+                        }
+                    }
+                    //Middle, with port/coil
+                    layer {
+                        row {
+                            +SPS_CASING
+                            for (glass in 1..5) { +STRUCTURAL_GLASS }
+                            +SPS_CASING
+                        }
+                        for (innerRow in 1..4) {
+                            row {
+                                +STRUCTURAL_GLASS
+                                for (space in 1..5) { space() }
+                                +STRUCTURAL_GLASS
+                            }
+                        }
+                        row {
+                            +STRUCTURAL_GLASS
+                            space(); space()
+                            +SUPERCHARGED_COIL
+                            space(); space()
+                            +STRUCTURAL_GLASS
+                        }
+                        row {
+                            +SPS_CASING
+                            +STRUCTURAL_GLASS; +STRUCTURAL_GLASS
+                            +SPS_PORT
+                            +STRUCTURAL_GLASS; +STRUCTURAL_GLASS
+                            +SPS_CASING
+                        }
+                    }
+                    layer {
+                        row {
+                            +SPS_CASING
+                            for (glass in 1..5) { +STRUCTURAL_GLASS }
+                            +SPS_CASING
+                        }
+                        for (innerRow in 1..5) {
+                            row {
+                                +STRUCTURAL_GLASS
+                                for (space in 1..5) { space() }
+                                +STRUCTURAL_GLASS
+                            }
+                        }
+                        row {
+                            +SPS_CASING
+                            for (glass in 1..5) { +STRUCTURAL_GLASS }
+                            +SPS_CASING
+                        }
+                    }
+                    layer {
+                        row {
+                            +SPS_CASING
+                            +STRUCTURAL_GLASS; +STRUCTURAL_GLASS; +STRUCTURAL_GLASS
+                            +SPS_CASING
+                        }
+                        row {
+                            +SPS_CASING
+                            for (space in 1..5) { space() }
+                            +SPS_CASING
+                        }
+                        for (glassRow in 1..3) {
+                            row {
+                                +STRUCTURAL_GLASS
+                                for (space in 1..5) { space() }
+                                +STRUCTURAL_GLASS
+                            }
+                        }
+                        row {
+                            +SPS_CASING
+                            for (space in 1..5) { space() }
+                            +SPS_CASING
+                        }
+                        row {
+                            +SPS_CASING
+                            +STRUCTURAL_GLASS; +STRUCTURAL_GLASS; +STRUCTURAL_GLASS
+                            +SPS_CASING
+                        }
+                    }
+                    layer {
+                        row { +SPS_CASING; +SPS_CASING; +SPS_CASING }
+                        row {
+                            +SPS_CASING
+                            +STRUCTURAL_GLASS; +STRUCTURAL_GLASS; +STRUCTURAL_GLASS
+                            +SPS_CASING
+                        }
+                        for (fullRow in 1..3) {
+                            row {
+                                +SPS_CASING
+                                for (glass in 1..5) { +STRUCTURAL_GLASS }
+                                +SPS_CASING
+                            }
+                        }
+                        row {
+                            +SPS_CASING
+                            +STRUCTURAL_GLASS; +STRUCTURAL_GLASS; +STRUCTURAL_GLASS
+                            +SPS_CASING
+                        }
+                        row { +SPS_CASING; +SPS_CASING; center(SPS_CASING) }
+                    }
+                }
+            }
         }
     }
 }
