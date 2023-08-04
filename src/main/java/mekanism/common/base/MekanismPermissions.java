@@ -57,6 +57,7 @@ public class MekanismPermissions {
     public static final CommandPermissionNode COMMAND_TEST_RULES = nodeOpCommand("test_rules");
     public static final CommandPermissionNode COMMAND_TP = nodeOpCommand("tp");
     public static final CommandPermissionNode COMMAND_TP_POP = nodeOpCommand("tp_pop");
+    public static final CommandPermissionNode COMMAND_QIO_GIVE = nodeOpCommand("qio_give");
 
     private static CommandPermissionNode nodeOpCommand(String nodeName) {
         PermissionNode<Boolean> node = node("command." + nodeName, PermissionTypes.BOOLEAN, PLAYER_IS_OP);

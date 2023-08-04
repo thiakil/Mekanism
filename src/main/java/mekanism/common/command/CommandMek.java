@@ -14,6 +14,9 @@ import mekanism.api.text.EnumColor;
 import mekanism.common.MekanismLang;
 import mekanism.common.base.MekanismPermissions;
 import mekanism.common.command.builders.BuildCommand;
+import mekanism.common.content.qio.QIODriveData;
+import mekanism.common.item.ItemQIODrive;
+import mekanism.common.registries.MekanismItems;
 import mekanism.common.util.text.BooleanStateDisplay.OnOff;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -23,6 +26,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.phys.Vec3;
 
@@ -43,7 +47,8 @@ public class CommandMek {
               .then(RadiationCommand.register())
               .then(TestRulesCommand.register())
               .then(TpCommand.register())
-              .then(TppopCommand.register());
+              .then(TppopCommand.register())
+              .then(QIOGiving.register());
     }
 
     private static class DebugCommand {
