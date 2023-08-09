@@ -1,5 +1,6 @@
 package mekanism.common.item.block;
 
+import mekanism.api.NBTConstants;
 import mekanism.common.block.interfaces.IHasDescription;
 import mekanism.common.block.interfaces.IPersonalStorage;
 import mekanism.common.inventory.container.item.PersonalStorageItemContainer;
@@ -7,7 +8,9 @@ import mekanism.common.item.interfaces.IGuiItem;
 import mekanism.common.item.interfaces.IItemSustainedInventory;
 import mekanism.common.registration.impl.ContainerTypeRegistryObject;
 import mekanism.common.registries.MekanismContainerTypes;
+import mekanism.common.util.ItemDataUtils;
 import mekanism.common.util.SecurityUtils;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
@@ -22,6 +25,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.util.FakePlayer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class ItemBlockPersonalStorage<BLOCK extends Block & IHasDescription & IPersonalStorage> extends ItemBlockTooltip<BLOCK> implements IItemSustainedInventory,
       IGuiItem {
@@ -63,5 +67,18 @@ public class ItemBlockPersonalStorage<BLOCK extends Block & IHasDescription & IP
     @Override
     public ContainerTypeRegistryObject<PersonalStorageItemContainer> getContainerType() {
         return MekanismContainerTypes.PERSONAL_STORAGE_ITEM;
+    }
+
+    @Override
+    public @Nullable CompoundTag getShareTag(ItemStack stack) {
+        //strip inventory from client data as it can be huge
+        CompoundTag superTag = super.getShareTag(stack);
+        if (superTag == null) return null;
+        CompoundTag copy = superTag.copy();
+        CompoundTag mekData = ItemDataUtils.getDataMapIfPresent(copy);
+        if (mekData != null) {
+            mekData.remove(NBTConstants.ITEMS);
+        }
+        return copy;
     }
 }

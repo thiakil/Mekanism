@@ -34,7 +34,11 @@ public final class ItemDataUtils {
 
     @Nullable
     public static CompoundTag getDataMapIfPresent(ItemStack stack) {
-        CompoundTag tag = stack.getTag();
+        return getDataMapIfPresent(stack.getTag());
+    }
+
+    @Nullable
+    public static CompoundTag getDataMapIfPresent(CompoundTag tag) {
         if (tag != null && tag.contains(NBTConstants.MEK_DATA, Tag.TAG_COMPOUND)) {
             return tag.getCompound(NBTConstants.MEK_DATA);
         }
