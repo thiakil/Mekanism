@@ -11,6 +11,7 @@ import mekanism.common.content.qio.filter.QIOFilter;
 import mekanism.common.content.transporter.SorterFilter;
 import mekanism.common.integration.computer.BaseComputerHelper;
 import mekanism.common.integration.computer.ComputerException;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -163,6 +164,21 @@ public class CCComputerHelper extends BaseComputerHelper {
     }
 
     @Override
+    public ItemStack getItemStack(int param) throws ComputerException {
+        Object value = null;
+        try {
+            value = arguments.get(param);
+        } catch (LuaException e) {
+            throw new ComputerException(e);
+        }
+        if (value instanceof WrappedItemStack wis) {
+            return wis.stack.copy();
+        }
+        return super.getItemStack(param);
+    }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    @Override
     public Object convert(@Nullable MinerFilter<?> minerFilter) {
         return minerFilter != null ? new CCFilterWrapper<>(minerFilter) : null;
     }
@@ -180,5 +196,10 @@ public class CCComputerHelper extends BaseComputerHelper {
     @Override
     public Object convert(@Nullable OredictionificatorFilter<?, ?, ?> filter) {
         return filter != null ? new CCFilterWrapper<>(filter) : null;
+    }
+
+    @Override
+    public Object convert(@Nullable ItemStack stack) {
+        return stack != null ? new WrappedItemStack(stack) : super.convert(stack);
     }
 }
