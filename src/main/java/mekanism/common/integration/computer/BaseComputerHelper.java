@@ -23,6 +23,7 @@ import mekanism.common.content.qio.filter.QIOItemStackFilter;
 import mekanism.common.content.transporter.SorterFilter;
 import mekanism.common.content.transporter.SorterItemStackFilter;
 import mekanism.common.lib.frequency.Frequency;
+import mekanism.common.util.MekanismUtils;
 import mekanism.common.util.RegistryUtils;
 import net.minecraft.Util;
 import net.minecraft.core.Vec3i;
@@ -300,10 +301,12 @@ public abstract class BaseComputerHelper {
         if (frequency == null) {
             return null;
         }
-        Frequency.FrequencyIdentity identity = frequency.getIdentity();
         Map<String, Object> wrapped = new HashMap<>(2);
-        wrapped.put("key", identity.key().toString());
-        wrapped.put("public", identity.isPublic());
+        wrapped.put("name", frequency.getName());
+        wrapped.put("public", frequency.isPublic());
+        if (frequency.getOwner() != null) {
+            wrapped.put("owner", MekanismUtils.getLastKnownUsername(frequency.getOwner()));
+        }
         return wrapped;
     }
 
