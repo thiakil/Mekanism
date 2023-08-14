@@ -1,6 +1,7 @@
 package mekanism.common.integration.computer;
 
 import mekanism.api.energy.IMekanismStrictEnergyHandler;
+import mekanism.api.fluid.IMekanismFluidHandler;
 import mekanism.api.functions.ConstantPredicates;
 import mekanism.common.tile.interfaces.IComparatorSupport;
 import mekanism.common.tile.interfaces.ITileDirectional;
@@ -34,7 +35,11 @@ public enum MethodRestriction implements Predicate<Object> {
     /**
      * Handler is a tile that has comparator support.
      */
-    COMPARATOR(handler -> handler instanceof IComparatorSupport comparatorSupport && comparatorSupport.supportsComparator());
+    COMPARATOR(handler -> handler instanceof IComparatorSupport comparatorSupport && comparatorSupport.supportsComparator()),
+    /**
+     * Handler is an fluid handler that can handle fluid.
+     */
+    FLUID(handler -> handler instanceof IMekanismFluidHandler fluidHandler && fluidHandler.canHandleFluid());
 
     private final Predicate<Object> validator;
 

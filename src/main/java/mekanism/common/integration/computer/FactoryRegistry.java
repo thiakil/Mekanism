@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.ServiceLoader.Provider;
 import mekanism.common.Mekanism;
+import mekanism.api.fluid.IMekanismFluidHandler;
 import net.minecraftforge.common.util.Lazy;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -31,6 +32,11 @@ public class FactoryRegistry {
     private static final Map<Class<?>, List<Class<?>>> superClasses = new HashMap<>();
     /** cached list of factories for a subject class */
     private static final Map<Class<?>, List<? extends ComputerMethodFactory<?>>> hierarchyHandlers = new ConcurrentHashMap<>();
+
+    static {
+        //register some statics which cant be annotations
+        registerInterface(IMekanismFluidHandler.class, FluidTankFactory::new);
+    }
 
     public static void load() {
         List<IComputerMethodRegistry> registries = ServiceLoader.load(IComputerMethodRegistry.class).stream().map(Provider::get).toList();
