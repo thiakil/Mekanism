@@ -12,6 +12,7 @@ import mekanism.common.content.transporter.SorterFilter;
 import mekanism.common.integration.computer.BaseComputerHelper;
 import mekanism.common.integration.computer.ComputerException;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.fluids.FluidStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -200,6 +201,11 @@ public class CCComputerHelper extends BaseComputerHelper {
 
     @Override
     public Object convert(@Nullable ItemStack stack) {
-        return stack != null ? new WrappedItemStack(stack) : super.convert(stack);
+        return stack != null ? new WrappedItemStack(stack) : null;
+    }
+
+    @Override
+    public Object convert(@Nullable FluidStack stack) {
+        return stack != null ? new WrappedFluidStack(stack) : null;
     }
 }
