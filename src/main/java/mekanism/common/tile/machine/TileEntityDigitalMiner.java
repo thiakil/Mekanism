@@ -38,6 +38,7 @@ import mekanism.common.capabilities.holder.slot.IInventorySlotHolder;
 import mekanism.common.capabilities.holder.slot.InventorySlotHelper;
 import mekanism.common.capabilities.resolver.BasicCapabilityResolver;
 import mekanism.common.config.MekanismConfig;
+import mekanism.common.content.filter.FilterType;
 import mekanism.common.content.filter.SortableFilterManager;
 import mekanism.common.content.miner.MinerFilter;
 import mekanism.common.content.miner.ThreadMinerSearch;
@@ -117,8 +118,7 @@ public class TileEntityDigitalMiner extends TileEntityMekanism implements ISusta
     public static final int DEFAULT_HEIGHT_RANGE = 60;
     public static final int DEFAULT_RADIUS = 10;
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private final SortableFilterManager<MinerFilter<?>> filterManager = new SortableFilterManager<MinerFilter<?>>((Class) MinerFilter.class, this::markForSave);
+    private final SortableFilterManager<MinerFilter<?>> filterManager = new SortableFilterManager<>(FilterType.FilterHolderType.MINER, this::markForSave);
     private Long2ObjectMap<BitSet> oresToMine = Long2ObjectMaps.emptyMap();
     public ThreadMinerSearch searcher = new ThreadMinerSearch(this);
 

@@ -11,6 +11,7 @@ import mekanism.common.capabilities.Capabilities;
 import mekanism.common.capabilities.holder.slot.IInventorySlotHolder;
 import mekanism.common.capabilities.holder.slot.InventorySlotHelper;
 import mekanism.common.capabilities.resolver.BasicCapabilityResolver;
+import mekanism.common.content.filter.FilterType;
 import mekanism.common.content.filter.SortableFilterManager;
 import mekanism.common.content.network.transmitter.LogisticalTransporterBase;
 import mekanism.common.content.transporter.SorterFilter;
@@ -48,8 +49,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class TileEntityLogisticalSorter extends TileEntityMekanism implements ISustainedData, ITileFilterHolder<SorterFilter<?>> {
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private final SortableFilterManager<SorterFilter<?>> filterManager = new SortableFilterManager<SorterFilter<?>>((Class) SorterFilter.class, this::markForSave);
+    private final SortableFilterManager<SorterFilter<?>> filterManager = new SortableFilterManager<>(FilterType.FilterHolderType.SORTER, this::markForSave);
     private final Finder strictFinder = stack -> filterManager.getEnabledFilters().stream().noneMatch(filter -> !filter.allowDefault && filter.getFinder().modifies(stack));
 
     @SyntheticComputerMethod(getter = "getDefaultColor")

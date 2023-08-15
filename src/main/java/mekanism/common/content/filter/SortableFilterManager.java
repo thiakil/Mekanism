@@ -7,8 +7,8 @@ public class SortableFilterManager<FILTER extends IFilter<?>> extends FilterMana
     private final BiConsumer<FILTER, FILTER> postSwap;
 
     //TODO: Improve how we create this when done with a generic intermediary class
-    public SortableFilterManager(Class<? extends FILTER> filterClass, Runnable markForSave) {
-        super(filterClass, markForSave);
+    public SortableFilterManager(FilterType.FilterHolderType<FILTER> filterHolderType, Runnable markForSave) {
+        super(filterHolderType, markForSave);
         this.postSwap = (sourceFilter, targetFilter) -> {
             //Save the change
             this.markForSave.run();

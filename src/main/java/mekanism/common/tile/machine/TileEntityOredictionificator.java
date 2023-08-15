@@ -16,6 +16,7 @@ import mekanism.common.capabilities.holder.slot.InventorySlotHelper;
 import mekanism.common.config.MekanismConfig;
 import mekanism.common.config.value.CachedValue.IConfigValueInvalidationListener;
 import mekanism.common.content.filter.FilterManager;
+import mekanism.common.content.filter.FilterType;
 import mekanism.common.content.oredictionificator.OredictionificatorFilter;
 import mekanism.common.content.oredictionificator.OredictionificatorItemFilter;
 import mekanism.common.integration.computer.ComputerException;
@@ -50,7 +51,7 @@ import org.jetbrains.annotations.NotNull;
 //TODO - V11: Make this support other tag types, such as fluids
 public class TileEntityOredictionificator extends TileEntityConfigurableMachine implements ISustainedData, ITileFilterHolder<OredictionificatorItemFilter> {
 
-    private final FilterManager<OredictionificatorItemFilter> filterManager = new FilterManager<>(OredictionificatorItemFilter.class, this::markForSave);
+    private final FilterManager<OredictionificatorItemFilter> filterManager = new FilterManager<>(FilterType.FilterHolderType.OREDICTIONIFICATOR, this::markForSave);
     public boolean didProcess;
 
     @WrappingComputerMethod(wrapper = ComputerIInventorySlotWrapper.class, methodNames = "getInputItem")

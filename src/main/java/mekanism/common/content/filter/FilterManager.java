@@ -17,14 +17,16 @@ import net.minecraft.nbt.Tag;
 public class FilterManager<FILTER extends IFilter<?>> {
 
     private final Class<? extends FILTER> filterClass;
+    private final FilterType.FilterHolderType<FILTER> filterHolderType;
     protected final Runnable markForSave;
 
     protected HashList<FILTER> filters = new HashList<>();
     @Nullable
     protected List<FILTER> enabledFilters = null;
 
-    public FilterManager(Class<? extends FILTER> filterClass, Runnable markForSave) {
-        this.filterClass = filterClass;
+    public FilterManager(FilterType.FilterHolderType<FILTER> filterHolderType, Runnable markForSave) {
+        this.filterHolderType = filterHolderType;
+        this.filterClass = filterHolderType.parentClass;
         this.markForSave = markForSave;
     }
 
@@ -149,5 +151,9 @@ public class FilterManager<FILTER extends IFilter<?>> {
                 tryAddFilter(filter, false);
             }
         });
+    }
+
+    public FilterType.FilterHolderType<FILTER> getFilterHolderType() {
+        return filterHolderType;
     }
 }

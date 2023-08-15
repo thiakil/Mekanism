@@ -10,6 +10,7 @@ import java.util.ServiceLoader;
 import java.util.ServiceLoader.Provider;
 import mekanism.common.Mekanism;
 import mekanism.api.fluid.IMekanismFluidHandler;
+import mekanism.common.tile.interfaces.ITileFilterHolder;
 import net.minecraftforge.common.util.Lazy;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -36,6 +37,7 @@ public class FactoryRegistry {
     static {
         //register some statics which cant be annotations
         registerInterface(IMekanismFluidHandler.class, FluidTankFactory::new);
+        registerInterface(ITileFilterHolder.class, FilterHolderFactory::new);
     }
 
     public static void load() {

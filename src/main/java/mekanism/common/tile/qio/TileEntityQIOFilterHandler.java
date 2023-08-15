@@ -5,6 +5,7 @@ import java.util.Map;
 import mekanism.api.NBTConstants;
 import mekanism.api.Upgrade;
 import mekanism.api.providers.IBlockProvider;
+import mekanism.common.content.filter.FilterType;
 import mekanism.common.content.filter.SortableFilterManager;
 import mekanism.common.content.qio.filter.QIOFilter;
 import mekanism.common.integration.computer.ComputerException;
@@ -17,8 +18,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public class TileEntityQIOFilterHandler extends TileEntityQIOComponent implements ITileFilterHolder<QIOFilter<?>> {
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private final SortableFilterManager<QIOFilter<?>> filterManager = new SortableFilterManager<QIOFilter<?>>((Class) QIOFilter.class, this::markForSave);
+    private final SortableFilterManager<QIOFilter<?>> filterManager = new SortableFilterManager<>(FilterType.FilterHolderType.QIO, this::markForSave);
 
     public TileEntityQIOFilterHandler(IBlockProvider blockProvider, BlockPos pos, BlockState state) {
         super(blockProvider, pos, state);
