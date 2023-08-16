@@ -228,6 +228,13 @@ public class TileEntityOredictionificator extends TileEntityConfigurableMachine 
         validateSecurityIsPublic();
         return filterManager.removeFilter(filter);
     }
+
+    @ComputerMethod
+    OredictionificatorItemFilter createFilter(ResourceLocation tag) throws ComputerException {
+        OredictionificatorItemFilter filter = new OredictionificatorItemFilter();
+        filter.computerSetFilter(tag);
+        return filter;
+    }
     //End methods IComputerTile
 
     public class ODConfigValueInvalidationListener implements IConfigValueInvalidationListener {
