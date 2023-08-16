@@ -189,7 +189,7 @@ public abstract class OredictionificatorFilter<TYPE, STACK, FILTER extends Oredi
         });
     }
 
-    private List<TYPE> matchingElements() {
+    protected List<TYPE> matchingElements() {
         return filterTag == null || !filterTag.isBound() ? Collections.emptyList() : filterTag.stream().toList();
     }
 

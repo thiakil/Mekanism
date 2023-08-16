@@ -13,6 +13,8 @@ import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.tags.ITagManager;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 //TODO - V11: Rewrite/refactor usages of this to better handle tags for fluids and chemicals by allowing them to make use of the super OredictionificatorFilter class
 public class OredictionificatorItemFilter extends OredictionificatorFilter<Item, ItemStack, OredictionificatorItemFilter> {
 
@@ -72,5 +74,10 @@ public class OredictionificatorItemFilter extends OredictionificatorFilter<Item,
     @ComputerMethod(nameOverride = "setSelectedOutput", threadSafe = true)
     void computerSetSelectedOutput(@NotNull Item item) {
         setSelectedOutput(item);
+    }
+
+    @ComputerMethod
+    List<Item> getPossibleOutputs() {
+        return super.matchingElements();
     }
 }
