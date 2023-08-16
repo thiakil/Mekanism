@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import mekanism.common.integration.computer.FactoryRegistry;
 import mekanism.common.integration.computer.computercraft.CCCapabilityHelper;
+import mekanism.common.integration.computer.computercraft.detailhelpers.CCDetails;
 import mekanism.common.integration.crafttweaker.content.CrTContentUtils;
 import mekanism.common.integration.curios.CuriosIntegration;
 import mekanism.common.integration.energy.EnergyCompatUtils;
@@ -101,6 +102,7 @@ public final class MekanismHooks {
         }
         if (CCLoaded) {
             CCCapabilityHelper.registerCCMathHelper();
+            CCDetails.register();
         }
         EnergyCompatUtils.initLoadedCache();
     }
