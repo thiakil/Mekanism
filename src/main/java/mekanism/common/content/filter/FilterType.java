@@ -10,16 +10,16 @@ import mekanism.common.integration.computer.BaseComputerHelper;
 import java.util.function.BiFunction;
 
 public enum FilterType {
-    MINER_ITEMSTACK_FILTER(FilterHolderType.MINER, FilterCategory.ITEM),
-    MINER_MODID_FILTER(FilterHolderType.MINER, FilterCategory.MODID),
-    MINER_TAG_FILTER(FilterHolderType.MINER, FilterCategory.TAG),
-    SORTER_ITEMSTACK_FILTER(FilterHolderType.SORTER, FilterCategory.ITEM),
-    SORTER_MODID_FILTER(FilterHolderType.SORTER, FilterCategory.MODID),
-    SORTER_TAG_FILTER(FilterHolderType.SORTER, FilterCategory.TAG),
-    OREDICTIONIFICATOR_ITEM_FILTER(FilterHolderType.OREDICTIONIFICATOR, FilterCategory.OREDICTIONIFICATOR),
-    QIO_ITEMSTACK_FILTER(FilterHolderType.QIO, FilterCategory.ITEM),
-    QIO_MODID_FILTER(FilterHolderType.QIO, FilterCategory.MODID),
-    QIO_TAG_FILTER(FilterHolderType.QIO, FilterCategory.TAG);
+    MINER_ITEMSTACK_FILTER          (FilterHolderType.MINER, FilterCategory.ITEM),
+    MINER_MODID_FILTER              (FilterHolderType.MINER, FilterCategory.MODID),
+    MINER_TAG_FILTER                (FilterHolderType.MINER, FilterCategory.TAG),
+    SORTER_ITEMSTACK_FILTER         (FilterHolderType.SORTER, FilterCategory.ITEM),
+    SORTER_MODID_FILTER             (FilterHolderType.SORTER, FilterCategory.MODID),
+    SORTER_TAG_FILTER               (FilterHolderType.SORTER, FilterCategory.TAG),
+    OREDICTIONIFICATOR_ITEM_FILTER  (FilterHolderType.OREDICTIONIFICATOR, FilterCategory.OREDICTIONIFICATOR),
+    QIO_ITEMSTACK_FILTER            (FilterHolderType.QIO, FilterCategory.ITEM),
+    QIO_MODID_FILTER                (FilterHolderType.QIO, FilterCategory.MODID),
+    QIO_TAG_FILTER                  (FilterHolderType.QIO, FilterCategory.TAG);
 
     public final FilterHolderType<?> holderType;
     public final FilterCategory category;
