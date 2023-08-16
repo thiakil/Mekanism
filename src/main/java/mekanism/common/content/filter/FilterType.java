@@ -2,7 +2,6 @@ package mekanism.common.content.filter;
 
 import mekanism.api.math.MathUtils;
 import mekanism.common.content.miner.MinerFilter;
-import mekanism.common.content.oredictionificator.OredictionificatorFilter;
 import mekanism.common.content.oredictionificator.OredictionificatorItemFilter;
 import mekanism.common.content.qio.filter.QIOFilter;
 import mekanism.common.content.transporter.SorterFilter;
@@ -37,16 +36,17 @@ public enum FilterType {
     }
 
     public static class FilterHolderType<FILTER extends IFilter<?>> {
-        public static final FilterHolderType<MinerFilter<?>> MINER = new FilterHolderType<MinerFilter<?>>((Class)MinerFilter.class, BaseComputerHelper::convert);
-        public static final FilterHolderType<SorterFilter<?>> SORTER = new FilterHolderType<SorterFilter<?>>((Class)SorterFilter.class, BaseComputerHelper::convert);
+        public static final FilterHolderType<MinerFilter<?>> MINER = new FilterHolderType<>(MinerFilter.class, BaseComputerHelper::convert);
+        public static final FilterHolderType<SorterFilter<?>> SORTER = new FilterHolderType<>(SorterFilter.class, BaseComputerHelper::convert);
         public static final FilterHolderType<OredictionificatorItemFilter> OREDICTIONIFICATOR = new FilterHolderType<>(OredictionificatorItemFilter.class, BaseComputerHelper::convert);
-        public static final FilterHolderType<QIOFilter<?>> QIO = new FilterHolderType<QIOFilter<?>>((Class)QIOFilter.class, BaseComputerHelper::convert);
+        public static final FilterHolderType<QIOFilter<?>> QIO = new FilterHolderType<>(QIOFilter.class, BaseComputerHelper::convert);
 
         public final Class<FILTER> parentClass;
         public final BiFunction<BaseComputerHelper, FILTER, Object> computerConverter;
 
-        FilterHolderType(Class<FILTER> parentClass, BiFunction<BaseComputerHelper, FILTER, Object> computerConverter) {
-            this.parentClass = parentClass;
+        FilterHolderType(Class<?> parentClass, BiFunction<BaseComputerHelper, FILTER, Object> computerConverter) {
+            //noinspection rawtypes,unchecked
+            this.parentClass = (Class)parentClass;
             this.computerConverter = computerConverter;
         }
     }
