@@ -23,6 +23,7 @@ import mekanism.common.content.qio.filter.QIOItemStackFilter;
 import mekanism.common.content.transporter.SorterFilter;
 import mekanism.common.content.transporter.SorterItemStackFilter;
 import mekanism.common.lib.frequency.Frequency;
+import mekanism.common.lib.frequency.IColorableFrequency;
 import mekanism.common.util.MekanismUtils;
 import mekanism.common.util.RegistryUtils;
 import net.minecraft.Util;
@@ -306,6 +307,9 @@ public abstract class BaseComputerHelper {
         wrapped.put("public", frequency.isPublic());
         if (frequency.getOwner() != null) {
             wrapped.put("owner", MekanismUtils.getLastKnownUsername(frequency.getOwner()));
+        }
+        if (frequency instanceof IColorableFrequency colorable) {
+            wrapped.put("color", convert(colorable.getColor()));
         }
         return wrapped;
     }
