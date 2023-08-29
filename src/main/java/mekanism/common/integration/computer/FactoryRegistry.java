@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.ServiceLoader.Provider;
+import java.util.Set;
 import mekanism.common.Mekanism;
 import net.minecraftforge.common.util.Lazy;
 import org.jetbrains.annotations.NotNull;
@@ -15,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
+import org.jetbrains.annotations.TestOnly;
 
 /**
  * Central place for Factories to be registered and bound.
@@ -41,6 +44,13 @@ public class FactoryRegistry {
         if (!hasRegistry) {
             Mekanism.logger.error("Expected to find at least one IComputerMethodRegistry, but didn't find any");
         }
+    }
+
+    @TestOnly
+    static Set<Class<?>> getKnownClasses() {
+        Set<Class<?>> ret = new HashSet<>(factories.keySet());
+        ret.addAll(interfaceFactories.keySet());
+        return ret;
     }
 
     /**

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 import mekanism.api.annotations.ParametersAreNotNullByDefault;
 import net.minecraftforge.fml.ModList;
 import org.jetbrains.annotations.Nullable;
@@ -15,6 +16,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import org.jetbrains.annotations.VisibleForTesting;
 
 /**
  * A base class for the annotation generator to extend.
@@ -27,6 +29,8 @@ import java.lang.reflect.Method;
  */
 @ParametersAreNotNullByDefault
 public class ComputerMethodFactory<T>{
+    @VisibleForTesting
+    static Predicate<String> IS_MOD_LOADED = (modId)->ModList.get().isLoaded(modId);
     protected static String[] NO_STRINGS = new String[0];
     protected static Class<?>[] NO_CLASSES = new Class[0];
 
@@ -82,7 +86,7 @@ public class ComputerMethodFactory<T>{
 
     private boolean modsLoaded(String[] mods) {
         for (String mod : mods) {
-            if (!ModList.get().isLoaded(mod)) {
+            if (!IS_MOD_LOADED.test(mod)) {
                 return false;
             }
         }
