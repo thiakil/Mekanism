@@ -11,9 +11,9 @@ public class AE2ConfigCardIntegration {
     public static void register(RegisterCapabilitiesEvent event) {
         BuiltInRegistries.BLOCK.forEach(block -> {
             if (block instanceof CableBusBlock) {
-                event.registerBlock(Capabilities.CONFIG_CARD, AE2ConfigCardCompatCableBus::getCapability, block);
+                event.registerBlock(Capabilities.CONFIG_CARD, AE2ConfigCardCompatCableBus::getBusCapability, block);
             } else if (block instanceof AEBaseEntityBlock<?>) {
-                event.registerBlock(Capabilities.CONFIG_CARD, AE2ConfigCardCompatBlock::new, block);
+                event.registerBlock(Capabilities.CONFIG_CARD, AE2ConfigCardCompatBlock::getBlockCapability, block);
             }
         });
     }

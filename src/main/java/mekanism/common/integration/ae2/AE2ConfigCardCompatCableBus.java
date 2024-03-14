@@ -2,32 +2,30 @@ package mekanism.common.integration.ae2;
 
 import appeng.api.parts.IPart;
 import appeng.api.parts.IPartHost;
-import appeng.block.AEBaseEntityBlock;
-import appeng.blockentity.AEBaseBlockEntity;
 import appeng.core.definitions.AEBlocks;
 import appeng.core.definitions.AEParts;
-import appeng.helpers.AEMultiBlockEntity;
 import appeng.items.tools.MemoryCardItem;
 import appeng.util.SettingsFrom;
 import mekanism.api.IConfigCardAccess;
 import mekanism.api.NBTConstants;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 public class AE2ConfigCardCompatCableBus extends AE2ConfigCardCompatBlock {
-    static IConfigCardAccess getCapability(Level level, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, Direction side) {
+
+    static IConfigCardAccess getBusCapability(Level level, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, UseOnContext context) {
         if (blockEntity instanceof IPartHost partHost) {
-            IPart part = partHost.getPart(side);
+            IPart part = partHost.selectPartWorld(context.getClickLocation()).part;
             if (part != null) {
-                return new AE2ConfigCardCompatCableBus(level, pos, state, side, part);
+                return new AE2ConfigCardCompatCableBus(level, pos, state, context, part);
             }
         }
         return null;
@@ -37,8 +35,8 @@ public class AE2ConfigCardCompatCableBus extends AE2ConfigCardCompatBlock {
     //private final BlockPos pos;
     private final IPart part;
 
-    public AE2ConfigCardCompatCableBus(Level level, BlockPos pos, BlockState state, Direction dir, IPart part) {
-        super(level, pos, state, null, dir);
+    public AE2ConfigCardCompatCableBus(Level level, BlockPos pos, BlockState state, UseOnContext context, IPart part) {
+        super(state, null);
         //this.level = level;
         //this.pos = pos;
         this.part = part;

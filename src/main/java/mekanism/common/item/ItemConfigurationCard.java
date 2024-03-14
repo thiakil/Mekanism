@@ -55,13 +55,11 @@ public class ItemConfigurationCard extends Item {
         }
         Level world = context.getLevel();
         BlockPos pos = context.getClickedPos();
-        Direction side = context.getClickedFace();
-        IConfigCardAccess configCardAccess = WorldUtils.getCapability(world, Capabilities.CONFIG_CARD, pos, side);
+        IConfigCardAccess configCardAccess = WorldUtils.getCapability(world, Capabilities.CONFIG_CARD, pos, context);
         if (configCardAccess != null) {
             if (!IBlockSecurityUtils.INSTANCE.canAccessOrDisplayError(player, world, pos)) {
                 return InteractionResult.FAIL;
             }
-            //ItemStack stack = context.getItemInHand();
             if (player.isShiftKeyDown()) {
                 if (!world.isClientSide) {
                     String translationKey = configCardAccess.getConfigCardName();

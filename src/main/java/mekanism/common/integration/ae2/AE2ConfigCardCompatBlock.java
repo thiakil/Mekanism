@@ -1,18 +1,17 @@
 package mekanism.common.integration.ae2;
 
-import appeng.api.implementations.items.MemoryCardMessages;
-import appeng.block.AEBaseEntityBlock;
 import appeng.blockentity.AEBaseBlockEntity;
 import appeng.items.tools.MemoryCardItem;
 import appeng.util.SettingsFrom;
 import mekanism.api.IConfigCardAccess;
 import mekanism.api.NBTConstants;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
@@ -20,15 +19,17 @@ import org.jetbrains.annotations.Nullable;
 public class AE2ConfigCardCompatBlock implements IConfigCardAccess {
     protected static final String KEY_AEDATA = "ae2data";
 
-    private final AEBaseEntityBlock<?> aeBlock;
+    public static AE2ConfigCardCompatBlock getBlockCapability(Level level, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, UseOnContext context) {
+        return new AE2ConfigCardCompatBlock(state, blockEntity);
+    }
+
+    private final Block aeBlock;
     //private final Level level;
     //private final BlockPos pos;
     private final AEBaseBlockEntity blockEntity;
 
-    public AE2ConfigCardCompatBlock(Level level, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, Direction dir) {
-        this.aeBlock = (AEBaseEntityBlock<?>) state.getBlock();
-        //this.level = level;
-        //this.pos = pos;
+    public AE2ConfigCardCompatBlock(BlockState state, @Nullable BlockEntity blockEntity) {
+        this.aeBlock = state.getBlock();
         this.blockEntity = (AEBaseBlockEntity) blockEntity;
     }
 
