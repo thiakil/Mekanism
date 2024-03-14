@@ -64,7 +64,6 @@ public class ItemConfigurationCard extends Item {
                 if (!world.isClientSide) {
                     String translationKey = configCardAccess.getConfigCardName();
                     CompoundTag data = configCardAccess.getConfigurationData(player);
-                    //todo move this to proper interface
                     data.putString(NBTConstants.DATA_NAME, translationKey);
                     data.putString(NBTConstants.DATA_TYPE, configCardAccess.getConfigurationDataType().toString());
                     stack.setData(MekanismAttachmentTypes.CONFIGURATION_DATA, data);
