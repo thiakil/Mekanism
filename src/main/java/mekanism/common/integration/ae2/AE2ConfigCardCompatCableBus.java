@@ -4,7 +4,6 @@ import appeng.api.parts.IPart;
 import appeng.api.parts.IPartHost;
 import appeng.core.definitions.AEBlocks;
 import appeng.core.definitions.AEParts;
-import appeng.items.tools.MemoryCardItem;
 import appeng.util.SettingsFrom;
 import mekanism.api.IConfigCardAccess;
 import mekanism.api.NBTConstants;
@@ -31,14 +30,10 @@ public class AE2ConfigCardCompatCableBus extends AE2ConfigCardCompatBlock {
         return null;
     }
 
-    //private final Level level;
-    //private final BlockPos pos;
     private final IPart part;
 
     public AE2ConfigCardCompatCableBus(Level level, BlockPos pos, BlockState state, UseOnContext context, IPart part) {
         super(state, null);
-        //this.level = level;
-        //this.pos = pos;
         this.part = part;
     }
 
@@ -80,8 +75,6 @@ public class AE2ConfigCardCompatCableBus extends AE2ConfigCardCompatBlock {
         CompoundTag aedata = rawData.getCompound(KEY_AEDATA);
         if (getConfigCardName().equals(ae2type)) {
             part.importSettings(SettingsFrom.MEMORY_CARD, aedata, player);
-        } else {
-            MemoryCardItem.importGenericSettingsAndNotify(part, aedata, player);
         }
     }
 }

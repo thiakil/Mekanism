@@ -1,7 +1,6 @@
 package mekanism.common.integration.ae2;
 
 import appeng.blockentity.AEBaseBlockEntity;
-import appeng.items.tools.MemoryCardItem;
 import appeng.util.SettingsFrom;
 import mekanism.api.IConfigCardAccess;
 import mekanism.api.NBTConstants;
@@ -24,8 +23,6 @@ public class AE2ConfigCardCompatBlock implements IConfigCardAccess {
     }
 
     private final Block aeBlock;
-    //private final Level level;
-    //private final BlockPos pos;
     private final AEBaseBlockEntity blockEntity;
 
     public AE2ConfigCardCompatBlock(BlockState state, @Nullable BlockEntity blockEntity) {
@@ -67,14 +64,7 @@ public class AE2ConfigCardCompatBlock implements IConfigCardAccess {
         CompoundTag aedata = rawData.getCompound(KEY_AEDATA);
         if (aeBlock.getDescriptionId().equals(ae2type)) {
             blockEntity.importSettings(SettingsFrom.MEMORY_CARD, aedata, player);
-        } else {
-            MemoryCardItem.importGenericSettingsAndNotify(blockEntity, aedata, player);
         }
-    }
-
-    @Override
-    public boolean isConfigurationDataCompatible(ResourceLocation type) {
-        return type.getNamespace().equals("ae2");//ae2 can attempt partial restore
     }
 
     @Override
