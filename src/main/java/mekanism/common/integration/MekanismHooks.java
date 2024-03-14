@@ -2,6 +2,7 @@ package mekanism.common.integration;
 
 import java.util.List;
 import java.util.function.Predicate;
+import mekanism.common.integration.ae2.AE2ConfigCardIntegration;
 import mekanism.common.integration.computer.FactoryRegistry;
 import mekanism.common.integration.computer.computercraft.CCCapabilityHelper;
 import mekanism.common.integration.crafttweaker.content.CrTContentUtils;
@@ -40,6 +41,7 @@ public final class MekanismHooks {
     public static final String RECIPE_STAGES_MOD_ID = "recipestages";
     public static final String TOP_MOD_ID = "theoneprobe";
     public static final String WILDFIRE_GENDER_MOD_ID = "wildfire_gender";
+    public static final String AE2_MOD_ID = "ae2";
 
     public final boolean CCLoaded;
     public final boolean CraftTweakerLoaded;
@@ -53,6 +55,7 @@ public final class MekanismHooks {
     public final boolean RecipeStagesLoaded;
     public final boolean TOPLoaded;
     public final boolean WildfireGenderModLoaded;
+    public final boolean Ae2Loaded;
 
     public MekanismHooks() {
         ModList modList = ModList.get();
@@ -70,6 +73,7 @@ public final class MekanismHooks {
         RecipeStagesLoaded = loadedCheck.test(RECIPE_STAGES_MOD_ID);
         TOPLoaded = loadedCheck.test(TOP_MOD_ID);
         WildfireGenderModLoaded = loadedCheck.test(WILDFIRE_GENDER_MOD_ID);
+        Ae2Loaded = loadedCheck.test(AE2_MOD_ID);
     }
 
     public void hookConstructor(final IEventBus bus) {
@@ -92,6 +96,9 @@ public final class MekanismHooks {
         }
         if (ProjectELoaded) {
             MekanismNormalizedSimpleStacks.NSS_SERIALIZERS.register(bus);
+        }
+        if (Ae2Loaded) {
+            bus.addListener(AE2ConfigCardIntegration::register);
         }
     }
 

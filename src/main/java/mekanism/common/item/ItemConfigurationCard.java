@@ -29,6 +29,7 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -47,7 +48,7 @@ public class ItemConfigurationCard extends Item {
 
     @NotNull
     @Override
-    public InteractionResult useOn(UseOnContext context) {
+    public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {
         Player player = context.getPlayer();
         if (player == null) {
             return InteractionResult.PASS;
@@ -60,11 +61,12 @@ public class ItemConfigurationCard extends Item {
             if (!IBlockSecurityUtils.INSTANCE.canAccessOrDisplayError(player, world, pos)) {
                 return InteractionResult.FAIL;
             }
-            ItemStack stack = context.getItemInHand();
+            //ItemStack stack = context.getItemInHand();
             if (player.isShiftKeyDown()) {
                 if (!world.isClientSide) {
                     String translationKey = configCardAccess.getConfigCardName();
                     CompoundTag data = configCardAccess.getConfigurationData(player);
+                    //todo move this to proper interface
                     data.putString(NBTConstants.DATA_NAME, translationKey);
                     data.putString(NBTConstants.DATA_TYPE, configCardAccess.getConfigurationDataType().toString());
                     stack.setData(MekanismAttachmentTypes.CONFIGURATION_DATA, data);
@@ -120,5 +122,10 @@ public class ItemConfigurationCard extends Item {
     public boolean hasData(ItemStack stack) {
         CompoundTag data = getData(stack);
         return data != null && data.contains(NBTConstants.DATA_NAME, Tag.TAG_STRING);
+    }
+
+    @Override
+    public boolean doesSneakBypassUse(ItemStack stack, LevelReader level, BlockPos pos, Player player) {
+        return super.doesSneakBypassUse(stack, level, pos, player);
     }
 }
