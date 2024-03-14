@@ -1,8 +1,8 @@
 package mekanism.api;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.block.Block;
 
 /**
  * Expose this as a capability on your block to expose it to Mekanism's Configuration card for purposes of saving data to the card and then loading it on another block.
@@ -14,9 +14,7 @@ public interface IConfigCardAccess {
      *
      * @return The translation key for the name to display.
      */
-    default String getConfigCardName() {
-        return getConfigurationDataType().getDescriptionId();
-    }
+    String getConfigCardName();
 
     /**
      * Gets the type of the block this config card access exposes.
@@ -26,7 +24,7 @@ public interface IConfigCardAccess {
      * @apiNote The reason this exists rather than being gotten directly from the tile the capability is accessed from is for purposes of if a block is proxying a
      * capability such as Mekanism's bounding blocks.
      */
-    Block getConfigurationDataType();
+    ResourceLocation getConfigurationDataType();
 
     /**
      * Checks if this config card access can handle the configuration data from another type of tile. This is used in Mekanism for things like allowing factories to
@@ -36,8 +34,8 @@ public interface IConfigCardAccess {
      *
      * @return {@code true} if the data is compatible.
      */
-    default boolean isConfigurationDataCompatible(Block type) {
-        return type == getConfigurationDataType();
+    default boolean isConfigurationDataCompatible(ResourceLocation type) {
+        return type.equals(getConfigurationDataType());
     }
 
     /**

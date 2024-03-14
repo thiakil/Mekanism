@@ -66,14 +66,14 @@ public class ItemConfigurationCard extends Item {
                     String translationKey = configCardAccess.getConfigCardName();
                     CompoundTag data = configCardAccess.getConfigurationData(player);
                     data.putString(NBTConstants.DATA_NAME, translationKey);
-                    NBTUtils.writeRegistryEntry(data, NBTConstants.DATA_TYPE, BuiltInRegistries.BLOCK, configCardAccess.getConfigurationDataType());
+                    data.putString(NBTConstants.DATA_TYPE, configCardAccess.getConfigurationDataType().toString());
                     stack.setData(MekanismAttachmentTypes.CONFIGURATION_DATA, data);
                     player.sendSystemMessage(MekanismUtils.logFormat(MekanismLang.CONFIG_CARD_GOT.translate(EnumColor.INDIGO, TextComponentUtil.translate(translationKey))));
                     MekanismCriteriaTriggers.CONFIGURATION_CARD.value().trigger((ServerPlayer) player, true);
                 }
             } else {
                 CompoundTag data = getData(stack);
-                Block storedType = getStoredType(data);
+                ResourceLocation storedType = getStoredType(data);
                 if (storedType == null) {
                     return InteractionResult.PASS;
                 }
@@ -103,12 +103,11 @@ public class ItemConfigurationCard extends Item {
 
     @Nullable
     @Contract("null -> null")
-    private Block getStoredType(@Nullable CompoundTag data) {
+    private ResourceLocation getStoredType(@Nullable CompoundTag data) {
         if (data == null || !data.contains(NBTConstants.DATA_TYPE, Tag.TAG_STRING)) {
             return null;
         }
-        ResourceLocation blockRegistryName = ResourceLocation.tryParse(data.getString(NBTConstants.DATA_TYPE));
-        return blockRegistryName == null ? null : BuiltInRegistries.BLOCK.get(blockRegistryName);
+        return ResourceLocation.tryParse(data.getString(NBTConstants.DATA_TYPE));
     }
 
     private Component getConfigCardName(@Nullable CompoundTag data) {

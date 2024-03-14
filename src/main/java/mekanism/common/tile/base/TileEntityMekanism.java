@@ -1259,8 +1259,13 @@ public abstract class TileEntityMekanism extends CapabilityTileEntity implements
     }
 
     @Override
-    public Block getConfigurationDataType() {
-        return getBlockType();
+    public ResourceLocation getConfigurationDataType() {
+        return getBlockTypeRegistryName();
+    }
+
+    @Override
+    public String getConfigCardName() {
+        return getBlockType().getDescriptionId();
     }
 
     @Override
