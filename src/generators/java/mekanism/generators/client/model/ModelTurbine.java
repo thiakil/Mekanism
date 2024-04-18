@@ -81,6 +81,10 @@ public class ModelTurbine extends MekanismJavaModel {
         return renderer.getBuffer(RENDER_TYPE);
     }
 
+    public RenderType getRenderType() {
+        return RENDER_TYPE;
+    }
+
     public void render(@NotNull PoseStack matrix, VertexConsumer buffer, int light, int overlayLight, int index) {
         matrix.pushPose();
         matrix.mulPose(Axis.YP.rotationDegrees(index * 5));

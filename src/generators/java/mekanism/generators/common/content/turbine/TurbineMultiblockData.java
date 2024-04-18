@@ -97,7 +97,8 @@ public class TurbineMultiblockData extends MultiblockData {
     @SyntheticComputerMethod(getter = "getFlowRate")
     public long clientFlow;
 
-    public float clientRotation;
+    public float clientRotation;//flow rate modifier
+    public float clientCurrentRotation;
     public float prevSteamScale;
 
     public TurbineMultiblockData(TileEntityTurbineCasing tile) {
@@ -212,6 +213,7 @@ public class TurbineMultiblockData extends MultiblockData {
         NBTUtils.setGasStackIfPresent(tag, NBTConstants.GAS_STORED, value -> gasTank.setStack(value));
         NBTUtils.setBlockPosIfPresent(tag, NBTConstants.COMPLEX, value -> complex = value);
         NBTUtils.setFloatIfPresent(tag, NBTConstants.ROTATION, value -> clientRotation = value);
+        NBTUtils.setIntIfPresent(tag, NBTConstants.BLADES, value -> blades = value);
         clientRotationMap.put(inventoryID, clientRotation);
     }
 
@@ -224,6 +226,7 @@ public class TurbineMultiblockData extends MultiblockData {
         tag.put(NBTConstants.GAS_STORED, gasTank.getStack().write(new CompoundTag()));
         tag.put(NBTConstants.COMPLEX, NbtUtils.writeBlockPos(complex));
         tag.putFloat(NBTConstants.ROTATION, clientRotation);
+        tag.putInt(NBTConstants.BLADES, blades);
     }
 
     @ComputerMethod

@@ -2,16 +2,13 @@ package mekanism.generators.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
-import java.util.UUID;
 import mekanism.api.annotations.NothingNullByDefault;
 import mekanism.client.render.tileentity.ModelTileEntityRenderer;
 import mekanism.generators.client.model.ModelTurbine;
 import mekanism.generators.common.GeneratorsProfilerConstants;
-import mekanism.generators.common.content.turbine.TurbineMultiblockData;
 import mekanism.generators.common.tile.turbine.TileEntityTurbineRotor;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -25,7 +22,6 @@ public class RenderTurbineRotor extends ModelTileEntityRenderer<TileEntityTurbin
 
     @Nullable
     public static RenderTurbineRotor INSTANCE;
-    private static final float BASE_SPEED = 512F;
 
     public RenderTurbineRotor(BlockEntityRendererProvider.Context context) {
         super(context, ModelTurbine::new);
@@ -36,42 +32,38 @@ public class RenderTurbineRotor extends ModelTileEntityRenderer<TileEntityTurbin
         return model.getBuffer(renderer);
     }
 
-    @Override
-    protected void render(TileEntityTurbineRotor tile, float partialTick, PoseStack matrix, MultiBufferSource renderer, int light, int overlayLight, ProfilerFiller profiler) {
-        render(tile, matrix, getBuffer(renderer), light, overlayLight);
+    public RenderType getRenderType() {
+        return model.getRenderType();
     }
 
-    public void render(TileEntityTurbineRotor tile, PoseStack matrix, VertexConsumer buffer, int light, int overlayLight) {
+    @Override
+    protected void render(TileEntityTurbineRotor tile, float partialTick, PoseStack matrix, MultiBufferSource renderer, int light, int overlayLight, ProfilerFiller profiler) {
+        VertexConsumer buffer = getBuffer(renderer);
+        int baseIndex = tile.getPosition() * 2;
         int housedBlades = tile.getHousedBlades();
         if (housedBlades == 0) {
             return;
         }
-        int baseIndex = tile.getPosition() * 2;
-        if (!Minecraft.getInstance().isPaused()) {
-            UUID multiblockUUID = tile.getMultiblockUUID();
-            if (multiblockUUID != null && TurbineMultiblockData.clientRotationMap.containsKey(multiblockUUID)) {
-                float rotateSpeed = TurbineMultiblockData.clientRotationMap.getFloat(multiblockUUID) * BASE_SPEED;
-                tile.rotationLower = (tile.rotationLower + rotateSpeed * (1F / (baseIndex + 1))) % 360;
-                tile.rotationUpper = (tile.rotationUpper + rotateSpeed * (1F / (baseIndex + 2))) % 360;
-            } else {
-                tile.rotationLower = tile.rotationLower % 360;
-                tile.rotationUpper = tile.rotationUpper % 360;
-            }
-        }
+
+        matrix.translate(0.5, 0, 0.5);
+
         //Bottom blade
-        matrix.pushPose();
-        matrix.translate(0.5, -1, 0.5);
-        matrix.mulPose(Axis.YP.rotationDegrees(tile.rotationLower));
-        model.render(matrix, buffer, light, overlayLight, baseIndex);
-        matrix.popPose();
+        renderSingleBlade(matrix, buffer, light, overlayLight, baseIndex, true);
         //Top blade
         if (housedBlades == 2) {
-            matrix.pushPose();
-            matrix.translate(0.5, -0.5, 0.5);
-            matrix.mulPose(Axis.YP.rotationDegrees(tile.rotationUpper));
-            model.render(matrix, buffer, light, overlayLight, baseIndex + 1);
-            matrix.popPose();
+            renderSingleBlade(matrix, buffer, light, overlayLight, baseIndex + 1, false);
         }
+    }
+
+    public void renderSingleBlade(PoseStack matrix, VertexConsumer buffer, int light, int overlayLight, int index, boolean isLower) {
+        matrix.pushPose();
+        if (isLower) {
+            matrix.translate(0, -1, 0);
+        } else {
+            matrix.translate(0, -0.5, 0);
+        }
+        model.render(matrix, buffer, light, overlayLight, index);
+        matrix.popPose();
     }
 
     @Override
