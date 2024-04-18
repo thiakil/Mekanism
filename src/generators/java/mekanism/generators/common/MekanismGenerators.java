@@ -136,7 +136,7 @@ public class MekanismGenerators implements IModModule {
 
     @Override
     public void resetClient() {
-        TurbineMultiblockData.clientRotationMap.clear();
+        
     }
 
     private void onConfigLoad(ModConfigEvent configEvent) {

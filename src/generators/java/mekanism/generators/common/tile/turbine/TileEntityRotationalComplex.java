@@ -23,8 +23,6 @@ public class TileEntityRotationalComplex extends TileEntityInternalMultiblock {
             if (tile != null) {
                 tile.updateRotors();
             }
-        } else if (getMultiblockUUID() == null && old != null) {
-            TurbineMultiblockData.clientRotationMap.removeFloat(old);
         }
     }
 }

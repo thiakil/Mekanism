@@ -52,7 +52,6 @@ import org.jetbrains.annotations.Nullable;
 public class TurbineMultiblockData extends MultiblockData {
 
     public static final float ROTATION_THRESHOLD = 0.001F;
-    public static final Object2FloatMap<UUID> clientRotationMap = new Object2FloatOpenHashMap<>();
 
     private final List<BlockCapabilityCache<IFluidHandler, @Nullable Direction>> fluidOutputTargets = new ArrayList<>();
     private final List<BlockEnergyCapabilityCache> energyOutputTargets = new ArrayList<>();
@@ -214,7 +213,6 @@ public class TurbineMultiblockData extends MultiblockData {
         NBTUtils.setBlockPosIfPresent(tag, NBTConstants.COMPLEX, value -> complex = value);
         NBTUtils.setFloatIfPresent(tag, NBTConstants.ROTATION, value -> clientRotation = value);
         NBTUtils.setIntIfPresent(tag, NBTConstants.BLADES, value -> blades = value);
-        clientRotationMap.put(inventoryID, clientRotation);
     }
 
     @Override
