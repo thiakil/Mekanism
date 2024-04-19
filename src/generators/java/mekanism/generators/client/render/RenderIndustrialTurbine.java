@@ -9,8 +9,9 @@ import com.mojang.blaze3d.vertex.VertexBuffer;
 import com.mojang.blaze3d.vertex.VertexBuffer.Usage;
 import com.mojang.math.Axis;
 import mekanism.api.annotations.NothingNullByDefault;
-import mekanism.client.render.MekanismRenderer;
+import mekanism.client.render.MekanismRenderType;
 import mekanism.client.render.ModelRenderer;
+import mekanism.client.render.RenderResizableCuboid;
 import mekanism.client.render.RenderResizableCuboid.FaceDisplay;
 import mekanism.client.render.data.ChemicalRenderData.GasRenderData;
 import mekanism.client.render.tileentity.MultiblockTileEntityRenderer;
@@ -21,7 +22,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -97,17 +97,13 @@ public class RenderIndustrialTurbine extends MultiblockTileEntityRenderer<Turbin
                 GasRenderData gasRenderData = new GasRenderData(multiblock.renderLocation, multiblock.width(), height, multiblock.length(), multiblock.gasTank.getStack().getType());
 
                 VertexBuffer gasBuffer = STEAM_BUFFER.getIfPresent(gasRenderData);
-                RenderType renderType = Sheets.translucentCullBlockSheet();
+                RenderType renderType = MekanismRenderType.translucentDepthBlocks();
 
                 if (gasBuffer == null) {
                     gasBuffer = new VertexBuffer(Usage.STATIC);
                     BufferBuilder builder = new BufferBuilder(renderType.bufferSize());
                     builder.begin(renderType.mode(), renderType.format());
-                    final PoseStack poseStack = new PoseStack();
-                    poseStack.pushPose();
-                    poseStack.translate(gasRenderData.location.getX() - pos.getX(), gasRenderData.location.getY() - pos.getY(), gasRenderData.location.getZ() - pos.getZ());
-                    MekanismRenderer.renderObject(ModelRenderer.getModel(gasRenderData, 1F), poseStack, builder, gasRenderData.getColorARGB(1F), gasRenderData.calculateGlowLight(LightTexture.FULL_SKY), overlayLight, FaceDisplay.BOTH, getCamera(), gasRenderData.location);
-                    poseStack.popPose();
+                    RenderResizableCuboid.renderCube(ModelRenderer.getModel(gasRenderData, 1F), new PoseStack(), builder, gasRenderData.getColorARGB(1F), gasRenderData.calculateGlowLight(LightTexture.FULL_SKY), overlayLight, FaceDisplay.FRONT, getCamera(), null);
                     gasBuffer.bind();
                     gasBuffer.upload(builder.end());
                     STEAM_BUFFER.put(gasRenderData, gasBuffer);
@@ -115,7 +111,10 @@ public class RenderIndustrialTurbine extends MultiblockTileEntityRenderer<Turbin
                 renderType.setupRenderState();
                 RenderSystem.setShaderColor(1, 1, 1, multiblock.prevSteamScale);
                 gasBuffer.bind();
+                matrix.pushPose();
+                matrix.translate(gasRenderData.location.getX() - pos.getX(), gasRenderData.location.getY() - pos.getY(), gasRenderData.location.getZ() - pos.getZ());
                 gasBuffer.drawWithShader(matrix.last().pose(), RenderSystem.getProjectionMatrix(), RenderSystem.getShader());
+                matrix.popPose();
                 VertexBuffer.unbind();
                 renderType.clearRenderState();
                 RenderSystem.setShaderColor(1, 1, 1, 1);

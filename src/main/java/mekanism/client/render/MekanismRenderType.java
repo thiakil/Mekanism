@@ -6,12 +6,14 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat.Mode;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import net.minecraft.Util;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
 
 public class MekanismRenderType extends RenderType {
@@ -111,4 +113,23 @@ public class MekanismRenderType extends RenderType {
               .createCompositeState(true);
         return create("mek_sps", DefaultVertexFormat.POSITION_COLOR_TEX, Mode.QUADS, 256, true, true, state);
     });
+
+    public static final BiFunction<ResourceLocation, Boolean, RenderType> TRANSLUCENT_DEPTH = Util.memoize(
+          (texture, outline) -> {
+              RenderType.CompositeState rendertype$compositestate = RenderType.CompositeState.builder()
+                    .setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_SHADER)
+                    .setTextureState(new RenderStateShard.TextureStateShard(texture, false, false))
+                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                    .setDepthTestState(LEQUAL_DEPTH_TEST)
+                    .setCullState(NO_CULL)
+                    .setLightmapState(LIGHTMAP)
+                    .setOverlayState(OVERLAY)
+                    .createCompositeState(outline);
+              return create("translucent_depth", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 1536, true, true, rendertype$compositestate);
+          }
+    );
+
+    public static RenderType translucentDepthBlocks() {
+        return TRANSLUCENT_DEPTH.apply(TextureAtlas.LOCATION_BLOCKS, true);
+    }
 }
