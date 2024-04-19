@@ -94,7 +94,7 @@ public class RenderIndustrialTurbine extends MultiblockTileEntityRenderer<Turbin
         if (!multiblock.gasTank.isEmpty() && multiblock.length() > 0) {
             int height = multiblock.lowerVolume / (multiblock.length() * multiblock.width());
             if (height > 0) {
-                GasRenderData gasRenderData = new GasRenderData(multiblock.renderLocation, multiblock.width(), height, multiblock.length(), multiblock.gasTank.getStack().getType());
+                GasRenderData gasRenderData = new GasRenderData(multiblock.renderLocation, multiblock.width() - 2, height, multiblock.length() - 2, multiblock.gasTank.getStack().getType());
 
                 VertexBuffer gasBuffer = STEAM_BUFFER.getIfPresent(gasRenderData);
                 RenderType renderType = MekanismRenderType.translucentDepthBlocks();
@@ -112,7 +112,7 @@ public class RenderIndustrialTurbine extends MultiblockTileEntityRenderer<Turbin
                 RenderSystem.setShaderColor(1, 1, 1, multiblock.prevSteamScale);
                 gasBuffer.bind();
                 matrix.pushPose();
-                matrix.translate(gasRenderData.location.getX() - pos.getX(), gasRenderData.location.getY() - pos.getY(), gasRenderData.location.getZ() - pos.getZ());
+                matrix.translate(gasRenderData.location.getX() - pos.getX() + 1, gasRenderData.location.getY() - pos.getY(), gasRenderData.location.getZ() - pos.getZ() + 1);
                 gasBuffer.drawWithShader(matrix.last().pose(), RenderSystem.getProjectionMatrix(), RenderSystem.getShader());
                 matrix.popPose();
                 VertexBuffer.unbind();
