@@ -30,7 +30,7 @@ public class RenderThermalEvaporationPlant extends MultiblockTileEntityRenderer<
     }
 
     @Override
-    protected String getProfilerSection() {
+    public String getProfilerSection() {
         return ProfilerConstants.THERMAL_EVAPORATION_CONTROLLER;
     }
 
@@ -40,7 +40,7 @@ public class RenderThermalEvaporationPlant extends MultiblockTileEntityRenderer<
     }
 
     @Override
-    public void renderVBO(TileEntityThermalEvaporationController tile, PoseStack matrix, Matrix4f projectionMatrix, int light, int overlayLight) {
+    public void renderVBO(TileEntityThermalEvaporationController tile, PoseStack matrix, Matrix4f projectionMatrix, int light, int overlayLight, ProfilerFiller profiler) {
         EvaporationMultiblockData multiblock = tile.getMultiblock();
         FluidRenderData data = RenderData.Builder.create(multiblock.inputTank.getFluid())
               .location(multiblock.renderLocation.offset(1, 0, 1))

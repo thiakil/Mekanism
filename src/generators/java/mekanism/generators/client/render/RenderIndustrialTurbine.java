@@ -49,7 +49,7 @@ public class RenderIndustrialTurbine extends MultiblockTileEntityRenderer<Turbin
     }
 
     @Override
-    protected String getProfilerSection() {
+    public String getProfilerSection() {
         return GeneratorsProfilerConstants.INDUSTRIAL_TURBINE;
     }
 
@@ -59,8 +59,7 @@ public class RenderIndustrialTurbine extends MultiblockTileEntityRenderer<Turbin
     }
 
     @Override
-    public void renderVBO(TileEntityTurbineCasing tile, PoseStack matrix, Matrix4f projectionMatrix, int light, int overlayLight) {
-        ProfilerFiller profiler = Minecraft.getInstance().getProfiler();
+    public void renderVBO(TileEntityTurbineCasing tile, PoseStack matrix, Matrix4f projectionMatrix, int light, int overlayLight, ProfilerFiller profiler) {
         TurbineMultiblockData multiblock = tile.getMultiblock();
         if (multiblock.renderLocation == null) {
             return;

@@ -200,12 +200,13 @@ public class RenderTickHandler {
             double cameraX = vec3.x();
             double cameraY = vec3.y();
             double cameraZ = vec3.z();
+            ProfilerFiller profiler = minecraft.getProfiler();
             for (VBORendererObject<?> rendererObject : VBOS_TO_RENDER) {
                 PoseStack poseStack = event.getPoseStack();
                 poseStack.pushPose();
                 BlockPos renderLocation = rendererObject.location;
                 poseStack.translate((double) renderLocation.getX() - cameraX, (double) renderLocation.getY() - cameraY, (double) renderLocation.getZ() - cameraZ);
-                rendererObject.render(poseStack, event.getProjectionMatrix());
+                rendererObject.render(poseStack, event.getProjectionMatrix(), profiler);
                 poseStack.popPose();
             }
             VBOS_TO_RENDER.clear();
@@ -554,7 +555,9 @@ public class RenderTickHandler {
 
     public interface VBORenderer<CONTEXT> {
 
-        void renderVBO(CONTEXT context, PoseStack poseStack, Matrix4f projectionMatrix, int light, int overlayLight);
+        void renderVBO(CONTEXT context, PoseStack poseStack, Matrix4f projectionMatrix, int light, int overlayLight, ProfilerFiller profiler);
+
+        String getProfilerSection();
     }
 
     /**
@@ -569,8 +572,10 @@ public class RenderTickHandler {
     private record VBORendererObject<CONTEXT>(CONTEXT context, BlockPos location, double sortDistance, int light, int overlayLight,
                                               VBORenderer<CONTEXT> renderer) implements Comparable<VBORendererObject<?>> {
 
-        void render(PoseStack poseStack, Matrix4f projectionMatrix) {
-            renderer.renderVBO(context, poseStack, projectionMatrix, light, overlayLight);
+        void render(PoseStack poseStack, Matrix4f projectionMatrix, ProfilerFiller profiler) {
+            profiler.push(renderer.getProfilerSection());
+            renderer.renderVBO(context, poseStack, projectionMatrix, light, overlayLight, profiler);
+            profiler.pop();
         }
 
         @Override
