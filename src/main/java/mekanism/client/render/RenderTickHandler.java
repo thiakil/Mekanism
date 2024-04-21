@@ -1,5 +1,6 @@
 package mekanism.client.render;
 
+import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
@@ -196,6 +197,9 @@ public class RenderTickHandler {
             boltRenderer.render(event.getPartialTick(), event.getPoseStack(), renderer, event.getCamera().getPosition());
             renderer.endBatch(MekanismRenderType.MEK_LIGHTNING);
         } else if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES && !VBOS_TO_RENDER.isEmpty()) {
+            PoseStack poseStack = event.getPoseStack();
+            //TODO 1.20.5+ check if this is still needed, per FC message
+            Lighting.setupLevel(new Matrix4f());
             Camera camera = event.getCamera();
             Vec3 vec3 = camera.getPosition();
             double cameraX = vec3.x();
@@ -203,7 +207,6 @@ public class RenderTickHandler {
             double cameraZ = vec3.z();
             ProfilerFiller profiler = minecraft.getProfiler();
             for (VBORendererObject<?> rendererObject : VBOS_TO_RENDER) {
-                PoseStack poseStack = event.getPoseStack();
                 poseStack.pushPose();
                 BlockPos renderLocation = rendererObject.location;
                 poseStack.translate((double) renderLocation.getX() - cameraX, (double) renderLocation.getY() - cameraY, (double) renderLocation.getZ() - cameraZ);

@@ -191,7 +191,7 @@ public class MekanismRenderer {
 
     private static void renderCubeVBO(Camera camera, RenderData renderData, @NotNull PoseStack matrix, Matrix4f projectionMatrix, int overlay, float scale, Model3D model, int light) {
         FaceDisplay faceDisplay = getFaceDisplay(camera, renderData, model);
-        ScaledRenderData scaledRenderData = new ScaledRenderData(renderData, scale, faceDisplay);
+        ScaledRenderData scaledRenderData = new ScaledRenderData(renderData, scale, faceDisplay, light, overlay);
         VertexBuffer buffer = CUBE_BUFFER.getIfPresent(scaledRenderData);
         RenderType renderType = Sheets.translucentCullBlockSheet();
 
@@ -554,5 +554,5 @@ public class MekanismRenderer {
         }
     }
 
-    private record ScaledRenderData(RenderData renderData, float scale, FaceDisplay faceDisplay) {}
+    private record ScaledRenderData(RenderData renderData, float scale, FaceDisplay faceDisplay, int light, int overlay) {}
 }
