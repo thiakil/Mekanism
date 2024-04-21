@@ -2,6 +2,7 @@ package mekanism.common.lib.math.voxel;
 
 import mekanism.common.lib.multiblock.Structure.Axis;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.BlockPos.MutableBlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.AABB;
 
@@ -10,11 +11,20 @@ public class VoxelCuboid implements IShape {
     private BlockPos minPos;
     private BlockPos maxPos;
     private AABB asAABB;
+    private final MutableBlockPos center;
 
     public VoxelCuboid(BlockPos minPos, BlockPos maxPos) {
         this.minPos = minPos;
         this.maxPos = maxPos;
+        this.center = new MutableBlockPos();
+        recalculatePositions();
+    }
+
+    private void recalculatePositions() {
         this.asAABB = AABB.encapsulatingFullBlocks(minPos, maxPos);
+        this.center.set((minPos.getX() + maxPos.getX()) / 2,
+              (minPos.getY() + maxPos.getY()) / 2,
+              (minPos.getZ() + maxPos.getZ()) / 2);
     }
 
     public VoxelCuboid(int length, int height, int width) {
@@ -43,18 +53,16 @@ public class VoxelCuboid implements IShape {
 
     public void setMinPos(BlockPos minPos) {
         this.minPos = minPos;
-        this.asAABB = AABB.encapsulatingFullBlocks(minPos, maxPos);
+        recalculatePositions();
     }
 
     public void setMaxPos(BlockPos maxPos) {
         this.maxPos = maxPos;
-        this.asAABB = AABB.encapsulatingFullBlocks(minPos, maxPos);
+        recalculatePositions();
     }
 
     public BlockPos getCenter() {
-        return new BlockPos((minPos.getX() + maxPos.getX()) / 2,
-              (minPos.getY() + maxPos.getY()) / 2,
-              (minPos.getZ() + maxPos.getZ()) / 2);
+        return center;
     }
 
     public Direction getSide(BlockPos pos) {
