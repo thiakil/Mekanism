@@ -19,6 +19,7 @@ import mekanism.generators.common.content.turbine.TurbineMultiblockData;
 import mekanism.generators.common.tile.turbine.TileEntityTurbineCasing;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
@@ -46,7 +47,8 @@ public class RenderIndustrialTurbine extends MultiblockTileEntityRenderer<Turbin
         if (multiblock.renderLocation == null) {
             return;
         }
-        RenderTickHandler.queueVBORender(getCamera(), tile, tile.getBlockPos(), multiblock.getBounds().getCenter(), light, overlayLight, this);
+        BlockPos center = multiblock.getBounds().getCenter();
+        RenderTickHandler.queueVBORender(getCamera(), tile, tile.getBlockPos(), center, LevelRenderer.getLightColor(tile.getLevel(), center), overlayLight, this);
     }
 
     @Override
