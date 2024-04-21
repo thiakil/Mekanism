@@ -22,7 +22,6 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -74,20 +73,7 @@ public abstract class MekanismTileEntityRenderer<TILE extends BlockEntity> imple
     }
 
     protected final boolean isInsideBounds(double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
-        return isInsideBounds(getCamera(), minX, minY, minZ, maxX, maxY, maxZ);
-    }
-
-    protected final boolean isInsideBounds(Camera camera, double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
-        Vec3 projectedView = camera.getPosition();
-        return minX <= projectedView.x && projectedView.x <= maxX &&
-               minY <= projectedView.y && projectedView.y <= maxY &&
-               minZ <= projectedView.z && projectedView.z <= maxZ;
-    }
-
-    protected final FaceDisplay getFaceDisplay(Camera camera, RenderData data, Model3D model) {
-        return isInsideBounds(camera, data.location.getX(), data.location.getY(), data.location.getZ(),
-              data.location.getX() + data.length, data.location.getY() + ModelRenderer.getActualHeight(model), data.location.getZ() + data.width)
-               ? FaceDisplay.BACK : FaceDisplay.FRONT;
+        return MekanismRenderer.isInsideBounds(getCamera(), minX, minY, minZ, maxX, maxY, maxZ);
     }
 
     protected void renderObject(RenderData data, Set<ValveData> valves, BlockPos rendererPos, @NotNull PoseStack matrix, VertexConsumer buffer, int overlay, float scale) {
@@ -112,7 +98,7 @@ public abstract class MekanismTileEntityRenderer<TILE extends BlockEntity> imple
         Camera camera = getCamera();
         matrix.pushPose();
         matrix.translate(data.location.getX() - rendererPos.getX(), data.location.getY() - rendererPos.getY(), data.location.getZ() - rendererPos.getZ());
-        MekanismRenderer.renderObject(object, matrix, buffer, data.getColorARGB(scale), glow, overlay, getFaceDisplay(camera, data, object), camera, data.location);
+        MekanismRenderer.renderObject(object, matrix, buffer, data.getColorARGB(scale), glow, overlay, MekanismRenderer.getFaceDisplay(camera, data, object), camera, data.location);
         matrix.popPose();
         return glow;
     }

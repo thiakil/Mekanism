@@ -17,6 +17,7 @@ import mekanism.client.render.tileentity.MultiblockTileEntityRenderer;
 import mekanism.generators.common.GeneratorsProfilerConstants;
 import mekanism.generators.common.content.turbine.TurbineMultiblockData;
 import mekanism.generators.common.tile.turbine.TileEntityTurbineCasing;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -59,7 +60,7 @@ public class RenderIndustrialTurbine extends MultiblockTileEntityRenderer<Turbin
     }
 
     @Override
-    public void renderVBO(TileEntityTurbineCasing tile, PoseStack matrix, Matrix4f projectionMatrix, int light, int overlayLight, ProfilerFiller profiler) {
+    public void renderVBO(Camera camera, TileEntityTurbineCasing tile, PoseStack matrix, Matrix4f projectionMatrix, int light, int overlayLight, ProfilerFiller profiler) {
         TurbineMultiblockData multiblock = tile.getMultiblock();
         if (multiblock.renderLocation == null) {
             return;
@@ -112,7 +113,7 @@ public class RenderIndustrialTurbine extends MultiblockTileEntityRenderer<Turbin
             int height = multiblock.lowerVolume / (multiblock.length() * multiblock.width());
             if (height > 0) {
                 GasRenderData gasRenderData = new GasRenderData(multiblock.renderLocation.offset(1, 0, 1), multiblock.width() - 2, height, multiblock.length() - 2, multiblock.gasTank.getStack().getType());
-                MekanismRenderer.renderObjectVBO(gasRenderData, pos, matrix, projectionMatrix, overlayLight, multiblock.prevSteamScale);
+                MekanismRenderer.renderObjectVBO(camera, gasRenderData, pos, matrix, projectionMatrix, overlayLight, multiblock.prevSteamScale);
 
             }
         }

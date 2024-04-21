@@ -121,7 +121,7 @@ public class MekanismRenderType extends RenderType {
                     .setTextureState(new RenderStateShard.TextureStateShard(texture, false, false))
                     .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
                     .setDepthTestState(LEQUAL_DEPTH_TEST)
-                    .setCullState(NO_CULL)
+                    .setCullState(CULL)
                     .setLightmapState(LIGHTMAP)
                     .setOverlayState(OVERLAY)
                     .createCompositeState(outline);

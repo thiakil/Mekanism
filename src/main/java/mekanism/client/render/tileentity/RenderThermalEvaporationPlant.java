@@ -10,6 +10,7 @@ import mekanism.client.render.data.RenderData;
 import mekanism.common.base.ProfilerConstants;
 import mekanism.common.content.evaporation.EvaporationMultiblockData;
 import mekanism.common.tile.multiblock.TileEntityThermalEvaporationController;
+import net.minecraft.client.Camera;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -40,12 +41,12 @@ public class RenderThermalEvaporationPlant extends MultiblockTileEntityRenderer<
     }
 
     @Override
-    public void renderVBO(TileEntityThermalEvaporationController tile, PoseStack matrix, Matrix4f projectionMatrix, int light, int overlayLight, ProfilerFiller profiler) {
+    public void renderVBO(Camera camera, TileEntityThermalEvaporationController tile, PoseStack matrix, Matrix4f projectionMatrix, int light, int overlayLight, ProfilerFiller profiler) {
         EvaporationMultiblockData multiblock = tile.getMultiblock();
         FluidRenderData data = RenderData.Builder.create(multiblock.inputTank.getFluid())
               .location(multiblock.renderLocation.offset(1, 0, 1))
               .dimensions(2, multiblock.height() - 1, 2)
               .build();
-        MekanismRenderer.renderObjectAndValvesVBO(data, multiblock.valves, tile.getBlockPos(), matrix, projectionMatrix, overlayLight, Math.min(1, multiblock.prevScale));
+        MekanismRenderer.renderObjectAndValvesVBO(camera, data, multiblock.valves, tile.getBlockPos(), matrix, projectionMatrix, overlayLight, Math.min(1, multiblock.prevScale));
     }
 }

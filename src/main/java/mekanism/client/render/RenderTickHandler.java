@@ -196,7 +196,8 @@ public class RenderTickHandler {
             boltRenderer.render(event.getPartialTick(), event.getPoseStack(), renderer, event.getCamera().getPosition());
             renderer.endBatch(MekanismRenderType.MEK_LIGHTNING);
         } else if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES && !VBOS_TO_RENDER.isEmpty()) {
-            Vec3 vec3 = event.getCamera().getPosition();
+            Camera camera = event.getCamera();
+            Vec3 vec3 = camera.getPosition();
             double cameraX = vec3.x();
             double cameraY = vec3.y();
             double cameraZ = vec3.z();
@@ -206,7 +207,7 @@ public class RenderTickHandler {
                 poseStack.pushPose();
                 BlockPos renderLocation = rendererObject.location;
                 poseStack.translate((double) renderLocation.getX() - cameraX, (double) renderLocation.getY() - cameraY, (double) renderLocation.getZ() - cameraZ);
-                rendererObject.render(poseStack, event.getProjectionMatrix(), profiler);
+                rendererObject.render(camera, poseStack, event.getProjectionMatrix(), profiler);
                 poseStack.popPose();
             }
             VBOS_TO_RENDER.clear();
@@ -555,7 +556,7 @@ public class RenderTickHandler {
 
     public interface VBORenderer<CONTEXT> {
 
-        void renderVBO(CONTEXT context, PoseStack poseStack, Matrix4f projectionMatrix, int light, int overlayLight, ProfilerFiller profiler);
+        void renderVBO(Camera camera, CONTEXT context, PoseStack poseStack, Matrix4f projectionMatrix, int light, int overlayLight, ProfilerFiller profiler);
 
         String getProfilerSection();
     }
@@ -572,9 +573,9 @@ public class RenderTickHandler {
     private record VBORendererObject<CONTEXT>(CONTEXT context, BlockPos location, double sortDistance, int light, int overlayLight,
                                               VBORenderer<CONTEXT> renderer) implements Comparable<VBORendererObject<?>> {
 
-        void render(PoseStack poseStack, Matrix4f projectionMatrix, ProfilerFiller profiler) {
+        void render(Camera camera, PoseStack poseStack, Matrix4f projectionMatrix, ProfilerFiller profiler) {
             profiler.push(renderer.getProfilerSection());
-            renderer.renderVBO(context, poseStack, projectionMatrix, light, overlayLight, profiler);
+            renderer.renderVBO(camera, context, poseStack, projectionMatrix, light, overlayLight, profiler);
             profiler.pop();
         }
 

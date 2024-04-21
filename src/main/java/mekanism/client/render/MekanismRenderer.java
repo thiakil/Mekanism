@@ -149,7 +149,7 @@ public class MekanismRenderer {
         }
     }
 
-    public static void renderObjectAndValvesVBO(FluidRenderData renderData, Set<ValveData> valves, BlockPos rendererPos, @NotNull PoseStack matrix, Matrix4f projectionMatrix, int overlay, float scale) {
+    public static void renderObjectAndValvesVBO(Camera camera, FluidRenderData renderData, Set<ValveData> valves, BlockPos rendererPos, @NotNull PoseStack matrix, Matrix4f projectionMatrix, int overlay, float scale) {
         Model3D model = ModelRenderer.getModel(renderData, scale);
         if (model == null) {
             return;
@@ -157,7 +157,7 @@ public class MekanismRenderer {
         int glow = renderData.calculateGlowLight(LightTexture.FULL_SKY);
         matrix.pushPose();
         matrix.translate(renderData.location.getX() - rendererPos.getX(), renderData.location.getY() - rendererPos.getY(), renderData.location.getZ() - rendererPos.getZ());
-        renderCubeVBO(renderData, matrix, projectionMatrix, overlay, scale, model, glow);
+        renderCubeVBO(camera, renderData, matrix, projectionMatrix, overlay, scale, model, glow);
         if (!valves.isEmpty()) {
             //Use the full multiblock's render data unlike getFaceDisplay which gets the current height for calculating if it is inside
             //If we are in the multiblock, render both faces of the valves as we may be "inside" of them or inside and outside them
@@ -168,7 +168,7 @@ public class MekanismRenderer {
                 if (valveModel != null) {
                     matrix.pushPose();
                     matrix.translate(valveData.location.getX() - rendererPos.getX(), valveData.location.getY() - rendererPos.getY(), valveData.location.getZ() - rendererPos.getZ());
-                    renderCubeVBO(valveRenderData, matrix, projectionMatrix, overlay, 1F, valveModel, glow);
+                    renderCubeVBO(camera, valveRenderData, matrix, projectionMatrix, overlay, 1F, valveModel, glow);
                     matrix.popPose();
                 }
             }
@@ -176,7 +176,7 @@ public class MekanismRenderer {
         matrix.popPose();
     }
 
-    public static void renderObjectVBO(RenderData renderData, BlockPos rendererPos, @NotNull PoseStack matrix, Matrix4f projectionMatrix, int overlay, float scale) {
+    public static void renderObjectVBO(Camera camera, RenderData renderData, BlockPos rendererPos, @NotNull PoseStack matrix, Matrix4f projectionMatrix, int overlay, float scale) {
         Model3D model = ModelRenderer.getModel(renderData, scale);
         if (model == null) {
             return;
@@ -184,12 +184,13 @@ public class MekanismRenderer {
         int glow = renderData.calculateGlowLight(LightTexture.FULL_SKY);
         matrix.pushPose();
         matrix.translate(renderData.location.getX() - rendererPos.getX(), renderData.location.getY() - rendererPos.getY(), renderData.location.getZ() - rendererPos.getZ());
-        renderCubeVBO(renderData, matrix, projectionMatrix, overlay, scale, model, glow);
+        renderCubeVBO(camera, renderData, matrix, projectionMatrix, overlay, scale, model, glow);
         matrix.popPose();
     }
 
-    private static void renderCubeVBO(RenderData renderData, @NotNull PoseStack matrix, Matrix4f projectionMatrix, int overlay, float scale, Model3D model, int light) {
-        ScaledRenderData scaledRenderData = new ScaledRenderData(renderData, scale);
+    private static void renderCubeVBO(Camera camera, RenderData renderData, @NotNull PoseStack matrix, Matrix4f projectionMatrix, int overlay, float scale, Model3D model, int light) {
+        FaceDisplay faceDisplay = getFaceDisplay(camera, renderData, model);
+        ScaledRenderData scaledRenderData = new ScaledRenderData(renderData, scale, faceDisplay);
         VertexBuffer buffer = CUBE_BUFFER.getIfPresent(scaledRenderData);
         RenderType renderType = MekanismRenderType.translucentDepthBlocks();
 
@@ -198,7 +199,7 @@ public class MekanismRenderer {
             BufferBuilder builder = new BufferBuilder(renderType.bufferSize());
             builder.begin(renderType.mode(), renderType.format());
             final PoseStack poseStack = new PoseStack();
-            RenderResizableCuboid.renderCube(model, poseStack, builder, renderData.getColorARGB(scale), light, overlay, FaceDisplay.FRONT, null, null);
+            RenderResizableCuboid.renderCube(model, poseStack, builder, renderData.getColorARGB(scale), light, overlay, faceDisplay, null, null);
             buffer.bind();
             buffer.upload(builder.end());
             CUBE_BUFFER.put(scaledRenderData, buffer);
@@ -397,6 +398,19 @@ public class MekanismRenderer {
         GuiElementHolder.updateBackgroundColor();
     }
 
+    public static boolean isInsideBounds(Camera camera, double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
+        Vec3 projectedView = camera.getPosition();
+        return minX <= projectedView.x && projectedView.x <= maxX &&
+               minY <= projectedView.y && projectedView.y <= maxY &&
+               minZ <= projectedView.z && projectedView.z <= maxZ;
+    }
+
+    public static FaceDisplay getFaceDisplay(Camera camera, RenderData data, Model3D model) {
+        return isInsideBounds(camera, data.location.getX(), data.location.getY(), data.location.getZ(),
+              data.location.getX() + data.length, data.location.getY() + ModelRenderer.getActualHeight(model), data.location.getZ() + data.width)
+               ? FaceDisplay.BACK : FaceDisplay.FRONT;
+    }
+
     public enum FluidTextureType {
         STILL,
         FLOWING
@@ -539,5 +553,5 @@ public class MekanismRenderer {
         }
     }
 
-    private record ScaledRenderData(RenderData renderData, float scale) {}
+    private record ScaledRenderData(RenderData renderData, float scale, FaceDisplay faceDisplay) {}
 }
