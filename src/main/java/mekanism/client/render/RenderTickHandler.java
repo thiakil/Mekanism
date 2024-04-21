@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.UUID;
 import mekanism.api.RelativeSide;
 import mekanism.client.gui.GuiMekanism;
@@ -107,6 +109,7 @@ public class RenderTickHandler {
     private static final Map<Direction, Map<TransmissionType, Model3D>> cachedOverlays = new EnumMap<>(Direction.class);
     private static final List<LazyRender> transparentRenderers = new ArrayList<>();
     private static final BoltRenderer boltRenderer = new BoltRenderer();
+    private static final Set<VBORendererObject<?>> VBOS_TO_RENDER = new TreeSet<>();
 
     private boolean outliningArea = false;
 
@@ -149,6 +152,12 @@ public class RenderTickHandler {
         transparentRenderers.add(render);
     }
 
+    public static <CONTEXT> void queueVBORender(Camera camera, CONTEXT context, BlockPos location, BlockPos renderCenter, int light, int overlayLight,
+          VBORenderer<CONTEXT> renderer) {
+        double distance = camera.getPosition().distanceToSqr(renderCenter.getCenter());
+        VBOS_TO_RENDER.add(new VBORendererObject<CONTEXT>(context, location, distance, light, overlayLight, renderer));
+    }
+
     @SubscribeEvent
     public void renderWorld(RenderLevelStageEvent event) {
         if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS) {
@@ -186,6 +195,20 @@ public class RenderTickHandler {
             MultiBufferSource.BufferSource renderer = minecraft.renderBuffers().bufferSource();
             boltRenderer.render(event.getPartialTick(), event.getPoseStack(), renderer, event.getCamera().getPosition());
             renderer.endBatch(MekanismRenderType.MEK_LIGHTNING);
+        } else if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES && !VBOS_TO_RENDER.isEmpty()) {
+            Vec3 vec3 = event.getCamera().getPosition();
+            double cameraX = vec3.x();
+            double cameraY = vec3.y();
+            double cameraZ = vec3.z();
+            for (VBORendererObject<?> rendererObject : VBOS_TO_RENDER) {
+                PoseStack poseStack = event.getPoseStack();
+                poseStack.pushPose();
+                BlockPos renderLocation = rendererObject.location;
+                poseStack.translate((double) renderLocation.getX() - cameraX, (double) renderLocation.getY() - cameraY, (double) renderLocation.getZ() - cameraZ);
+                rendererObject.render(poseStack, event.getProjectionMatrix());
+                poseStack.popPose();
+            }
+            VBOS_TO_RENDER.clear();
         }
     }
 
@@ -527,6 +550,33 @@ public class RenderTickHandler {
 
         @NotNull
         public abstract RenderType getRenderType();
+    }
+
+    public interface VBORenderer<CONTEXT> {
+
+        void renderVBO(CONTEXT context, PoseStack poseStack, Matrix4f projectionMatrix, int light, int overlayLight);
+    }
+
+    /**
+     * @param context      context for the renderer to use, usually BE or Multiblock
+     * @param location     translation position - where the BER would have been translated to in world coords
+     * @param sortDistance distance from the camera for translucency sorting
+     * @param light        light passed through to the BER
+     * @param overlayLight overlay passed through to the BER
+     * @param renderer     the instance of a renderer to use, preferably NOT a newly allocated object
+     * @param <CONTEXT>    any class the renderer needs
+     */
+    private record VBORendererObject<CONTEXT>(CONTEXT context, BlockPos location, double sortDistance, int light, int overlayLight,
+                                              VBORenderer<CONTEXT> renderer) implements Comparable<VBORendererObject<?>> {
+
+        void render(PoseStack poseStack, Matrix4f projectionMatrix) {
+            renderer.renderVBO(context, poseStack, projectionMatrix, light, overlayLight);
+        }
+
+        @Override
+        public int compareTo(@NotNull RenderTickHandler.VBORendererObject<?> o) {
+            return -Double.compare(this.sortDistance, o.sortDistance);
+        }
     }
 
     private static void doTransparentRender(RenderType renderType, LazyRender transparentRender, Camera camera, BufferSource renderer, PoseStack poseStack, int renderTick, float partialTick, ProfilerFiller profiler) {

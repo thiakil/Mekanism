@@ -13,6 +13,8 @@ import mekanism.client.render.MekanismRenderType;
 import mekanism.client.render.ModelRenderer;
 import mekanism.client.render.RenderResizableCuboid;
 import mekanism.client.render.RenderResizableCuboid.FaceDisplay;
+import mekanism.client.render.RenderTickHandler;
+import mekanism.client.render.RenderTickHandler.VBORenderer;
 import mekanism.client.render.data.ChemicalRenderData.GasRenderData;
 import mekanism.client.render.tileentity.MultiblockTileEntityRenderer;
 import mekanism.generators.common.GeneratorsProfilerConstants;
@@ -26,9 +28,10 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix4f;
 
 @NothingNullByDefault
-public class RenderIndustrialTurbine extends MultiblockTileEntityRenderer<TurbineMultiblockData, TileEntityTurbineCasing> {
+public class RenderIndustrialTurbine extends MultiblockTileEntityRenderer<TurbineMultiblockData, TileEntityTurbineCasing> implements VBORenderer<TileEntityTurbineCasing> {
 
     private static final Cache<TurbineKey, VertexBuffer> ROTOR_BUFFERS = CacheBuilder.newBuilder()
           .<TurbineKey, VertexBuffer>removalListener(notification -> notification.getValue().close())
@@ -47,6 +50,29 @@ public class RenderIndustrialTurbine extends MultiblockTileEntityRenderer<Turbin
     @Override
     protected void render(TileEntityTurbineCasing tile, TurbineMultiblockData multiblock, float partialTick, PoseStack matrix, MultiBufferSource renderer, int light,
           int overlayLight, ProfilerFiller profiler) {
+        if (multiblock.renderLocation == null) {
+            return;
+        }
+        RenderTickHandler.queueVBORender(getCamera(), tile, tile.getBlockPos(), multiblock.getBounds().getCenter(), light, overlayLight, this);
+    }
+
+    @Override
+    protected String getProfilerSection() {
+        return GeneratorsProfilerConstants.INDUSTRIAL_TURBINE;
+    }
+
+    @Override
+    protected boolean shouldRender(TileEntityTurbineCasing tile, TurbineMultiblockData multiblock, Vec3 camera) {
+        return super.shouldRender(tile, multiblock, camera) && multiblock.complex != null;
+    }
+
+    @Override
+    public void renderVBO(TileEntityTurbineCasing tile, PoseStack matrix, Matrix4f projectionMatrix, int light, int overlayLight) {
+        ProfilerFiller profiler = Minecraft.getInstance().getProfiler();
+        TurbineMultiblockData multiblock = tile.getMultiblock();
+        if (multiblock.renderLocation == null) {
+            return;
+        }
         BlockPos pos = tile.getBlockPos();
         profiler.push(GeneratorsProfilerConstants.TURBINE_ROTOR);
         if (RenderTurbineRotor.INSTANCE != null) {
@@ -67,7 +93,7 @@ public class RenderIndustrialTurbine extends MultiblockTileEntityRenderer<Turbin
 
             TurbineKey turbineKey = new TurbineKey(multiblock.blades, light);
             VertexBuffer rotorBuffer = ROTOR_BUFFERS.getIfPresent(turbineKey);
-            
+
             if (rotorBuffer == null) {
                 rotorBuffer = new VertexBuffer(Usage.STATIC);
                 BufferBuilder builder = new BufferBuilder(renderType.bufferSize());
@@ -84,7 +110,7 @@ public class RenderIndustrialTurbine extends MultiblockTileEntityRenderer<Turbin
 
             renderType.setupRenderState();
             rotorBuffer.bind();
-            rotorBuffer.drawWithShader(matrix.last().pose(), RenderSystem.getProjectionMatrix(), RenderSystem.getShader());
+            rotorBuffer.drawWithShader(matrix.last().pose(), projectionMatrix, RenderSystem.getShader());
             VertexBuffer.unbind();
             renderType.clearRenderState();
 
@@ -122,16 +148,6 @@ public class RenderIndustrialTurbine extends MultiblockTileEntityRenderer<Turbin
             }
         }
         profiler.pop();
-    }
-
-    @Override
-    protected String getProfilerSection() {
-        return GeneratorsProfilerConstants.INDUSTRIAL_TURBINE;
-    }
-
-    @Override
-    protected boolean shouldRender(TileEntityTurbineCasing tile, TurbineMultiblockData multiblock, Vec3 camera) {
-        return super.shouldRender(tile, multiblock, camera) && multiblock.complex != null;
     }
 
     private record TurbineKey(int blades, int lightLevel) {}
