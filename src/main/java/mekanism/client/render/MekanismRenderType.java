@@ -113,23 +113,4 @@ public class MekanismRenderType extends RenderType {
               .createCompositeState(true);
         return create("mek_sps", DefaultVertexFormat.POSITION_COLOR_TEX, Mode.QUADS, 256, true, true, state);
     });
-
-    public static final BiFunction<ResourceLocation, Boolean, RenderType> TRANSLUCENT_DEPTH = Util.memoize(
-          (texture, outline) -> {
-              RenderType.CompositeState rendertype$compositestate = RenderType.CompositeState.builder()
-                    .setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_SHADER)
-                    .setTextureState(new RenderStateShard.TextureStateShard(texture, false, false))
-                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                    .setDepthTestState(LEQUAL_DEPTH_TEST)
-                    .setCullState(CULL)
-                    .setLightmapState(LIGHTMAP)
-                    .setOverlayState(OVERLAY)
-                    .createCompositeState(outline);
-              return create("translucent_depth", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 1536, true, true, rendertype$compositestate);
-          }
-    );
-
-    public static RenderType translucentDepthBlocks() {
-        return TRANSLUCENT_DEPTH.apply(TextureAtlas.LOCATION_BLOCKS, true);
-    }
 }

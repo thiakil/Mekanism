@@ -48,6 +48,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
@@ -192,7 +193,7 @@ public class MekanismRenderer {
         FaceDisplay faceDisplay = getFaceDisplay(camera, renderData, model);
         ScaledRenderData scaledRenderData = new ScaledRenderData(renderData, scale, faceDisplay);
         VertexBuffer buffer = CUBE_BUFFER.getIfPresent(scaledRenderData);
-        RenderType renderType = MekanismRenderType.translucentDepthBlocks();
+        RenderType renderType = Sheets.translucentCullBlockSheet();
 
         if (buffer == null) {
             buffer = new VertexBuffer(Usage.STATIC);
