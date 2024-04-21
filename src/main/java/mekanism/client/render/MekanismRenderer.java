@@ -149,7 +149,7 @@ public class MekanismRenderer {
         }
     }
 
-    public static void renderObjectAndValvesVBO(Camera camera, FluidRenderData renderData, Set<ValveData> valves, BlockPos rendererPos, @NotNull PoseStack matrix, Matrix4f projectionMatrix, int overlay, float scale) {
+    public static void renderObjectAndValvesVBO(Camera camera, RenderData renderData, Set<ValveData> valves, BlockPos rendererPos, @NotNull PoseStack matrix, Matrix4f projectionMatrix, int overlay, float scale) {
         Model3D model = ModelRenderer.getModel(renderData, scale);
         if (model == null) {
             return;
@@ -158,12 +158,12 @@ public class MekanismRenderer {
         matrix.pushPose();
         matrix.translate(renderData.location.getX() - rendererPos.getX(), renderData.location.getY() - rendererPos.getY(), renderData.location.getZ() - rendererPos.getZ());
         renderCubeVBO(camera, renderData, matrix, projectionMatrix, overlay, scale, model, glow);
-        if (!valves.isEmpty()) {
+        if (!valves.isEmpty() && renderData instanceof FluidRenderData fluidRenderData) {
             //Use the full multiblock's render data unlike getFaceDisplay which gets the current height for calculating if it is inside
             //If we are in the multiblock, render both faces of the valves as we may be "inside" of them or inside and outside them
             // if we aren't in the multiblock though we can just get away with only rendering the front faces
             for (ValveData valveData : valves) {
-                ValveRenderData valveRenderData = ValveRenderData.get(renderData, valveData);
+                ValveRenderData valveRenderData = ValveRenderData.get(fluidRenderData, valveData);
                 Model3D valveModel = ModelRenderer.getValveModel(valveRenderData, model.maxY - model.minY);
                 if (valveModel != null) {
                     matrix.pushPose();

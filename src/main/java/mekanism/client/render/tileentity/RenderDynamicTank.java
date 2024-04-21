@@ -3,20 +3,25 @@ package mekanism.client.render.tileentity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import mekanism.api.annotations.NothingNullByDefault;
+import mekanism.client.render.MekanismRenderer;
+import mekanism.client.render.RenderTickHandler;
+import mekanism.client.render.RenderTickHandler.VBORenderer;
 import mekanism.client.render.data.RenderData;
 import mekanism.common.base.ProfilerConstants;
 import mekanism.common.capabilities.merged.MergedTank.CurrentType;
 import mekanism.common.content.tank.TankMultiblockData;
 import mekanism.common.tile.multiblock.TileEntityDynamicTank;
+import net.minecraft.client.Camera;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
 
 @NothingNullByDefault
-public class RenderDynamicTank extends MultiblockTileEntityRenderer<TankMultiblockData, TileEntityDynamicTank> {
+public class RenderDynamicTank extends MultiblockTileEntityRenderer<TankMultiblockData, TileEntityDynamicTank> implements VBORenderer<TileEntityDynamicTank> {
 
     public RenderDynamicTank(BlockEntityRendererProvider.Context context) {
         super(context);
@@ -25,11 +30,7 @@ public class RenderDynamicTank extends MultiblockTileEntityRenderer<TankMultiblo
     @Override
     protected void render(TileEntityDynamicTank tile, TankMultiblockData multiblock, float partialTick, PoseStack matrix, MultiBufferSource renderer, int light,
           int overlayLight, ProfilerFiller profiler) {
-        RenderData data = getRenderData(multiblock);
-        if (data != null) {
-            VertexConsumer buffer = renderer.getBuffer(Sheets.translucentCullBlockSheet());
-            renderObject(data, multiblock.valves, tile.getBlockPos(), matrix, buffer, overlayLight, multiblock.prevScale);
-        }
+        RenderTickHandler.queueVBORender(getCamera(), tile, tile.getBlockPos(), multiblock.getBounds().getCenter(), light, overlayLight, this);
     }
 
     @Nullable
@@ -45,11 +46,20 @@ public class RenderDynamicTank extends MultiblockTileEntityRenderer<TankMultiblo
             case PIGMENT -> RenderData.Builder.create(multiblock.getPigmentTank().getStack());
             case SLURRY -> RenderData.Builder.create(multiblock.getSlurryTank().getStack());
             default -> throw new IllegalStateException("Unknown current type.");
-        }).of(multiblock).build();
+        }).ofBordered(multiblock).build();
     }
 
     @Override
-    protected String getProfilerSection() {
+    public void renderVBO(Camera camera, TileEntityDynamicTank tileEntityDynamicTank, PoseStack matrix, Matrix4f projectionMatrix, int light, int overlayLight, ProfilerFiller profiler) {
+        TankMultiblockData multiblock = tileEntityDynamicTank.getMultiblock();
+        RenderData data = getRenderData(multiblock);
+        if (data != null) {
+            MekanismRenderer.renderObjectAndValvesVBO(camera, data, multiblock.valves, tileEntityDynamicTank.getBlockPos(), matrix, projectionMatrix, overlayLight, multiblock.prevScale);
+        }
+    }
+
+    @Override
+    public String getProfilerSection() {
         return ProfilerConstants.DYNAMIC_TANK;
     }
 

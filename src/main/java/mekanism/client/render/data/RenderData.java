@@ -114,6 +114,13 @@ public abstract class RenderData {
                   .width(multiblock.width());
         }
 
+        public Builder<DATA_TYPE> ofBordered(MultiblockData multiblock) {
+            return location(Objects.requireNonNull(multiblock.renderLocation, "Render location may not be null.").offset(1, 0, 1))
+                  .height(multiblock.height() - 2)
+                  .length(multiblock.length() - 2)
+                  .width(multiblock.width() - 2);
+        }
+
         public DATA_TYPE build() {
             if (location == null) {
                 throw new IllegalStateException("Incomplete render data builder, no render location set.");
