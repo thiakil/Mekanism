@@ -9,10 +9,7 @@ import com.mojang.blaze3d.vertex.VertexBuffer;
 import com.mojang.blaze3d.vertex.VertexBuffer.Usage;
 import com.mojang.math.Axis;
 import mekanism.api.annotations.NothingNullByDefault;
-import mekanism.client.render.MekanismRenderType;
-import mekanism.client.render.ModelRenderer;
-import mekanism.client.render.RenderResizableCuboid;
-import mekanism.client.render.RenderResizableCuboid.FaceDisplay;
+import mekanism.client.render.MekanismRenderer;
 import mekanism.client.render.RenderTickHandler;
 import mekanism.client.render.RenderTickHandler.VBORenderer;
 import mekanism.client.render.data.ChemicalRenderData.GasRenderData;
@@ -21,7 +18,6 @@ import mekanism.generators.common.GeneratorsProfilerConstants;
 import mekanism.generators.common.content.turbine.TurbineMultiblockData;
 import mekanism.generators.common.tile.turbine.TileEntityTurbineCasing;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
@@ -36,10 +32,6 @@ public class RenderIndustrialTurbine extends MultiblockTileEntityRenderer<Turbin
     private static final Cache<TurbineKey, VertexBuffer> ROTOR_BUFFERS = CacheBuilder.newBuilder()
           .<TurbineKey, VertexBuffer>removalListener(notification -> notification.getValue().close())
           .maximumSize(10)
-          .build();
-    private static final Cache<GasRenderData, VertexBuffer> STEAM_BUFFER = CacheBuilder.newBuilder()
-          .<GasRenderData, VertexBuffer>removalListener(notification -> notification.getValue().close())
-          .maximumSize(5)
           .build();
     private static final float BASE_SPEED = 180F;
 
@@ -120,30 +112,8 @@ public class RenderIndustrialTurbine extends MultiblockTileEntityRenderer<Turbin
         if (!multiblock.gasTank.isEmpty() && multiblock.length() > 0) {
             int height = multiblock.lowerVolume / (multiblock.length() * multiblock.width());
             if (height > 0) {
-                GasRenderData gasRenderData = new GasRenderData(multiblock.renderLocation, multiblock.width() - 2, height, multiblock.length() - 2, multiblock.gasTank.getStack().getType());
-
-                VertexBuffer gasBuffer = STEAM_BUFFER.getIfPresent(gasRenderData);
-                RenderType renderType = MekanismRenderType.translucentDepthBlocks();
-
-                if (gasBuffer == null) {
-                    gasBuffer = new VertexBuffer(Usage.STATIC);
-                    BufferBuilder builder = new BufferBuilder(renderType.bufferSize());
-                    builder.begin(renderType.mode(), renderType.format());
-                    RenderResizableCuboid.renderCube(ModelRenderer.getModel(gasRenderData, 1F), new PoseStack(), builder, gasRenderData.getColorARGB(1F), gasRenderData.calculateGlowLight(LightTexture.FULL_SKY), overlayLight, FaceDisplay.FRONT, getCamera(), null);
-                    gasBuffer.bind();
-                    gasBuffer.upload(builder.end());
-                    STEAM_BUFFER.put(gasRenderData, gasBuffer);
-                }
-                renderType.setupRenderState();
-                RenderSystem.setShaderColor(1, 1, 1, multiblock.prevSteamScale);
-                gasBuffer.bind();
-                matrix.pushPose();
-                matrix.translate(gasRenderData.location.getX() - pos.getX() + 1, gasRenderData.location.getY() - pos.getY(), gasRenderData.location.getZ() - pos.getZ() + 1);
-                gasBuffer.drawWithShader(matrix.last().pose(), RenderSystem.getProjectionMatrix(), RenderSystem.getShader());
-                matrix.popPose();
-                VertexBuffer.unbind();
-                renderType.clearRenderState();
-                RenderSystem.setShaderColor(1, 1, 1, 1);
+                GasRenderData gasRenderData = new GasRenderData(multiblock.renderLocation.offset(1, 0, 1), multiblock.width() - 2, height, multiblock.length() - 2, multiblock.gasTank.getStack().getType());
+                MekanismRenderer.renderObjectVBO(gasRenderData, pos, matrix, projectionMatrix, overlayLight, multiblock.prevSteamScale);
 
             }
         }

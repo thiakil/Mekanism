@@ -1,6 +1,12 @@
 package mekanism.client.render;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexBuffer;
+import com.mojang.blaze3d.vertex.VertexBuffer.Usage;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import java.util.Arrays;
@@ -17,6 +23,7 @@ import mekanism.client.SpecialColors;
 import mekanism.client.gui.element.GuiElementHolder;
 import mekanism.client.render.RenderResizableCuboid.FaceDisplay;
 import mekanism.client.render.data.FluidRenderData;
+import mekanism.client.render.data.RenderData;
 import mekanism.client.render.data.ValveRenderData;
 import mekanism.client.render.lib.ColorAtlas;
 import mekanism.client.render.lib.ColorAtlas.ColorRegistryObject;
@@ -39,6 +46,7 @@ import mekanism.common.util.MekanismUtils;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -56,6 +64,7 @@ import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtension
 import net.neoforged.neoforge.fluids.FluidStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
 
 @Mod.EventBusSubscriber(modid = Mekanism.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class MekanismRenderer {
@@ -68,6 +77,11 @@ public class MekanismRenderer {
     public static TextureAtlasSprite teleporterPortal;
     public static TextureAtlasSprite redstonePulse;
     public static final Map<TransmissionType, TextureAtlasSprite> overlays = new EnumMap<>(TransmissionType.class);
+
+    private static final Cache<ScaledRenderData, VertexBuffer> CUBE_BUFFER = CacheBuilder.newBuilder()
+          .<ScaledRenderData, VertexBuffer>removalListener(notification -> notification.getValue().close())
+          .maximumSize(20)
+          .build();
 
     /**
      * Get a fluid texture when a stack does not exist.
@@ -133,6 +147,68 @@ public class MekanismRenderer {
                 matrix.popPose();
             }
         }
+    }
+
+    public static void renderObjectAndValvesVBO(FluidRenderData renderData, Set<ValveData> valves, BlockPos rendererPos, @NotNull PoseStack matrix, Matrix4f projectionMatrix, int overlay, float scale) {
+        Model3D model = ModelRenderer.getModel(renderData, scale);
+        if (model == null) {
+            return;
+        }
+        int glow = renderData.calculateGlowLight(LightTexture.FULL_SKY);
+        matrix.pushPose();
+        matrix.translate(renderData.location.getX() - rendererPos.getX(), renderData.location.getY() - rendererPos.getY(), renderData.location.getZ() - rendererPos.getZ());
+        renderCubeVBO(renderData, matrix, projectionMatrix, overlay, scale, model, glow);
+        if (!valves.isEmpty()) {
+            //Use the full multiblock's render data unlike getFaceDisplay which gets the current height for calculating if it is inside
+            //If we are in the multiblock, render both faces of the valves as we may be "inside" of them or inside and outside them
+            // if we aren't in the multiblock though we can just get away with only rendering the front faces
+            for (ValveData valveData : valves) {
+                ValveRenderData valveRenderData = ValveRenderData.get(renderData, valveData);
+                Model3D valveModel = ModelRenderer.getValveModel(valveRenderData, model.maxY - model.minY);
+                if (valveModel != null) {
+                    matrix.pushPose();
+                    matrix.translate(valveData.location.getX() - rendererPos.getX(), valveData.location.getY() - rendererPos.getY(), valveData.location.getZ() - rendererPos.getZ());
+                    renderCubeVBO(valveRenderData, matrix, projectionMatrix, overlay, 1F, valveModel, glow);
+                    matrix.popPose();
+                }
+            }
+        }
+        matrix.popPose();
+    }
+
+    public static void renderObjectVBO(RenderData renderData, BlockPos rendererPos, @NotNull PoseStack matrix, Matrix4f projectionMatrix, int overlay, float scale) {
+        Model3D model = ModelRenderer.getModel(renderData, scale);
+        if (model == null) {
+            return;
+        }
+        int glow = renderData.calculateGlowLight(LightTexture.FULL_SKY);
+        matrix.pushPose();
+        matrix.translate(renderData.location.getX() - rendererPos.getX(), renderData.location.getY() - rendererPos.getY(), renderData.location.getZ() - rendererPos.getZ());
+        renderCubeVBO(renderData, matrix, projectionMatrix, overlay, scale, model, glow);
+        matrix.popPose();
+    }
+
+    private static void renderCubeVBO(RenderData renderData, @NotNull PoseStack matrix, Matrix4f projectionMatrix, int overlay, float scale, Model3D model, int light) {
+        ScaledRenderData scaledRenderData = new ScaledRenderData(renderData, scale);
+        VertexBuffer buffer = CUBE_BUFFER.getIfPresent(scaledRenderData);
+        RenderType renderType = MekanismRenderType.translucentDepthBlocks();
+
+        if (buffer == null) {
+            buffer = new VertexBuffer(Usage.STATIC);
+            BufferBuilder builder = new BufferBuilder(renderType.bufferSize());
+            builder.begin(renderType.mode(), renderType.format());
+            final PoseStack poseStack = new PoseStack();
+            RenderResizableCuboid.renderCube(model, poseStack, builder, renderData.getColorARGB(scale), light, overlay, FaceDisplay.FRONT, null, null);
+            buffer.bind();
+            buffer.upload(builder.end());
+            CUBE_BUFFER.put(scaledRenderData, buffer);
+        }
+
+        renderType.setupRenderState();
+        buffer.bind();
+        buffer.drawWithShader(matrix.last().pose(), projectionMatrix, RenderSystem.getShader());
+        VertexBuffer.unbind();
+        renderType.clearRenderState();
     }
 
     //Color
@@ -462,4 +538,6 @@ public class MekanismRenderer {
             return model;
         }
     }
+
+    private record ScaledRenderData(RenderData renderData, float scale) {}
 }
