@@ -41,7 +41,7 @@ public class RenderThermalEvaporationPlant extends MultiblockTileEntityRenderer<
     }
 
     @Override
-    public void renderVBO(Camera camera, TileEntityThermalEvaporationController tile, PoseStack matrix, Matrix4f projectionMatrix, int light, int overlayLight, ProfilerFiller profiler) {
+    public void renderVBO(Camera camera, TileEntityThermalEvaporationController tile, PoseStack matrix, Matrix4f projectionMatrix, int light, int overlayLight, ProfilerFiller profiler, float partialTick) {
         EvaporationMultiblockData multiblock = tile.getMultiblock();
         FluidRenderData data = RenderData.Builder.create(multiblock.inputTank.getFluid())
               .location(multiblock.renderLocation.offset(1, 0, 1))

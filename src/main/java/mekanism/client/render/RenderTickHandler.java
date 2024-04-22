@@ -205,12 +205,13 @@ public class RenderTickHandler {
             double cameraX = vec3.x();
             double cameraY = vec3.y();
             double cameraZ = vec3.z();
+            float partialTick = event.getPartialTick();
             ProfilerFiller profiler = minecraft.getProfiler();
             for (VBORendererObject<?> rendererObject : VBOS_TO_RENDER) {
                 poseStack.pushPose();
                 BlockPos renderLocation = rendererObject.location;
                 poseStack.translate((double) renderLocation.getX() - cameraX, (double) renderLocation.getY() - cameraY, (double) renderLocation.getZ() - cameraZ);
-                rendererObject.render(camera, poseStack, event.getProjectionMatrix(), profiler);
+                rendererObject.render(camera, poseStack, event.getProjectionMatrix(), profiler, partialTick);
                 poseStack.popPose();
             }
             VBOS_TO_RENDER.clear();
@@ -559,7 +560,7 @@ public class RenderTickHandler {
 
     public interface VBORenderer<CONTEXT> {
 
-        void renderVBO(Camera camera, CONTEXT context, PoseStack poseStack, Matrix4f projectionMatrix, int light, int overlayLight, ProfilerFiller profiler);
+        void renderVBO(Camera camera, CONTEXT context, PoseStack poseStack, Matrix4f projectionMatrix, int light, int overlayLight, ProfilerFiller profiler, float partialTick);
 
         String getProfilerSection();
     }
@@ -576,9 +577,9 @@ public class RenderTickHandler {
     private record VBORendererObject<CONTEXT>(CONTEXT context, BlockPos location, double sortDistance, int light, int overlayLight,
                                               VBORenderer<CONTEXT> renderer) implements Comparable<VBORendererObject<?>> {
 
-        void render(Camera camera, PoseStack poseStack, Matrix4f projectionMatrix, ProfilerFiller profiler) {
+        void render(Camera camera, PoseStack poseStack, Matrix4f projectionMatrix, ProfilerFiller profiler, float partialTick) {
             profiler.push(renderer.getProfilerSection());
-            renderer.renderVBO(camera, context, poseStack, projectionMatrix, light, overlayLight, profiler);
+            renderer.renderVBO(camera, context, poseStack, projectionMatrix, light, overlayLight, profiler, partialTick);
             profiler.pop();
         }
 

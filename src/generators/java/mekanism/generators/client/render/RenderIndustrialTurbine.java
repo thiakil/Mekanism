@@ -62,7 +62,7 @@ public class RenderIndustrialTurbine extends MultiblockTileEntityRenderer<Turbin
     }
 
     @Override
-    public void renderVBO(Camera camera, TileEntityTurbineCasing tile, PoseStack matrix, Matrix4f projectionMatrix, int light, int overlayLight, ProfilerFiller profiler) {
+    public void renderVBO(Camera camera, TileEntityTurbineCasing tile, PoseStack matrix, Matrix4f projectionMatrix, int light, int overlayLight, ProfilerFiller profiler, float partialTick) {
         TurbineMultiblockData multiblock = tile.getMultiblock();
         if (multiblock.renderLocation == null) {
             return;

@@ -110,6 +110,8 @@ public class ModelWindGenerator extends MekanismJavaModel {
 
     private final RenderType RENDER_TYPE = renderType(GENERATOR_TEXTURE);
     private final List<ModelPart> parts;
+    private final List<ModelPart> staticParts;
+    private final List<ModelPart> bladeParts;
     private final ModelPart blade1a;
     private final ModelPart blade1b;
     private final ModelPart blade2a;
@@ -124,6 +126,9 @@ public class ModelWindGenerator extends MekanismJavaModel {
         ModelPart root = entityModelSet.bakeLayer(GENERATOR_LAYER);
         parts = getRenderableParts(root, HEAD, PLATE_CONNECTOR_2, PLATE_CONNECTOR, PLATE, BASE_RIM, BASE, WIRE, REAR_PLATE_1, REAR_PLATE_2, POST_1A, POST_1B,
               POST_1C, POST_1D, BLADE_1A, BLADE_2A, BLADE_3A, BLADE_1B, BLADE_2B, BLADE_3B, BLADE_CAP, BLADE_CENTER);
+        staticParts = getRenderableParts(root, HEAD, PLATE_CONNECTOR_2, PLATE_CONNECTOR, PLATE, BASE_RIM, BASE, WIRE, REAR_PLATE_1, REAR_PLATE_2, POST_1A, POST_1B,
+              POST_1C, POST_1D);
+        bladeParts = getRenderableParts(root, BLADE_1A, BLADE_2A, BLADE_3A, BLADE_1B, BLADE_2B, BLADE_3B, BLADE_CAP, BLADE_CENTER);
         blade1a = BLADE_1A.getFromRoot(root);
         blade1b = BLADE_1B.getFromRoot(root);
         blade2a = BLADE_2A.getFromRoot(root);
@@ -135,6 +140,16 @@ public class ModelWindGenerator extends MekanismJavaModel {
     }
 
     public void render(@NotNull PoseStack matrix, @NotNull MultiBufferSource renderer, double angle, int light, int overlayLight, boolean hasEffect) {
+        render(matrix, getVertexConsumer(renderer, RENDER_TYPE, hasEffect), angle, light, overlayLight);
+    }
+
+    public void render(@NotNull PoseStack matrix, @NotNull VertexConsumer vertexConsumer, double angle, int light, int overlayLight) {
+        setRotations(angle);
+
+        renderToBuffer(matrix, vertexConsumer, light, overlayLight, 1, 1, 1, 1);
+    }
+
+    private void setRotations(double angle) {
         float baseRotation = getAbsoluteRotation(angle);
         setRotation(blade1a, 0F, 0F, baseRotation);
         setRotation(blade1b, 0F, 0F, 0.0349066F + baseRotation);
@@ -149,8 +164,6 @@ public class ModelWindGenerator extends MekanismJavaModel {
 
         setRotation(bladeCap, 0F, 0F, baseRotation);
         setRotation(bladeCenter, 0F, 0F, baseRotation);
-
-        renderToBuffer(matrix, getVertexConsumer(renderer, RENDER_TYPE, hasEffect), light, overlayLight, 1, 1, 1, 1);
     }
 
     @Override
@@ -158,22 +171,22 @@ public class ModelWindGenerator extends MekanismJavaModel {
         renderPartsToBuffer(parts, poseStack, vertexConsumer, light, overlayLight, red, green, blue, alpha);
     }
 
+    public void renderStaticPartsToBuffer(@NotNull PoseStack poseStack, @NotNull VertexConsumer vertexConsumer, int light, int overlayLight) {
+        renderPartsToBuffer(staticParts, poseStack, vertexConsumer, light, overlayLight, 1F, 1F, 1F, 1F);
+    }
+
+    public void renderBladePartsToBuffer(@NotNull PoseStack poseStack, @NotNull VertexConsumer vertexConsumer, int light, int overlayLight) {
+        setRotations(0);
+        renderPartsToBuffer(bladeParts, poseStack, vertexConsumer, light, overlayLight, 1F, 1F, 1F, 1F);
+    }
+
     public void renderWireFrame(PoseStack matrix, VertexConsumer vertexBuilder, double angle) {
-        float baseRotation = getAbsoluteRotation(angle);
-        setRotation(blade1a, 0F, 0F, baseRotation);
-        setRotation(blade1b, 0F, 0F, 0.0349066F + baseRotation);
-
-        float blade2Rotation = getAbsoluteRotation(angle - 60);
-        setRotation(blade2a, 0F, 0F, blade2Rotation);
-        setRotation(blade2b, 0F, 0F, 0.0349066F + blade2Rotation);
-
-        float blade3Rotation = getAbsoluteRotation(angle + 60);
-        setRotation(blade3a, 0F, 0F, blade3Rotation);
-        setRotation(blade3b, 0F, 0F, 0.0349066F + blade3Rotation);
-
-        setRotation(bladeCap, 0F, 0F, baseRotation);
-        setRotation(bladeCenter, 0F, 0F, baseRotation);
+        setRotations(angle);
         renderPartsAsWireFrame(parts, matrix, vertexBuilder);
+    }
+
+    public RenderType getRenderType() {
+        return RENDER_TYPE;
     }
 
     private float getAbsoluteRotation(double angle) {

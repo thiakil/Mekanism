@@ -1,7 +1,6 @@
 package mekanism.client.render.tileentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import mekanism.api.annotations.NothingNullByDefault;
 import mekanism.client.render.MekanismRenderer;
 import mekanism.client.render.RenderTickHandler;
@@ -14,7 +13,6 @@ import mekanism.common.tile.multiblock.TileEntityDynamicTank;
 import net.minecraft.client.Camera;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -53,7 +51,7 @@ public class RenderDynamicTank extends MultiblockTileEntityRenderer<TankMultiblo
     }
 
     @Override
-    public void renderVBO(Camera camera, TileEntityDynamicTank tileEntityDynamicTank, PoseStack matrix, Matrix4f projectionMatrix, int light, int overlayLight, ProfilerFiller profiler) {
+    public void renderVBO(Camera camera, TileEntityDynamicTank tileEntityDynamicTank, PoseStack matrix, Matrix4f projectionMatrix, int light, int overlayLight, ProfilerFiller profiler, float partialTick) {
         TankMultiblockData multiblock = tileEntityDynamicTank.getMultiblock();
         RenderData data = getRenderData(multiblock);
         if (data != null) {
