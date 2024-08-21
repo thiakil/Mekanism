@@ -578,20 +578,15 @@ class EnrichingRecipeProvider implements ISubRecipeProvider {
 
     private void addEnrichingEnrichedRecipes(RecipeOutput consumer, String basePath) {
         //Carbon
-        ItemStackToItemStackRecipeBuilder.enriching(
-              IngredientCreatorAccess.item().from(ItemTags.COALS),
-              MekanismItems.ENRICHED_CARBON.getItemStack()
-        ).build(consumer, Mekanism.rl(basePath + "carbon"));
+        //ItemStackToItemStackRecipeBuilder.enriching(
+        //      IngredientCreatorAccess.item().from(ItemTags.COALS),
+        //      MekanismItems.ENRICHED_CARBON.getItemStack()
+        //).build(consumer, Mekanism.rl(basePath + "carbon"));
         //Diamond
-        ItemStackToItemStackRecipeBuilder.enriching(
-              IngredientCreatorAccess.item().from(Tags.Items.GEMS_DIAMOND),
-              MekanismItems.ENRICHED_DIAMOND.getItemStack()
-        ).build(consumer, Mekanism.rl(basePath + "diamond"));
-        //Redstone
-        ItemStackToItemStackRecipeBuilder.enriching(
-              IngredientCreatorAccess.item().from(Tags.Items.DUSTS_REDSTONE),
-              MekanismItems.ENRICHED_REDSTONE.getItemStack()
-        ).build(consumer, Mekanism.rl(basePath + "redstone"));
+        //ItemStackToItemStackRecipeBuilder.enriching(
+        //      IngredientCreatorAccess.item().from(Tags.Items.GEMS_DIAMOND),
+        //      MekanismItems.ENRICHED_DIAMOND.getItemStack()
+        //).build(consumer, Mekanism.rl(basePath + "diamond"));
         //Refined Obsidian
         ItemStackToItemStackRecipeBuilder.enriching(
               IngredientCreatorAccess.item().from(MekanismTags.Items.DUSTS_REFINED_OBSIDIAN),

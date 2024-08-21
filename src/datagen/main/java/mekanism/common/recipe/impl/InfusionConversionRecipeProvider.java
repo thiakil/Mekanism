@@ -1,6 +1,7 @@
 package mekanism.common.recipe.impl;
 
 import mekanism.api.chemical.ChemicalStack;
+import mekanism.api.datagen.recipe.builder.ItemStackChemicalToItemStackRecipeBuilder;
 import mekanism.api.datagen.recipe.builder.ItemStackToChemicalRecipeBuilder;
 import mekanism.api.recipes.ingredients.ItemStackIngredient;
 import mekanism.api.recipes.ingredients.creator.IngredientCreatorAccess;
@@ -8,11 +9,13 @@ import mekanism.common.Mekanism;
 import mekanism.common.recipe.BaseRecipeProvider;
 import mekanism.common.recipe.ISubRecipeProvider;
 import mekanism.common.registries.MekanismChemicals;
+import mekanism.common.registries.MekanismItems;
 import mekanism.common.resource.PrimaryResource;
 import mekanism.common.resource.ResourceType;
 import mekanism.common.tags.MekanismTags;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.recipes.RecipeOutput;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.Tags;
@@ -63,6 +66,14 @@ class InfusionConversionRecipeProvider implements ISubRecipeProvider {
 
         //Enriched
         infusionConversion(consumer, IngredientCreatorAccess.item().from(MekanismTags.Items.ENRICHED_CARBON), MekanismChemicals.CARBON.getStack(80), basePath, "from_enriched");
+
+        //Enriched carbon
+        ItemStackChemicalToItemStackRecipeBuilder.purifying(
+              IngredientCreatorAccess.item().from(ItemTags.COALS),
+              IngredientCreatorAccess.chemicalStack().from(MekanismChemicals.OXYGEN, 1),
+              MekanismItems.ENRICHED_CARBON.getItemStack(),
+              true
+        ).build(consumer, Mekanism.rl(basePath + "enriched"));
     }
 
     private void addInfusionConversionDiamondRecipes(RecipeOutput consumer, String basePath) {
@@ -70,6 +81,13 @@ class InfusionConversionRecipeProvider implements ISubRecipeProvider {
         infusionConversion(consumer, IngredientCreatorAccess.item().from(MekanismTags.Items.DUSTS_DIAMOND), MekanismChemicals.DIAMOND.getStack(10), basePath, "from_dust");
         //Enriched
         infusionConversion(consumer, IngredientCreatorAccess.item().from(MekanismTags.Items.ENRICHED_DIAMOND), MekanismChemicals.DIAMOND.getStack(80), basePath, "from_enriched");
+
+        ItemStackChemicalToItemStackRecipeBuilder.injecting(
+              IngredientCreatorAccess.item().from(Tags.Items.GEMS_DIAMOND),
+              IngredientCreatorAccess.chemicalStack().from(MekanismChemicals.HYDROGEN_CHLORIDE, 1),
+              MekanismItems.ENRICHED_DIAMOND.getItemStack(),
+              true
+        ).build(consumer, Mekanism.rl(basePath + "enriched"));
     }
 
     private void addInfusionConversionFungiRecipes(RecipeOutput consumer, String basePath) {
@@ -89,6 +107,14 @@ class InfusionConversionRecipeProvider implements ISubRecipeProvider {
         infusionConversion(consumer, IngredientCreatorAccess.item().from(Tags.Items.DUSTS_REDSTONE), MekanismChemicals.REDSTONE.getStack(10), basePath, "from_dust");
         //Enriched
         infusionConversion(consumer, IngredientCreatorAccess.item().from(MekanismTags.Items.ENRICHED_REDSTONE), MekanismChemicals.REDSTONE.getStack(80), basePath, "from_enriched");
+
+        //Enriched redstone
+        ItemStackChemicalToItemStackRecipeBuilder.purifying(
+              IngredientCreatorAccess.item().from(Tags.Items.DUSTS_REDSTONE),
+              IngredientCreatorAccess.chemicalStack().from(MekanismChemicals.OXYGEN, 1),
+              MekanismItems.ENRICHED_REDSTONE.getItemStack(),
+              true
+        ).build(consumer, Mekanism.rl(basePath + "enriched"));
     }
 
     private void addInfusionConversionRefinedObsidianRecipes(RecipeOutput consumer, String basePath) {
