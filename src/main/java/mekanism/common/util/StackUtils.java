@@ -2,6 +2,7 @@ package mekanism.common.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import mekanism.api.Action;
 import mekanism.api.inventory.IInventorySlot;
 import net.minecraft.core.BlockPos;
@@ -120,5 +121,22 @@ public final class StackUtils {
     public static BlockState getStateForPlacement(ItemStack stack, BlockPos pos, Player player) {
         return Block.byItem(stack.getItem()).getStateForPlacement(new BlockPlaceContext(new UseOnContext(player, InteractionHand.MAIN_HAND,
               new BlockHitResult(Vec3.ZERO, Direction.UP, pos, false))));
+    }
+
+
+    /**
+     * Same as {@link ItemStack#isSameItemSameComponents(ItemStack, ItemStack)} but skips the equality check if the components patch empty state doesn't match
+     *
+     * @return true if the stacks are equal disregarding stack sizes
+     */
+    public static boolean isSameItemSameComponents(ItemStack stack, ItemStack other) {
+        if (other.getItem() != stack.getItem()) {
+            //counts as an empty check, i.e. item == item is the same as isEmpty() == true for both
+            return false;
+        } else if (stack.isComponentsPatchEmpty()) {
+            return other.isComponentsPatchEmpty();
+        }
+
+        return Objects.equals(stack.getComponents(), other.getComponents());
     }
 }
