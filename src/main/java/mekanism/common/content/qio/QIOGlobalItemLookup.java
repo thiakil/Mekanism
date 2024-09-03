@@ -5,15 +5,17 @@ import com.google.common.collect.HashBiMap;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import mekanism.api.SerializationConstants;
 import mekanism.common.Mekanism;
 import mekanism.common.lib.MekanismSavedData;
 import mekanism.common.lib.inventory.HashedItem;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -129,7 +131,7 @@ public class QIOGlobalItemLookup {
                     Mekanism.logger.warn("Invalid UUID ({}) stored in {} saved data.", key, DATA_HANDLER_NAME);
                     continue;
                 }
-                ItemStack stack = ItemStack.parseOptional(provider, nbt.getCompound(key));
+                Optional<HashedItem> stack = HashedItem.parse(provider, nbt.getCompound(key));
                 //Only add the item if the item could be read. If it can't that means the mod adding the item was probably removed
                 if (stack.isEmpty()) {
                     Mekanism.logger.debug("Failed to read corresponding item for UUID ({}) stored in {} saved data. "
@@ -138,17 +140,17 @@ public class QIOGlobalItemLookup {
                     //Note: We can't cache the nbt we read from as something might have changed related to caps just from loading it, and we
                     // want to make sure that we save it with the proper corresponding data
                     //TODO: Eventually we may want to keep the NBT so that if the mod gets added back it exists again
-                    SerializedHashedItem item = new SerializedHashedItem(stack);
+                    SerializedHashedItem item = new SerializedHashedItem(stack.get());
                     try {
                         QIOGlobalItemLookup.INSTANCE.itemCache.put(uuid, item);
                     } catch (IllegalArgumentException e) {
                         UUID winningId = QIOGlobalItemLookup.INSTANCE.itemCache.inverse().get(item);
                         if (winningId == null) {
-                            Mekanism.logger.error("Failed to resolve conflict for UUID ({}) for item {} with components: {}. Skipping", uuid, stack.getItem(),
-                                  stack.getComponentsPatch());
+                            Mekanism.logger.error("Failed to resolve conflict for UUID ({}) for item {} with components: {}. Skipping", uuid, item.getItem(),
+                                  item.getDataPatch());
                         } else {
-                            Mekanism.logger.warn("Adding alias between UUID ({}) to ({}) for item {} with components: {}", uuid, winningId, stack.getItem(),
-                                  stack.getComponentsPatch());
+                            Mekanism.logger.warn("Adding alias between UUID ({}) to ({}) for item {} with components: {}", uuid, winningId, item.getItem(),
+                                  item.getDataPatch());
                             //Try to add it as an alias
                             if (QIOGlobalItemLookup.INSTANCE.mergedIds.isEmpty()) {
                                 QIOGlobalItemLookup.INSTANCE.mergedIds = new HashMap<>();
@@ -202,8 +204,8 @@ public class QIOGlobalItemLookup {
 
         private Tag nbtRepresentation;
 
-        private SerializedHashedItem(ItemStack stack) {
-            super(stack);
+        private SerializedHashedItem(Item item, @Nullable DataComponentPatch patch) {
+            super(item, patch);
         }
 
         protected SerializedHashedItem(HashedItem other) {

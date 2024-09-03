@@ -1,8 +1,10 @@
 package mekanism.api.inventory;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Represents an "item type" for comparing {@link ItemStack ItemStack's} without size.
@@ -35,9 +37,15 @@ public interface IHashedItem {
      *
      * @return The {@link Item} that this item type represents.
      */
-    default Item getItem() {
-        return getInternalStack().getItem();
-    }
+    Item getItem();
+
+    /**
+     * Helper to get the component patch. Do NOT under any circumstances try to change it.
+     *
+     * @return the component patch or null if no entries
+     */
+    @Nullable
+    DataComponentPatch getDataPatch();
 
     /**
      * Helper to get the max stack size of the {@link Item} that this item type represents.
@@ -47,4 +55,13 @@ public interface IHashedItem {
     default int getMaxStackSize() {
         return getInternalStack().getMaxStackSize();
     }
+
+    /**
+     * Checks if a stack matches item & components, without needing to create a HashedItem
+     *
+     * @param stack the stack to check
+     *
+     * @return true if the components and item match
+     */
+    boolean matches(ItemStack stack);
 }

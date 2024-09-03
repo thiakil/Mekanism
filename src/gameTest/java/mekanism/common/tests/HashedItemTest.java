@@ -41,13 +41,6 @@ public class HashedItemTest {
 
     @GameTest
     @EmptyTemplate
-    @TestHolder(description = "HashedItem.raw")
-    public static void validateRaw(final MekGameTestHelper helper) {
-        doSequence(helper, HashedItem::raw, HashedItem::raw, false);
-    }
-
-    @GameTest
-    @EmptyTemplate
     @TestHolder(description = "HashedItem.create")
     public static void validateRegular(final MekGameTestHelper helper) {
         doSequence(helper, HashedItem::create, HashedItem::create, false);
@@ -55,17 +48,10 @@ public class HashedItemTest {
 
     @GameTest
     @EmptyTemplate
-    @TestHolder(description = "HashedItem.create and HashedItem.raw equivalent")
-    public static void validateRawAndRegular(final MekGameTestHelper helper) {
-        doSequence(helper, HashedItem::raw, HashedItem::create, false);
-    }
-
-    @GameTest
-    @EmptyTemplate
     @TestHolder(description = "UUID aware equivalent")
     public static void validateUUID(final MekGameTestHelper helper) {
         UUID randomUUID = UUID.randomUUID();
-        Function<ItemStack, HashedItem> uuidSupplier = s -> new UUIDAwareHashedItem(s, randomUUID);
+        Function<ItemStack, HashedItem> uuidSupplier = s -> new UUIDAwareHashedItem(HashedItem.create(s), randomUUID);
         doSequence(helper, uuidSupplier, uuidSupplier, false);
     }
 
@@ -74,7 +60,7 @@ public class HashedItemTest {
     @TestHolder(description = "UUID aware after unwrapping. Tests copying hashed items")
     public static void validateUUIDUnwrapped(final MekGameTestHelper helper) {
         UUID randomUUID = UUID.randomUUID();
-        Function<ItemStack, HashedItem> uuidSupplier = s -> new UUIDAwareHashedItem(s, randomUUID).asRawHashedItem();
+        Function<ItemStack, HashedItem> uuidSupplier = s -> new UUIDAwareHashedItem(HashedItem.create(s), randomUUID).asRawHashedItem();
         doSequence(helper, uuidSupplier, uuidSupplier, false);
     }
 
@@ -82,7 +68,7 @@ public class HashedItemTest {
     @EmptyTemplate
     @TestHolder(description = "UUID aware but different UUIDs")
     public static void validateUUIDDiffer(final MekGameTestHelper helper) {
-        Function<ItemStack, HashedItem> uuidSupplier = s -> new UUIDAwareHashedItem(s, UUID.randomUUID());
+        Function<ItemStack, HashedItem> uuidSupplier = s -> new UUIDAwareHashedItem(HashedItem.create(s), UUID.randomUUID());
         doSequence(helper, uuidSupplier, uuidSupplier, true);
     }
 }

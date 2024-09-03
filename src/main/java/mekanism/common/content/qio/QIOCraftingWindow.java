@@ -749,7 +749,7 @@ public class QIOCraftingWindow implements IContentsListener {
                     }
                     //Start by checking against the exact stack it has stored as an item
                     // Note: We can use a raw hashed item here as we don't store it anywhere, and just use it as a lookup
-                    if (testEquivalentItem(world, frequency, slot, index, usedIngredient, HashedItem.raw(item))) {
+                    if (testEquivalentItem(world, frequency, slot, index, usedIngredient, HashedItem.create(item))) {
                         //Match found, we can exit
                         return;
                     }

@@ -51,6 +51,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
@@ -162,9 +163,9 @@ public class TileEntityNutritionalLiquifier extends TileEntityProgressMachine<It
                 sendUpdatePacket = true;
             }
         } else {
-            HashedItem item = HashedItem.raw(inputSlot.getStack());
-            if (!item.equals(lastPasteItem)) {
-                lastPasteItem = item.recreate();
+            ItemStack stack = inputSlot.getStack();
+            if (lastPasteItem == null || lastPasteItem.matches(stack)) {
+                lastPasteItem = HashedItem.create(stack);
                 sendUpdatePacket = true;
             }
         }
@@ -248,7 +249,11 @@ public class TileEntityNutritionalLiquifier extends TileEntityProgressMachine<It
     public void handleUpdateTag(@NotNull CompoundTag tag, @NotNull HolderLookup.Provider provider) {
         super.handleUpdateTag(tag, provider);
         NBTUtils.setCompoundIfPresent(tag, SerializationConstants.FLUID, nbt -> fluidTank.deserializeNBT(provider, nbt));
-        NBTUtils.setItemStackOrEmpty(provider, tag, SerializationConstants.ITEM, stack -> lastPasteItem = stack.isEmpty() ? null : HashedItem.raw(stack));
+        if (tag.contains(SerializationConstants.ITEM, Tag.TAG_COMPOUND)) {
+            lastPasteItem = HashedItem.parse(provider, tag.getCompound(SerializationConstants.ITEM)).orElse(null);
+        } else {
+            lastPasteItem = null;
+        }
     }
 
     //Methods relating to IComputerTile

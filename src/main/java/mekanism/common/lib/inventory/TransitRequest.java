@@ -47,7 +47,7 @@ public abstract class TransitRequest implements Iterable<ItemData> {
             ItemStack stack = inventory.extractItem(i, max, true);
 
             if (!stack.isEmpty() && finder.test(stack)) {
-                HashedItem hashed = HashedItem.raw(stack);
+                HashedItem hashed = HashedItem.create(stack);
                 int toUse = Math.min(stack.getCount(), max - ret.getCount(hashed));
                 if (toUse == 0) {
                     continue; // continue if we don't need any more of this item type

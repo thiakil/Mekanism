@@ -8,10 +8,11 @@ import mekanism.common.lib.inventory.HashedItem;
 import mekanism.common.lib.inventory.HashedItem.UUIDAwareHashedItem;
 import mekanism.common.network.IMekanismPacket;
 import net.minecraft.core.UUIDUtil;
+import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.world.item.ItemStack;
 
 //TODO - 1.19: Split implementations of this packet as it is possible for it to technically become too large and cause a crash
 // Also ideally we only would sync the hashed item for types we haven't sent a given client yet so that then
@@ -20,9 +21,9 @@ public abstract class PacketQIOItemViewerGuiSync implements IMekanismPacket {
 
     private static final StreamCodec<RegistryFriendlyByteBuf, Object2LongMap<UUIDAwareHashedItem>> ITEM_MAP_CODEC = ByteBufCodecs.map(Object2LongOpenHashMap::new,
           StreamCodec.composite(
-                ItemStack.STREAM_CODEC, HashedItem::getInternalStack,
+                ByteBufCodecs.registry(Registries.ITEM), HashedItem::getItem, DataComponentPatch.STREAM_CODEC, HashedItem::getDataPatch,
                 ByteBufCodecs.optional(UUIDUtil.STREAM_CODEC), item -> Optional.ofNullable(item.getUUID()),
-                (stack, uuid) -> new UUIDAwareHashedItem(stack, uuid.orElse(null))
+                (item, components, uuid) -> new UUIDAwareHashedItem(item, components, uuid.orElse(null))
           ), ByteBufCodecs.VAR_LONG
     );
 

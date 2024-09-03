@@ -159,13 +159,13 @@ public class QIOCraftingTransferHandler {
                 // so we may as well remove some unneeded copies
                 if (!displayed.isEmpty()) {
                     //Start by adding the displayed ingredient if there is one to prioritize it
-                    representations.add(HashedItem.raw(displayed));
+                    representations.add(HashedItem.create(displayed));
                 }
                 //Then add all valid ingredients in the order they appear in JEI. Because we are using a set
                 // we will just end up merging with the displayed ingredient when we get to it as a valid ingredient
                 for (ItemStack validIngredient : validIngredients) {
                     if (!validIngredient.isEmpty()) {//Shouldn't be empty but validate it just in case
-                        representations.add(HashedItem.raw(validIngredient));
+                        representations.add(HashedItem.create(validIngredient));
                     }
                 }
                 hashedIngredients.put((byte) index, new TrackedIngredients<>(slotView, representations));
@@ -371,7 +371,7 @@ public class QIOCraftingTransferHandler {
             IInventorySlot slot = craftingWindow.getInputSlot(slotIndex);
             if (!slot.isEmpty()) {
                 //Note: We can use raw as we are not modifying the stack or persisting the reference
-                HashedItem type = HashedItem.raw(slot.getStack());
+                HashedItem type = HashedItem.create(slot.getStack());
                 HashedItemSource source = qioTransferHelper.getSource(type);
                 if (source == null) {
                     //Something went wrong, this should never be null for the things in the crafting slots
@@ -390,7 +390,7 @@ public class QIOCraftingTransferHandler {
             BaseSimulatedInventory simulatedInventory = new BaseSimulatedInventory(hotBarSlots, mainInventorySlots) {
                 @Override
                 protected int getRemaining(int slot, ItemStack currentStored) {
-                    HashedItemSource source = qioTransferHelper.getSource(HashedItem.raw(currentStored));
+                    HashedItemSource source = qioTransferHelper.getSource(HashedItem.create(currentStored));
                     if (source == null) {
                         return currentStored.getCount();
                     }

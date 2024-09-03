@@ -56,7 +56,7 @@ public class QIOCraftingTransferHelper {
                 //Note: This isn't a super accurate validation of if we can take the stack or not, given in theory we
                 // always should be able to, but we have this check that mimics our implementation here just in case
                 if (!slot.extractItem(1, Action.SIMULATE, AutomationType.MANUAL).isEmpty()) {
-                    reverseLookup.computeIfAbsent(HashedItem.raw(slot.getStack()), item -> new HashedItemSource()).addSlot(inventorySlotIndex, slot.getCount());
+                    reverseLookup.computeIfAbsent(HashedItem.create(slot.getStack()), item -> new HashedItemSource()).addSlot(inventorySlotIndex, slot.getCount());
                 } else {
                     isValid = false;
                     //Can stop initializing things if we are not valid due to not being able to remove things from the input.
@@ -75,7 +75,7 @@ public class QIOCraftingTransferHelper {
             if (slot.hasItem()) {
                 if (slot.mayPickup(player)) {
                     ItemStack stack = slot.getItem();
-                    reverseLookup.computeIfAbsent(HashedItem.raw(stack), item -> new HashedItemSource()).addSlot(inventorySlotIndex, stack.getCount());
+                    reverseLookup.computeIfAbsent(HashedItem.create(stack), item -> new HashedItemSource()).addSlot(inventorySlotIndex, stack.getCount());
                 }
             } else {
                 emptyInventorySlots++;

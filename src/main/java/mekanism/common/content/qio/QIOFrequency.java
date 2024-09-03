@@ -157,7 +157,7 @@ public class QIOFrequency extends Frequency implements IColorableFrequency, IQIO
         if (stack.isEmpty() || amount <= 0) {
             return 0;
         }
-        HashedItem type = action.execute() ? HashedItem.create(stack) : HashedItem.raw(stack);
+        HashedItem type = HashedItem.create(stack);
         // these checks are extremely important; they prevent us from wasting CPU searching for a place to put the new items,
         // and they also prevent us from adding a ghost type to the itemDataMap if nothing is inserted
         if (totalCount == totalCountCapacity || (!itemDataMap.containsKey(type) && itemDataMap.size() == totalTypeCapacity)) {
@@ -238,7 +238,7 @@ public class QIOFrequency extends Frequency implements IColorableFrequency, IQIO
         if (amount <= 0 || stack.isEmpty() || itemDataMap.isEmpty()) {
             return 0;
         }
-        HashedItem type = HashedItem.raw(stack);
+        HashedItem type = HashedItem.create(stack);
         QIOItemTypeData data = itemDataMap.get(type);
         if (data == null) {
             return 0;
@@ -259,7 +259,7 @@ public class QIOFrequency extends Frequency implements IColorableFrequency, IQIO
         if (stack.isEmpty()) {
             return ItemStack.EMPTY;
         }
-        return removeByType(HashedItem.raw(stack), amount);
+        return removeByType(HashedItem.create(stack), amount);
     }
 
     public ItemStack removeByType(@Nullable HashedItem itemType, int amount) {
@@ -454,7 +454,7 @@ public class QIOFrequency extends Frequency implements IColorableFrequency, IQIO
 
     @Override
     public long getStored(ItemStack type) {
-        return type.isEmpty() ? 0 : getStoredByHash(HashedItem.raw(type));
+        return type.isEmpty() ? 0 : getStoredByHash(HashedItem.create(type));
     }
 
     public long getStoredByHash(HashedItem itemType) {

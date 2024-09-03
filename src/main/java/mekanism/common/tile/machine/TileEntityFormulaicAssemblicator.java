@@ -422,7 +422,7 @@ public class TileEntityFormulaicAssemblicator extends TileEntityConfigurableMach
                         ItemStack stockStack = stockSlot.getStack();
                         //Note: As we don't mutate it (except potentially when we found it as a match, at which point we don't need it anymore),
                         // we can just use a raw view rather than having to copy the stack
-                        HashedItem stockStackType = HashedItem.raw(stockStack);
+                        HashedItem stockStackType = HashedItem.create(stockStack);
                         //If we already checked this stack type for being valid in the recipe for this position, we can skip checking it again
                         if (checkedTypes == null || checkedTypes.add(stockStackType)) {
                             if (formula.isIngredientInPos(level, stockStack, i)) {

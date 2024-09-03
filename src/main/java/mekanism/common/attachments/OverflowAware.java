@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntSortedMap;
 import it.unimi.dsi.fastutil.objects.Object2IntSortedMaps;
+import java.util.Optional;
 import mekanism.api.SerializationConstants;
 import mekanism.api.annotations.NothingNullByDefault;
 import mekanism.common.lib.inventory.HashedItem;
@@ -15,7 +16,6 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ExtraCodecs;
-import net.minecraft.world.item.ItemStack;
 
 /**
  * @param overflow Note: Sorted map to ensure each call to save is in the same order so that there is more uniformity
@@ -54,11 +54,11 @@ public record OverflowAware(Object2IntSortedMap<HashedItem> overflow) {
             int count = overflowComponent.getInt(SerializationConstants.COUNT);
             if (count > 0) {
                 //The count should always be greater than zero, but validate it just in case before trying to read the item
-                ItemStack s = ItemStack.parseOptional(provider, overflowComponent.getCompound(SerializationConstants.TYPE));
+                Optional<HashedItem> s = HashedItem.parse(provider, overflowComponent.getCompound(SerializationConstants.TYPE));
                 //Only add the item if the item could be read. If it can't that means the mod adding the item was probably removed
-                if (!s.isEmpty()) {
+                if (s.isPresent()) {
                     //Note: We can use a raw stack as we just created a new stack from NBT
-                    overflow.put(HashedItem.raw(s), count);
+                    overflow.put(s.get(), count);
                 }
             }
         }

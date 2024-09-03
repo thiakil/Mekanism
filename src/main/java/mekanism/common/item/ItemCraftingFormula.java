@@ -30,7 +30,7 @@ public class ItemCraftingFormula extends Item {
     @Override
     public void appendHoverText(@NotNull ItemStack itemStack, @NotNull Item.TooltipContext context, @NotNull List<Component> tooltip, @NotNull TooltipFlag flag) {
         Map<HashedItem, Integer> stacks = itemStack.getOrDefault(MekanismDataComponents.FORMULA_HOLDER, FormulaAttachment.EMPTY).nonEmptyItems()
-              .collect(Collectors.toMap(HashedItem::raw, ItemStack::getCount, Integer::sum, LinkedHashMap::new));
+              .collect(Collectors.toMap(HashedItem::create, ItemStack::getCount, Integer::sum, LinkedHashMap::new));
         if (!stacks.isEmpty()) {
             tooltip.add(MekanismLang.INGREDIENTS.translateColored(EnumColor.GRAY));
             for (Entry<HashedItem, Integer> entry : stacks.entrySet()) {

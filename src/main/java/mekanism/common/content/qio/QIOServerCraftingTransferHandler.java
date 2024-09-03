@@ -292,7 +292,7 @@ public class QIOServerCraftingTransferHandler {
             if (inputSlotData != null && inputSlotData.getAvailable() > 0) {
                 //If there was an item in the slot and there still is we need to see if we have room for it anywhere
                 //Note: We can just make the hashed item be raw as the stack does not get modified, and we don't persist this map
-                leftOverInput.mergeInt(HashedItem.raw(inputSlotData.getStack()), inputSlotData.getAvailable(), Integer::sum);
+                leftOverInput.mergeInt(HashedItem.create(inputSlotData.getStack()), inputSlotData.getAvailable(), Integer::sum);
             }
         }
         if (!leftOverInput.isEmpty()) {
