@@ -51,7 +51,10 @@ public class HashedItemTest {
     @TestHolder(description = "UUID aware equivalent")
     public static void validateUUID(final MekGameTestHelper helper) {
         UUID randomUUID = UUID.randomUUID();
-        Function<ItemStack, HashedItem> uuidSupplier = s -> new UUIDAwareHashedItem(HashedItem.create(s), randomUUID);
+        Function<ItemStack, HashedItem> uuidSupplier = s -> {
+            HashedItem other = HashedItem.create(s);
+            return new UUIDAwareHashedItem(other.getItem(), other.getDataPatch(), randomUUID);
+        };
         doSequence(helper, uuidSupplier, uuidSupplier, false);
     }
 
@@ -60,7 +63,10 @@ public class HashedItemTest {
     @TestHolder(description = "UUID aware after unwrapping. Tests copying hashed items")
     public static void validateUUIDUnwrapped(final MekGameTestHelper helper) {
         UUID randomUUID = UUID.randomUUID();
-        Function<ItemStack, HashedItem> uuidSupplier = s -> new UUIDAwareHashedItem(HashedItem.create(s), randomUUID).asRawHashedItem();
+        Function<ItemStack, HashedItem> uuidSupplier = s -> {
+            HashedItem other = HashedItem.create(s);
+            return new UUIDAwareHashedItem(other.getItem(), other.getDataPatch(), randomUUID).asRawHashedItem();
+        };
         doSequence(helper, uuidSupplier, uuidSupplier, false);
     }
 
@@ -68,7 +74,10 @@ public class HashedItemTest {
     @EmptyTemplate
     @TestHolder(description = "UUID aware but different UUIDs")
     public static void validateUUIDDiffer(final MekGameTestHelper helper) {
-        Function<ItemStack, HashedItem> uuidSupplier = s -> new UUIDAwareHashedItem(HashedItem.create(s), UUID.randomUUID());
+        Function<ItemStack, HashedItem> uuidSupplier = s -> {
+            HashedItem other = HashedItem.create(s);
+            return new UUIDAwareHashedItem(other.getItem(), other.getDataPatch(), UUID.randomUUID());
+        };
         doSequence(helper, uuidSupplier, uuidSupplier, true);
     }
 }
