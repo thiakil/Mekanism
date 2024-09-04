@@ -25,6 +25,8 @@ public class HashedItemTest {
             helper.assertValueEqual(hashed.equals(hashed2), sameExpected, "Equals for " + testType);
             helper.assertValueEqual(ItemStack.isSameItemSameComponents(stack1, hashed.createStack(stack1.getCount())), true, "Reconstituted stack1");
             helper.assertValueEqual(ItemStack.isSameItemSameComponents(stack2, hashed2.createStack(stack2.getCount())), true, "Reconstituted stack2");
+            helper.assertValueEqual(hashed.matches(stack1), true, "matches(stack) matches input stack");
+            helper.assertValueEqual(hashed2.matches(stack2), true, "matches(stack) matches input stack 2");
         };
     }
 
