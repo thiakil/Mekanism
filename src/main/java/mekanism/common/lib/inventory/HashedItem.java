@@ -79,11 +79,6 @@ public class HashedItem implements IHashedItem, DataComponentHolder {
         return new HashedItem(stack.getItem(), patchOrNull(stack));
     }
 
-    @Deprecated(forRemoval = true)
-    public static HashedItem raw(ItemStack stack) {
-        return create(stack);
-    }
-
     private static int hash(Item item, @Nullable DataComponentPatch patch) {
         int i = 31 + item.hashCode();
         return 31 * i + (patch != null ? patch.hashCode() : 0);
