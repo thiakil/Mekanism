@@ -271,6 +271,7 @@ public class HashedItem implements IHashedItem, DataComponentHolder {
             PatchedDataComponentMap rawComponentMap = (PatchedDataComponentMap) itemStackComponents.invokeExact(stack);
             //get the underlying map
             Reference2ObjectMap<DataComponentType<?>, Optional<?>> stackPatchMap = (Reference2ObjectMap<DataComponentType<?>, Optional<?>>) patchedDataComponentMapPatch.invokeExact(rawComponentMap);
+            //get the underlying map for the patch
             Reference2ObjectMap<DataComponentType<?>, Optional<?>> dcPatchMap = (Reference2ObjectMap<DataComponentType<?>, Optional<?>>) dataComponentPatchMap.invokeExact(patch);
 
             return Objects.equals(dcPatchMap, stackPatchMap);
