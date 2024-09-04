@@ -205,7 +205,7 @@ public class QIOFrequency extends Frequency implements IColorableFrequency, IQIO
 
     private QIOItemTypeData createTypeDataForAbsent(HashedItem type) {
         ItemStack stack = type.getInternalStack();
-        List<String> tags = TagCache.getItemTags(stack);
+        List<String> tags = TagCache.getItemTags(type);
         if (!tags.isEmpty()) {
             boolean hasAllKeys = tagLookupMap.hasAllKeys(tags);
             if (tagLookupMap.putAll(tags, type) && !hasAllKeys) {
@@ -227,7 +227,7 @@ public class QIOFrequency extends Frequency implements IColorableFrequency, IQIO
         }
         modItems.add(type);
         //Fuzzy item lookup has no wildcard cache related to it
-        fuzzyItemLookupMap.computeIfAbsent(stack.getItem(), item -> new HashSet<>()).add(type);
+        fuzzyItemLookupMap.computeIfAbsent(type.getItem(), item -> new HashSet<>()).add(type);
         //Ensure we have a matching uuid for this item
         QIOGlobalItemLookup.INSTANCE.getOrTrackUUID(type);
         return new QIOItemTypeData(type);
@@ -536,7 +536,7 @@ public class QIOFrequency extends Frequency implements IColorableFrequency, IQIO
             tagLookupMap.clear();
             tagWildcardCache.clear();
             for (QIOItemTypeData item : itemDataMap.values()) {
-                tagLookupMap.putAll(TagCache.getItemTags(item.itemType.getInternalStack()), item.itemType);
+                tagLookupMap.putAll(TagCache.getItemTags(item.itemType), item.itemType);
             }
         }
         return superDirty;

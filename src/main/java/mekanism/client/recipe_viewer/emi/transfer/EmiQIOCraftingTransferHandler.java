@@ -168,7 +168,7 @@ public class EmiQIOCraftingTransferHandler<CONTAINER extends QIOItemViewerContai
             //TODO - 1.20.4: Evaluate this
             //Note: ItemEmiStack copies the passed in stack before doing anything to it, so we can safely just pass the internal stack
             // and let it get copied
-            return EmiStack.of(hashed.getInternalStack(), 1);
+            return EmiStack.of(hashed.getItem(), hashed.getDataPatchNonNull(), 1);
         }
     }
 

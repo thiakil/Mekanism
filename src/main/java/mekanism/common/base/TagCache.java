@@ -17,6 +17,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import mekanism.common.block.interfaces.IHasTileEntity;
 import mekanism.common.lib.WildcardMatcher;
+import mekanism.common.lib.inventory.HashedItem;
 import mekanism.common.registries.MekanismBlocks;
 import mekanism.common.tags.MekanismTags;
 import mekanism.common.util.MekanismUtils;
@@ -62,6 +63,11 @@ public final class TagCache {
 
     public static List<String> getItemTags(@NotNull ItemStack check) {
         return getTagsAsStrings(check.getTags());
+    }
+
+    @SuppressWarnings("deprecation")
+    public static List<String> getItemTags(@NotNull HashedItem check) {
+        return getTagsAsStrings(check.getItem().builtInRegistryHolder().tags());
     }
 
     public static List<String> getTileEntityTypeTags(@NotNull Block block) {

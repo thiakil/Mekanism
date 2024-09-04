@@ -547,7 +547,7 @@ public abstract class QIOItemViewerContainer extends MekanismContainer implement
             } else {
                 //middle click -> add to current stack if over slot and stackable, else normal storage functionality
                 IScrollableSlot slot;
-                if (button == GLFW.GLFW_MOUSE_BUTTON_MIDDLE && (slot = slotProvider.get()) != null && InventoryUtils.areItemsStackable(heldItem, slot.item().getInternalStack())) {
+                if (button == GLFW.GLFW_MOUSE_BUTTON_MIDDLE && (slot = slotProvider.get()) != null && slot.item() != null && slot.item().matches(heldItem)) {
                     PacketUtils.sendToServer(new PacketQIOItemViewerSlotTake(slot.itemUUID(), 1));
                 } else {
                     //Left click -> all held, right click -> single item

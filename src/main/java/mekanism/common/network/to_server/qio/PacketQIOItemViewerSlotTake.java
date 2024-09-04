@@ -8,7 +8,6 @@ import mekanism.common.content.qio.QIOGlobalItemLookup;
 import mekanism.common.inventory.container.QIOItemViewerContainer;
 import mekanism.common.lib.inventory.HashedItem;
 import mekanism.common.network.IMekanismPacket;
-import mekanism.common.util.InventoryUtils;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -49,7 +48,7 @@ public record PacketQIOItemViewerSlotTake(UUID typeUUID, int count) implements I
                     //Note: The current stack and the grabbed stack should always be stackable unless the client sent multiple packets
                     // before processing our response to the first one, but we need to validate it to make sure it can actually stack
                     // so that we can avoid accidentally voiding any items
-                    if (toRemove > 0 && InventoryUtils.areItemsStackable(curStack, itemType.getInternalStack())) {
+                    if (toRemove > 0 && (curStack.isEmpty() || itemType.matches(curStack))) {
                         ItemStack extracted = freq.removeByType(itemType, toRemove);
                         if (!extracted.isEmpty()) {
                             if (curStack.isEmpty()) {

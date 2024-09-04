@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import mekanism.common.Mekanism;
-import mekanism.common.util.InventoryUtils;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandler;
 
@@ -67,17 +66,16 @@ public class HandlerTransitRequest extends CollectionTransitRequest {
             IItemHandler handler = getHandler();
             if (handler != null && !slotMap.isEmpty()) {
                 HashedItem itemType = getItemType();
-                ItemStack itemStack = itemType.getInternalStack();
                 for (ObjectIterator<Int2IntMap.Entry> iterator = slotMap.int2IntEntrySet().iterator(); iterator.hasNext(); )  {
                     Int2IntMap.Entry entry = iterator.next();
                     int slot = entry.getIntKey();
                     int currentCount = entry.getIntValue();
                     int toUse = Math.min(amount, currentCount);
                     ItemStack ret = handler.extractItem(slot, toUse, false);
-                    boolean stackable = InventoryUtils.areItemsStackable(itemStack, ret);
+                    boolean stackable = itemType.matches(ret);
                     if (!stackable || ret.getCount() != toUse) { // be loud if an InvStack's prediction doesn't line up
                         Mekanism.logger.warn("An inventory's returned content {} does not line up with HandlerTransitRequest's prediction.", stackable ? "count" : "type");
-                        Mekanism.logger.warn("HandlerTransitRequest item: {}, toUse: {}, ret: {}, slot: {}", itemStack, toUse, ret, slot);
+                        Mekanism.logger.warn("HandlerTransitRequest item: {}, toUse: {}, ret: {}, slot: {}", itemType.getInternalStack(), toUse, ret, slot);
                         Mekanism.logger.warn("ItemHandler: {}", handler.getClass().getName());
                     }
                     amount -= toUse;

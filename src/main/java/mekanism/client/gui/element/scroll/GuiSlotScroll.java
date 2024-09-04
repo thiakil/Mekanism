@@ -28,6 +28,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -169,7 +170,7 @@ public class GuiSlotScroll extends GuiElement implements IRecipeViewerIngredient
         //Slot's item is not null in default impl, but check in case we make it null at some point
         // and also validate if the internal stack is empty in case it is raw and there is some edge case
         HashedItem item = slot.item();
-        return item == null || item.getInternalStack().isEmpty();
+        return item == null || item.getItem() == Items.AIR;
     }
 
     private void renderSlotText(GuiGraphics guiGraphics, String text, int x, int y) {

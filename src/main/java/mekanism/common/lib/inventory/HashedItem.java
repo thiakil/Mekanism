@@ -123,6 +123,10 @@ public class HashedItem implements IHashedItem, DataComponentHolder {
     public @Nullable DataComponentPatch getDataPatch() {
         return this.componentPatch;
     }
+    
+    public @NotNull DataComponentPatch getDataPatchNonNull() {
+        return this.componentPatch != null ? this.componentPatch : DataComponentPatch.EMPTY;
+    }
 
     public boolean isPatchEmpty() {
         return componentPatch == null;

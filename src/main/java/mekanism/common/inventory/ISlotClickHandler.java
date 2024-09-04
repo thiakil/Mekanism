@@ -31,7 +31,7 @@ public interface ISlotClickHandler {
         }
 
         default ResourceLocation getRegistryName() {
-            return RegistryUtils.getName(item().getInternalStack().getItem());
+            return RegistryUtils.getName(item().getItem());
         }
     }
 }
