@@ -96,6 +96,7 @@ public abstract class TileEntityFactory<RECIPE extends MekanismRecipe<?>> extend
      * How many ticks it takes, with upgrades, to run an operation
      */
     private int ticksRequired = BASE_TICKS_REQUIRED;
+    private int operationsPerTick = 1;//will increase for modified upgrade multipliers
     private boolean sorting;
     private boolean sortingNeeded = true;
     private long lastUsage = 0L;
@@ -374,6 +375,10 @@ public abstract class TileEntityFactory<RECIPE extends MekanismRecipe<?>> extend
     @ComputerMethod(methodDescription = "Total number of ticks it takes currently for the recipe to complete")
     public int getTicksRequired() {
         return ticksRequired;
+    }
+
+    public int getOperationsPerTick() {
+        return this.operationsPerTick;
     }
 
     @Override
