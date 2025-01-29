@@ -26,13 +26,13 @@ import org.jetbrains.annotations.Nullable;
 
 @NothingNullByDefault
 public enum Upgrade implements IHasEnumNameTranslationKey, StringRepresentable {
-    SPEED("speed", APILang.UPGRADE_SPEED, APILang.UPGRADE_SPEED_DESCRIPTION, 8, EnumColor.RED),
-    ENERGY("energy", APILang.UPGRADE_ENERGY, APILang.UPGRADE_ENERGY_DESCRIPTION, 8, EnumColor.BRIGHT_GREEN),
-    FILTER("filter", APILang.UPGRADE_FILTER, APILang.UPGRADE_FILTER_DESCRIPTION, 1, EnumColor.DARK_AQUA),
-    CHEMICAL("chemical", APILang.UPGRADE_CHEMICAL, APILang.UPGRADE_CHEMICAL_DESCRIPTION, 8, EnumColor.YELLOW),
-    MUFFLING("muffling", APILang.UPGRADE_MUFFLING, APILang.UPGRADE_MUFFLING_DESCRIPTION, 1, EnumColor.INDIGO),
-    ANCHOR("anchor", APILang.UPGRADE_ANCHOR, APILang.UPGRADE_ANCHOR_DESCRIPTION, 1, EnumColor.DARK_GREEN),
-    STONE_GENERATOR("stone_generator", APILang.UPGRADE_STONE_GENERATOR, APILang.UPGRADE_STONE_GENERATOR_DESCRIPTION, 1, EnumColor.ORANGE);
+    SPEED("speed", APILang.UPGRADE_SPEED, APILang.UPGRADE_SPEED_DESCRIPTION, 8, EnumColor.RED, true),
+    ENERGY("energy", APILang.UPGRADE_ENERGY, APILang.UPGRADE_ENERGY_DESCRIPTION, 8, EnumColor.BRIGHT_GREEN, true),
+    FILTER("filter", APILang.UPGRADE_FILTER, APILang.UPGRADE_FILTER_DESCRIPTION, 1, EnumColor.DARK_AQUA, false),
+    CHEMICAL("chemical", APILang.UPGRADE_CHEMICAL, APILang.UPGRADE_CHEMICAL_DESCRIPTION, 8, EnumColor.YELLOW, true),
+    MUFFLING("muffling", APILang.UPGRADE_MUFFLING, APILang.UPGRADE_MUFFLING_DESCRIPTION, 1, EnumColor.INDIGO, false),
+    ANCHOR("anchor", APILang.UPGRADE_ANCHOR, APILang.UPGRADE_ANCHOR_DESCRIPTION, 1, EnumColor.DARK_GREEN, false),
+    STONE_GENERATOR("stone_generator", APILang.UPGRADE_STONE_GENERATOR, APILang.UPGRADE_STONE_GENERATOR_DESCRIPTION, 1, EnumColor.ORANGE, false);
 
     /**
      * Codec for serializing upgrades based on their name.
@@ -67,13 +67,15 @@ public enum Upgrade implements IHasEnumNameTranslationKey, StringRepresentable {
     private final ILangEntry descLangKey;
     private final int maxStack;
     private final EnumColor color;
+    private final boolean hasModifier;
 
-    Upgrade(String name, ILangEntry langKey, ILangEntry descLangKey, int maxStack, EnumColor color) {
+    Upgrade(String name, ILangEntry langKey, ILangEntry descLangKey, int maxStack, EnumColor color, boolean hasModifier) {
         this.name = name;
         this.langKey = langKey;
         this.descLangKey = descLangKey;
         this.maxStack = maxStack;
         this.color = color;
+        this.hasModifier = hasModifier;
     }
 
     /**
@@ -156,7 +158,7 @@ public enum Upgrade implements IHasEnumNameTranslationKey, StringRepresentable {
     /**
      * Gets the max number of upgrades of this type that can be installed.
      */
-    public int getMax() {
+    public int getMax() {//todo fix usages and rename
         return maxStack;
     }
 
@@ -165,6 +167,10 @@ public enum Upgrade implements IHasEnumNameTranslationKey, StringRepresentable {
      */
     public EnumColor getColor() {
         return color;
+    }
+
+    public boolean hasModifier() {
+        return hasModifier;
     }
 
     public interface IUpgradeInfoHandler {

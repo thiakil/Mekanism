@@ -239,6 +239,8 @@ public class Mekanism {
         packetHandler = new PacketHandler(modEventBus, versionNumber);
         //Super early hooks, only reliable thing is for checking dependencies that we declare we are after
         hooks.hookConstructor(modEventBus);
+
+        MekanismConfig.registerConfigsLate(modContainer);
     }
 
     public static synchronized void addModule(IModModule modModule) {

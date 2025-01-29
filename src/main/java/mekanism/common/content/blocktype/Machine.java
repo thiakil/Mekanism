@@ -18,20 +18,19 @@ import net.minecraft.core.particles.ParticleTypes;
 
 public class Machine<TILE extends TileEntityMekanism> extends BlockTypeTile<TILE> {
 
-    public Machine(Supplier<TileEntityTypeRegistryObject<TILE>> tileEntityRegistrar, ILangEntry description) {
+    public Machine(String blockId, Supplier<TileEntityTypeRegistryObject<TILE>> tileEntityRegistrar, ILangEntry description) {
         super(tileEntityRegistrar, description);
         // add default particle effects
         add(new AttributeParticleFX()
               .add(ParticleTypes.SMOKE, rand -> new Pos3D(rand.nextFloat() * 0.6F - 0.3F, rand.nextFloat() * 6.0F / 16.0F, 0.52))
               .add(DustParticleOptions.REDSTONE, rand -> new Pos3D(rand.nextFloat() * 0.6F - 0.3F, rand.nextFloat() * 6.0F / 16.0F, 0.52)));
-        add(Attributes.ACTIVE_LIGHT, new AttributeStateFacing(), Attributes.INVENTORY, Attributes.SECURITY, Attributes.REDSTONE, Attributes.COMPARATOR,
-              AttributeUpgradeSupport.DEFAULT_MACHINE_UPGRADES);
+        add(Attributes.ACTIVE_LIGHT, new AttributeStateFacing(), Attributes.INVENTORY, Attributes.SECURITY, Attributes.REDSTONE, Attributes.COMPARATOR);
     }
 
     public static class FactoryMachine<TILE extends TileEntityMekanism> extends Machine<TILE> {
 
-        public FactoryMachine(Supplier<TileEntityTypeRegistryObject<TILE>> tileEntitySupplier, ILangEntry description, FactoryType factoryType) {
-            super(tileEntitySupplier, description);
+        public FactoryMachine(String blockId, Supplier<TileEntityTypeRegistryObject<TILE>> tileEntitySupplier, ILangEntry description, FactoryType factoryType) {
+            super(blockId, tileEntitySupplier, description);
             add(new AttributeFactoryType(factoryType), new AttributeUpgradeable(() -> MekanismBlocks.getFactory(FactoryTier.BASIC, getFactoryType())));
         }
 
@@ -42,18 +41,18 @@ public class Machine<TILE extends TileEntityMekanism> extends BlockTypeTile<TILE
 
     public static class MachineBuilder<MACHINE extends Machine<TILE>, TILE extends TileEntityMekanism, T extends MachineBuilder<MACHINE, TILE, T>> extends BlockTileBuilder<MACHINE, TILE, T> {
 
-        protected MachineBuilder(MACHINE holder) {
-            super(holder);
+        protected MachineBuilder(String blockId, MACHINE holder) {
+            super(holder, blockId);
         }
 
-        public static <TILE extends TileEntityMekanism> MachineBuilder<Machine<TILE>, TILE, ?> createMachine(Supplier<TileEntityTypeRegistryObject<TILE>> tileEntityRegistrar,
+        public static <TILE extends TileEntityMekanism> MachineBuilder<Machine<TILE>, TILE, ?> createMachine(String blockId, Supplier<TileEntityTypeRegistryObject<TILE>> tileEntityRegistrar,
               ILangEntry description) {
-            return new MachineBuilder<>(new Machine<>(tileEntityRegistrar, description));
+            return new MachineBuilder<>(blockId, new Machine<>(blockId, tileEntityRegistrar, description)).with(AttributeUpgradeSupport.DEFAULT_MACHINE_UPGRADES);
         }
 
-        public static <TILE extends TileEntityMekanism> MachineBuilder<FactoryMachine<TILE>, TILE, ?> createFactoryMachine(Supplier<TileEntityTypeRegistryObject<TILE>> tileEntityRegistrar,
+        public static <TILE extends TileEntityMekanism> MachineBuilder<FactoryMachine<TILE>, TILE, ?> createFactoryMachine(String blockId, Supplier<TileEntityTypeRegistryObject<TILE>> tileEntityRegistrar,
               ILangEntry description, FactoryType factoryType) {
-            return new MachineBuilder<>(new FactoryMachine<>(tileEntityRegistrar, description, factoryType));
+            return new MachineBuilder<>(blockId, new FactoryMachine<>(blockId, tileEntityRegistrar, description, factoryType)).with(AttributeUpgradeSupport.DEFAULT_MACHINE_UPGRADES);
         }
     }
 }

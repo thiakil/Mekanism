@@ -1,22 +1,27 @@
 package mekanism.common.block.attribute;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
+import java.util.function.Function;
 import mekanism.api.Upgrade;
+import mekanism.common.config.MekanismConfig;
+import mekanism.common.config.UpgradesConfig;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public record AttributeUpgradeSupport(@NotNull Set<Upgrade> supportedUpgrades) implements Attribute {
+public record AttributeUpgradeSupport(@NotNull Set<Upgrade> supportedUpgrades, @Nullable UpgradesConfig.MachineUpgradeConfig config) implements Attribute {
 
-    public static final AttributeUpgradeSupport DEFAULT_MACHINE_UPGRADES = AttributeUpgradeSupport.create(Upgrade.SPEED, Upgrade.ENERGY, Upgrade.MUFFLING);
-    public static final AttributeUpgradeSupport DEFAULT_ADVANCED_MACHINE_UPGRADES = AttributeUpgradeSupport.create(Upgrade.SPEED, Upgrade.ENERGY, Upgrade.MUFFLING, Upgrade.CHEMICAL);
-    public static final AttributeUpgradeSupport SPEED_ENERGY = AttributeUpgradeSupport.create(Upgrade.SPEED, Upgrade.ENERGY);
-    public static final AttributeUpgradeSupport MUFFLING_ONLY = AttributeUpgradeSupport.create(Upgrade.MUFFLING);
-    public static final AttributeUpgradeSupport ENERGY_ONLY = AttributeUpgradeSupport.create(Upgrade.ENERGY);
-    public static final AttributeUpgradeSupport SPEED_ONLY = AttributeUpgradeSupport.create(Upgrade.SPEED);
-    public static final AttributeUpgradeSupport ANCHOR_ONLY = AttributeUpgradeSupport.create(Upgrade.ANCHOR);
+    public static final Function<String, AttributeUpgradeSupport> DEFAULT_MACHINE_UPGRADES = blockId -> AttributeUpgradeSupport.create(blockId, Upgrade.SPEED, Upgrade.ENERGY, Upgrade.MUFFLING);
+    public static final Function<String, AttributeUpgradeSupport> DEFAULT_ADVANCED_MACHINE_UPGRADES = blockId -> AttributeUpgradeSupport.create(blockId, Upgrade.SPEED, Upgrade.ENERGY, Upgrade.MUFFLING, Upgrade.CHEMICAL);
+    public static final Function<String, AttributeUpgradeSupport> SPEED_ENERGY = blockId -> AttributeUpgradeSupport.create(blockId, Upgrade.SPEED, Upgrade.ENERGY);
+    public static final Function<String, AttributeUpgradeSupport> MUFFLING_ONLY = blockId -> AttributeUpgradeSupport.create(blockId, Upgrade.MUFFLING);
+    public static final Function<String, AttributeUpgradeSupport> ENERGY_ONLY = blockId -> AttributeUpgradeSupport.create(blockId, Upgrade.ENERGY);
+    public static final Function<String, AttributeUpgradeSupport> SPEED_ONLY = blockId -> AttributeUpgradeSupport.create(blockId, Upgrade.SPEED);
+    public static final Function<String, AttributeUpgradeSupport> ANCHOR_ONLY = blockId -> AttributeUpgradeSupport.create(blockId, Upgrade.ANCHOR);
 
-    public static AttributeUpgradeSupport create(Upgrade... supportedUpgrades) {
+    public static AttributeUpgradeSupport create(String blockId, Upgrade... supportedUpgrades) {
         if (supportedUpgrades.length == 0) {
             throw new IllegalArgumentException("There must be at least one upgrade that is supported");
         }
@@ -30,6 +35,13 @@ public record AttributeUpgradeSupport(@NotNull Set<Upgrade> supportedUpgrades) i
             Collections.addAll(upgrades, supportedUpgrades);
             upgrades = Collections.unmodifiableSet(upgrades);
         }
-        return new AttributeUpgradeSupport(upgrades);
+        UpgradesConfig.MachineUpgradeConfig config = null;
+        for (Upgrade upgrade : supportedUpgrades) {
+            if (upgrade.hasModifier()) {
+                config = MekanismConfig.upgrades.register(Arrays.stream(supportedUpgrades).filter(Upgrade::hasModifier), blockId);
+                break;
+            }
+        }
+        return new AttributeUpgradeSupport(upgrades, config);
     }
 }

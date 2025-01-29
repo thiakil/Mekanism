@@ -22,6 +22,7 @@ public class MekanismConfig {
     public static final MekanismStartupConfig startup = new MekanismStartupConfig();
     public static final StorageConfig storage = new StorageConfig();
     public static final TierConfig tiers = new TierConfig();
+    public static final UpgradesConfig upgrades = new UpgradesConfig();
     public static final UsageConfig usage = new UsageConfig();
     public static final WorldConfig world = new WorldConfig();
 
@@ -35,6 +36,10 @@ public class MekanismConfig {
         MekanismConfigHelper.registerConfig(KNOWN_CONFIGS, modContainer, tiers);
         MekanismConfigHelper.registerConfig(KNOWN_CONFIGS, modContainer, usage);
         MekanismConfigHelper.registerConfig(KNOWN_CONFIGS, modContainer, world);
+    }
+
+    public static void registerConfigsLate(ModContainer modContainer) {
+        MekanismConfigHelper.registerConfig(KNOWN_CONFIGS, modContainer, upgrades.bake());
     }
 
     public static void onConfigLoad(ModConfigEvent configEvent) {

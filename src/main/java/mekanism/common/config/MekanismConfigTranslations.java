@@ -120,7 +120,8 @@ public enum MekanismConfigTranslations implements IConfigTranslation {
           "Allow upgrading Universal Cables, Mechanical Pipes, Pressurized Tubes, Logistical Transporters, and Thermodynamic Conductors by right clicking them "
           + "with the next tier of alloy."),
     GENERAL_UPGRADE_MULTIPLIER("general.misc.upgrade_multiplier", "Max Upgrade Multiplier",
-          "Base factor for working out machine performance with upgrades - UpgradeModifier * (UpgradesInstalled/UpgradesPossible)."),
+          "Maximum benefit/penalty of a fully upgraded machine. Calculated as UpgradeModifier * (UpgradesInstalled/UpgradesPossible)."),
+    GENERAL_UPGRADE_COUNT("general.misc.upgrade_count", "Max Upgrade Count", "Maximum possible upgrades of this type that can be installed to achieve 100% benefit. Increasing this number does NOT make the machine go faster (you want the multiplier for that)."),
     GENERAL_RATE_SNA("general.misc.rate.sna", "Peak SNA Processing Rate",
           "Peak processing rate in mB/t for the Solar Neutron Activator. Note: It can go higher than this value in some extreme environments."),
 

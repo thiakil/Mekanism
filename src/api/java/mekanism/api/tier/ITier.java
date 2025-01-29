@@ -6,4 +6,11 @@ public interface ITier {
      * Gets the base tier version of this tiered object.
      */
     BaseTier getBaseTier();
+
+    /**
+     * @return the lower name of the base tier
+     */
+    default String baseName() {
+        return getBaseTier().getLowerName();
+    }
 }

@@ -1,5 +1,6 @@
 package mekanism.common.content.blocktype;
 
+import java.util.function.Function;
 import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 import mekanism.api.Upgrade;
@@ -33,13 +34,17 @@ public class BlockTypeTile<TILE extends TileEntityUpdateable> extends BlockType 
     public static class BlockTileBuilder<BLOCK extends BlockTypeTile<TILE>, TILE extends TileEntityUpdateable, T extends BlockTileBuilder<BLOCK, TILE, T>>
           extends BlockTypeBuilder<BLOCK, T> {
 
-        protected BlockTileBuilder(BLOCK holder) {
+        protected final String blockId;
+        protected Function<String, AttributeUpgradeSupport> upgrades = null;
+
+        protected BlockTileBuilder(BLOCK holder, String blockId) {
             super(holder);
+            this.blockId = blockId;
         }
 
-        public static <TILE extends TileEntityUpdateable> BlockTileBuilder<BlockTypeTile<TILE>, TILE, ?> createBlock(
+        public static <TILE extends TileEntityUpdateable> BlockTileBuilder<BlockTypeTile<TILE>, TILE, ?> createBlock(String blockId,
               Supplier<TileEntityTypeRegistryObject<TILE>> tileEntityRegistrar, ILangEntry description) {
-            return new BlockTileBuilder<>(new BlockTypeTile<>(tileEntityRegistrar, description));
+            return new BlockTileBuilder<>(new BlockTypeTile<>(tileEntityRegistrar, description), blockId);
         }
 
         public T withSound(SoundEventRegistryObject<SoundEvent> soundRegistrar) {
@@ -69,8 +74,26 @@ public class BlockTypeTile<TILE extends TileEntityUpdateable> extends BlockType 
         }
 
         public T withSupportedUpgrades(Upgrade... upgrades) {
-            holder.add(AttributeUpgradeSupport.create(upgrades));
+            this.upgrades = id -> AttributeUpgradeSupport.create(id, upgrades);
             return self();
+        }
+
+        public T with(Function<String, AttributeUpgradeSupport> upgrades) {
+            this.upgrades = upgrades;
+            return self();
+        }
+
+        public T noUpgrades() {
+            this.upgrades = null;
+            return self();
+        }
+
+        @Override
+        public BLOCK build() {
+            if (this.upgrades != null) {
+                with(this.upgrades.apply(this.blockId));
+            }
+            return super.build();
         }
     }
 }

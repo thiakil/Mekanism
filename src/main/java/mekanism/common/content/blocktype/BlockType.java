@@ -1,5 +1,6 @@
 package mekanism.common.content.blocktype;
 
+import com.google.common.base.Preconditions;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,6 +12,7 @@ import mekanism.common.block.attribute.AttributeHasBounding;
 import mekanism.common.block.attribute.AttributeHasBounding.HandleBoundingBlock;
 import mekanism.common.block.attribute.AttributeMultiblock;
 import mekanism.common.block.attribute.AttributeSideConfig;
+import mekanism.common.block.attribute.AttributeUpgradeSupport;
 import mekanism.common.block.attribute.Attributes.AttributeComputerIntegration;
 import mekanism.common.block.attribute.Attributes.AttributeCustomPathType;
 import mekanism.common.block.attribute.Attributes.AttributeLight;
@@ -122,6 +124,9 @@ public class BlockType {
         @SafeVarargs
         public final T without(Class<? extends Attribute>... attrs) {
             holder.remove(attrs);
+            for (Class<? extends Attribute> attr : attrs) {
+                Preconditions.checkArgument(attr != AttributeUpgradeSupport.class, "Removing upgrades must use noUpgrades");
+            }
             return self();
         }
 

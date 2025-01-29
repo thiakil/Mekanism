@@ -17,6 +17,7 @@ import mekanism.common.inventory.container.MekanismContainer;
 import mekanism.common.lib.math.Pos3D;
 import mekanism.common.registration.impl.ContainerTypeRegistryObject;
 import mekanism.common.registration.impl.TileEntityTypeRegistryObject;
+import mekanism.common.registries.MekanismBlockTypes;
 import mekanism.common.registries.MekanismBlocks;
 import mekanism.common.registries.MekanismContainerTypes;
 import mekanism.common.tier.FactoryTier;
@@ -28,9 +29,9 @@ public class Factory<TILE extends TileEntityFactory<?>> extends FactoryMachine<T
 
     private final FactoryMachine<?> origMachine;
 
-    public Factory(Supplier<TileEntityTypeRegistryObject<TILE>> tileEntityRegistrar, Supplier<ContainerTypeRegistryObject<? extends MekanismContainer>> containerRegistrar,
+    public Factory(String blockId, Supplier<TileEntityTypeRegistryObject<TILE>> tileEntityRegistrar, Supplier<ContainerTypeRegistryObject<? extends MekanismContainer>> containerRegistrar,
           FactoryMachine<?> origMachine, FactoryTier tier) {
-        super(tileEntityRegistrar, MekanismLang.DESCRIPTION_FACTORY, origMachine.getFactoryType());
+        super(blockId, tileEntityRegistrar, MekanismLang.DESCRIPTION_FACTORY, origMachine.getFactoryType());
         this.origMachine = origMachine;
         setMachineData(tier);
         add(new AttributeGui(containerRegistrar, null), new AttributeTier<>(tier));
@@ -49,16 +50,16 @@ public class Factory<TILE extends TileEntityFactory<?>> extends FactoryMachine<T
     public static class FactoryBuilder<FACTORY extends Factory<TILE>, TILE extends TileEntityFactory<?>, T extends MachineBuilder<FACTORY, TILE, T>>
           extends BlockTileBuilder<FACTORY, TILE, T> {
 
-        protected FactoryBuilder(FACTORY holder) {
-            super(holder);
+        protected FactoryBuilder(FACTORY holder, String blockId) {
+            super(holder, blockId);
         }
 
         @SuppressWarnings("unchecked")
-        public static <TILE extends TileEntityFactory<?>> FactoryBuilder<Factory<TILE>, TILE, ?> createFactory(Supplier<?> tileEntityRegistrar, FactoryType type,
+        public static <TILE extends TileEntityFactory<?>> FactoryBuilder<Factory<TILE>, TILE, ?> createFactory(String blockId, Supplier<?> tileEntityRegistrar, FactoryType type,
               FactoryTier tier) {
             // this is dirty but unfortunately necessary for things to play right
-            FactoryBuilder<Factory<TILE>, TILE, ?> builder = new FactoryBuilder<>(new Factory<>((Supplier<TileEntityTypeRegistryObject<TILE>>) tileEntityRegistrar,
-                  () -> MekanismContainerTypes.FACTORY, type.getBaseMachine(), tier));
+            FactoryBuilder<Factory<TILE>, TILE, ?> builder = new FactoryBuilder<>(new Factory<>(blockId, (Supplier<TileEntityTypeRegistryObject<TILE>>) tileEntityRegistrar,
+                  () -> MekanismContainerTypes.FACTORY, type.getBaseMachine(), tier), blockId);
             //Note, we can't just return the builder here as then it gets all confused about object types, so we just
             // assign the value here, and then return the builder itself as it is the same object
             builder.withComputerSupport(tier, type.getRegistryNameComponentCapitalized() + "Factory");
@@ -72,6 +73,8 @@ public class Factory<TILE extends TileEntityFactory<?>> extends FactoryMachine<T
                   rand.nextFloat() * 0.1F + 0.7F,
                   rand.nextFloat() * 0.7F - 0.3F
             )));
+            BlockTypeTile<?> parentType = type.getBaseMachine();
+            builder.with(ignored -> parentType.get(AttributeUpgradeSupport.class));
             return builder;
         }
     }

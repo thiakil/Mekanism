@@ -17,13 +17,13 @@ public class Generator<TILE extends TileEntityMekanism> extends BlockTypeTile<TI
 
     public static class GeneratorBuilder<GENERATOR extends Generator<TILE>, TILE extends TileEntityMekanism, T extends GeneratorBuilder<GENERATOR, TILE, T>> extends BlockTileBuilder<GENERATOR, TILE, T> {
 
-        protected GeneratorBuilder(GENERATOR holder) {
-            super(holder);
+        protected GeneratorBuilder(GENERATOR holder, String blockId) {
+            super(holder, blockId);
         }
 
-        public static <TILE extends TileEntityMekanism> GeneratorBuilder<Generator<TILE>, TILE, ?> createGenerator(Supplier<TileEntityTypeRegistryObject<TILE>> tileEntityRegistrar,
+        public static <TILE extends TileEntityMekanism> GeneratorBuilder<Generator<TILE>, TILE, ?> createGenerator(String blockId, Supplier<TileEntityTypeRegistryObject<TILE>> tileEntityRegistrar,
               ILangEntry description) {
-            return new GeneratorBuilder<>(new Generator<>(tileEntityRegistrar, description));
+            return new GeneratorBuilder<>(new Generator<>(tileEntityRegistrar, description), blockId);
         }
     }
 }

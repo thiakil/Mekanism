@@ -7,7 +7,7 @@ public class MathUtils {
     private MathUtils() {
     }
 
-    static final long UNSIGNED_MASK = 0x7FFFFFFFFFFFFFFFL;
+    public static final int PRETTY_MAX_INT = 2000000000;
 
     /**
      * Clamp a double to int without using{@link Math#min(double, double)} due to double representation issues. Primary use: power systems that use int, where Mek uses
