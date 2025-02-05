@@ -1,10 +1,13 @@
 package mekanism.common.registries;
 
+import com.google.common.base.Preconditions;
 import com.mojang.serialization.Codec;
 import mekanism.api.annotations.NothingNullByDefault;
 import mekanism.common.Mekanism;
 import mekanism.common.item.gear.ItemFlamethrower.FlamethrowerMode;
+import mekanism.common.lib.heat.HeatManager;
 import mekanism.common.lib.radiation.RadiationManager;
+import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -30,4 +33,9 @@ public class MekanismAttachmentTypes {
           AttachmentType.builder(() -> FlamethrowerMode.COMBAT)
                 .serialize(FlamethrowerMode.CODEC, mode -> mode != FlamethrowerMode.COMBAT)
                 .build());
+
+    public static final DeferredHolder<AttachmentType<?>, AttachmentType<HeatManager>> HEAT_MANAGER = ATTACHMENT_TYPES.register("heat_manager", () -> AttachmentType.builder(holder -> {
+        Preconditions.checkArgument(holder instanceof Level, "Must be attached to a Level");
+        return new HeatManager((Level) holder);
+    }).build());
 }
